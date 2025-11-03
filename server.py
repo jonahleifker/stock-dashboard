@@ -7,7 +7,7 @@ CORS(app)
 
 # Fortune 100 public company tickers
 TICKERS = [
-    'AAPL', 'MSFT', 'AMZN', 'GOOGL', 'BRK-B', 'UNH', 'JNJ', 'XOM', 'JPM', 'V',
+    'AAPL', 'MSFT', 'TSLA', 'NVDA', 'META', 'AMZN', 'GOOGL', 'BRK-B', 'UNH', 'JNJ', 'XOM', 'JPM', 'V',
     'PG', 'CVX', 'MA', 'HD', 'BAC', 'ABBV', 'PFE', 'KO', 'COST', 'WMT',
     'DIS', 'CSCO', 'INTC', 'VZ', 'CMCSA', 'ADBE', 'NFLX', 'NKE', 'CRM', 'T',
     'MRK', 'TMO', 'ABT', 'DHR', 'ACN', 'ORCL', 'TXN', 'PM', 'NEE', 'LLY',
@@ -37,6 +37,9 @@ def get_stocks():
             # Get 30-day high
             high_30d = float(hist['High'].max())
             
+            # Calculate percent from high
+            percent_from_high = ((current_price - high_30d) / high_30d) * 100
+            
             # Get company info
             info = stock.info
             company_name = info.get('longName', info.get('shortName', ticker))
@@ -47,6 +50,7 @@ def get_stocks():
                 'company': company_name,
                 'currentPrice': current_price,
                 'highLast30Days': high_30d,
+                'percentFromHigh': percent_from_high,
                 'sector': sector
             })
             
