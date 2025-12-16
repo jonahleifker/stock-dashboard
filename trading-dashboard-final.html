@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <div id="root"></div>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel">
+        const { useState, useMemo } = React;
+        const App = () => {
+            const [tab, setTab] = useState('pullbacks');
+            const tabs = [
+                {id: 'pullbacks', label: '📉 Pullbacks', comp: Pullbacks},
+                {id: 'deep', label: '💥 Deep (50%+)', comp: DeepPullbacks},
+                {id: 'ipos', label: '🚀 IPOs', comp: IPOs},
+                {id: 'sectors', label: '🔥 Sectors', comp: Sectors}
+            ];
+            const ActiveComp = tabs.find(t => t.id === tab).comp;
+            return (
+                <div className="min-h-screen bg-gray-50">
+                    <div className="bg-white border-b sticky top-0 z-10 shadow">
+                        <div className="max-w-7xl mx-auto px-8 flex space-x-6">
+                            {tabs.map(t => (
+                                <button key={t.id} onClick={() => setTab(t.id)} className={`py-4 px-1 border-b-2 font-medium text-sm ${tab === t.id ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500'}`}>
+                                    {t.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="p-8"><ActiveComp /></div>
+                </div>
+            );
+        };
+
+        const Pullbacks = () => {
+            const [data, setData] = useState([]);
+            const [loading, setLoading] = useState(false);
+            const [search, setSearch] = useState('');
+            const [filter, setFilter] = useState(false);
+            const fetch = async () => {
+                setLoading(true);
+                try { const res = await window.fetch('http://localhost:8000/api/stocks'); setData(await res.json()); } catch(e) {}
+                setLoading(false);
+            };
+            const stocks = useMemo(() => {
+                let r = data.map(s => ({...s, change: ((s.currentPrice - s.highLast30Days) / s.highLast30Days) * 100}))
+                    .filter(s => s.ticker.toLowerCase().includes(search.toLowerCase()));
+                if (filter) r = r.filter(s => s.change <= -10);
+                return r.sort((a,b) => a.change - b.change);
+            }, [data, search, filter]);
+            return (
+                <div className="max-w-7xl mx-auto">
+                    <div className="bg-white rounded-lg shadow p-6 mb-6">
+                        <div className="flex justify-between mb-6">
+                            <h1 className="text-3xl font-bold">Pullback Opportunities</h1>
+                            <button onClick={fetch} disabled={loading} className="px-5 py-2 bg-blue-600 text-white rounded-lg">{loading ? 'Loading...' : 'Refresh'}</button>
+                        </div>
+                        {data.length > 0 && (
+                            <>
+                                <div className="grid grid-cols-2 gap-4 mb-6">
+                                    <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4">
+                                        <div className="text-red-600 text-sm font-medium">Opportunities (≥10%)</div>
+                                        <div className="text-3xl font-bold text-red-700">{stocks.filter(s => s.change <= -10).length}</div>
+                                    </div>
+                                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                        <div className="text-gray-600 text-sm font-medium">Total Stocks</div>
+                                        <div className="text-3xl font-bold text-gray-700">{stocks.length}</div>
+                                    </div>
+                                </div>
+                                <div className="flex gap-3 mb-6">
+                                    <input type="text" placeholder="Search..." className="flex-1 px-4 py-2 border rounded-lg" value={search} onChange={e => setSearch(e.target.value)} />
+                                    <button onClick={() => setFilter(!filter)} className={`px-5 py-2 rounded-lg font-medium ${filter ? 'bg-red-600 text-white' : 'bg-white border'}`}>{filter ? 'Show All' : 'Opps Only'}</button>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                    {data.length > 0 && (
+                        <div className="bg-white rounded-lg shadow overflow-auto">
+                            <table className="w-full">
+                                <thead className="bg-gray-50 border-b">
+                                    <tr>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase">Ticker</th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase">Company</th>
+                                        <th className="px-6 py-4 text-right text-xs font-bold text-gray-600 uppercase">Current</th>
+                                        <th className="px-6 py-4 text-right text-xs font-bold text-gray-600 uppercase">30d High</th>
+                                        <th className="px-6 py-4 text-right text-xs font-bold text-gray-600 uppercase">% from High</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y">{stocks.map(s => (
+                                    <tr key={s.ticker} className="hover:bg-gray-50">
+                                        <td className="px-6 py-4"><div className="font-bold">{s.ticker}</div></td>
+                                        <td className="px-6 py-4"><div className="text-sm">{s.company}</div></td>
+                                        <td className="px-6 py-4 text-right"><div className="text-sm font-bold">${s.currentPrice.toFixed(2)}</div></td>
+                                        <td className="px-6 py-4 text-right"><div className="text-sm">${s.highLast30Days.toFixed(2)}</div></td>
+                                        <td className="px-6 py-4 text-right">
+                                            <span className={`px-3 py-1 rounded-full text-sm font-bold ${s.change <= -10 ? 'bg-red-600 text-white' : 'bg-red-50 text-red-800'}`}>
+                                                {s.change.toFixed(2)}% {s.change <= -10 && '🎯'}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))}</tbody>
+                            </table>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const DeepPullbacks = () => {
+            const [data, setData] = useState([]);
+            const [loading, setLoading] = useState(false);
+            const [tf, setTf] = useState('1yr');
+            const [search, setSearch] = useState('');
+            const fetch = async () => {
+                setLoading(true);
+                try { const res = await window.fetch('http://localhost:8000/api/deep-pullbacks'); setData(await res.json()); } catch(e) {}
+                setLoading(false);
+            };
+            const stocks = useMemo(() => data.filter(s => s.ticker.toLowerCase().includes(search.toLowerCase())).sort((a,b) => {
+                const av = tf==='3mo'?a.change_3mo:tf==='6mo'?a.change_6mo:a.change_1yr;
+                const bv = tf==='3mo'?b.change_3mo:tf==='6mo'?b.change_6mo:b.change_1yr;
+                return av-bv;
+            }), [data,search,tf]);
+            const getC = s => tf==='3mo'?s.change_3mo:tf==='6mo'?s.change_6mo:s.change_1yr;
+            const fmt = c => c>=1e12?`$${(c/1e12).toFixed(1)}T`:c>=1e9?`$${(c/1e9).toFixed(1)}B`:`$${(c/1e6).toFixed(1)}M`;
+            return (
+                <div className="max-w-7xl mx-auto">
+                    <div className="bg-white rounded-lg shadow p-6 mb-6">
+                        <div className="flex justify-between mb-6">
+                            <h1 className="text-3xl font-bold">Deep Pullbacks (50%+)</h1>
+                            <button onClick={fetch} disabled={loading} className="px-5 py-2 bg-blue-600 text-white rounded-lg">{loading?'Loading...':'Refresh'}</button>
+                        </div>
+                        {data.length > 0 && (
+                            <>
+                                <div className="flex gap-3 mb-4">{['3mo','6mo','1yr'].map(t => (
+                                    <button key={t} onClick={()=>setTf(t)} className={`px-5 py-2 rounded-lg font-medium ${tf===t?'bg-blue-600 text-white':'bg-white border'}`}>
+                                        {t==='3mo'?'3 Months':t==='6mo'?'6 Months':'1 Year'}
+                                    </button>
+                                ))}</div>
+                                <input type="text" placeholder="Search..." className="w-full px-4 py-2 border rounded-lg mb-6" value={search} onChange={e=>setSearch(e.target.value)} />
+                            </>
+                        )}
+                    </div>
+                    {data.length > 0 && (
+                        <div className="bg-white rounded-lg shadow overflow-auto">
+                            <table className="w-full">
+                                <thead className="bg-gray-50 border-b">
+                                    <tr>
+                                        <th className="px-6 py-4 text-left text-xs font-bold uppercase">Ticker</th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold uppercase">Company</th>
+                                        <th className="px-6 py-4 text-right text-xs font-bold uppercase">Market Cap</th>
+                                        <th className="px-6 py-4 text-right text-xs font-bold uppercase">Current</th>
+                                        <th className="px-6 py-4 text-right text-xs font-bold uppercase">Drop %</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y">{stocks.map(s => {
+                                    const c = getC(s);
+                                    const color = c<=-90?'bg-purple-600 text-white':c<=-80?'bg-red-600 text-white':c<=-70?'bg-red-500 text-white':'bg-orange-500 text-white';
+                                    return (
+                                        <tr key={s.ticker} className="hover:bg-gray-50">
+                                            <td className="px-6 py-4"><div className="font-bold">{s.ticker}</div></td>
+                                            <td className="px-6 py-4"><div className="text-sm">{s.company}</div></td>
+                                            <td className="px-6 py-4 text-right"><div className="text-sm">{fmt(s.marketCap)}</div></td>
+                                            <td className="px-6 py-4 text-right"><div className="text-sm font-bold">${s.currentPrice.toFixed(2)}</div></td>
+                                            <td className="px-6 py-4 text-right">
+                                                <span className={`px-3 py-1 rounded-full text-sm font-bold ${color}`}>{c.toFixed(1)}%</span>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}</tbody>
+                            </table>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const IPOs = () => {
+            const [data, setData] = useState([]);
+            const [loading, setLoading] = useState(false);
+            const [search, setSearch] = useState('');
+            const fetch = async () => {
+                setLoading(true);
+                try { const res = await window.fetch('http://localhost:8000/api/ipos'); setData(await res.json()); } catch(e) {}
+                setLoading(false);
+            };
+            const stocks = useMemo(() => data.filter(s => s.ticker.toLowerCase().includes(search.toLowerCase())), [data,search]);
+            const fmt = c => c>=1e12?`$${(c/1e12).toFixed(1)}T`:c>=1e9?`$${(c/1e9).toFixed(1)}B`:`$${(c/1e6).toFixed(1)}M`;
+            const getColor = c => c>=200?'bg-emerald-600 text-white':c>=100?'bg-green-600 text-white':c>=50?'bg-green-500 text-white':c>0?'bg-green-100 text-green-800':c>-50?'bg-red-100 text-red-800':'bg-red-600 text-white';
+            const counts = useMemo(() => ({
+                total: data.length,
+                winners: data.filter(s=>s.changeSinceIPO>0).length,
+                big: data.filter(s=>s.changeSinceIPO>=100).length
+            }), [data]);
+            return (
+                <div className="max-w-7xl mx-auto">
+                    <div className="bg-white rounded-lg shadow p-6 mb-6">
+                        <div className="flex justify-between mb-6">
+                            <div>
+                                <h1 className="text-3xl font-bold">Recent IPOs (Last 5 Years)</h1>
+                                <p className="text-sm text-gray-500">Performance since going public</p>
+                            </div>
+                            <button onClick={fetch} disabled={loading} className="px-5 py-2 bg-blue-600 text-white rounded-lg">{loading?'Loading...':'Refresh'}</button>
+                        </div>
+                        {data.length > 0 && (
+                            <>
+                                <div className="grid grid-cols-3 gap-4 mb-6">
+                                    <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                                        <div className="text-blue-600 text-sm font-medium">Total IPOs</div>
+                                        <div className="text-3xl font-bold text-blue-700">{counts.total}</div>
+                                    </div>
+                                    <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
+                                        <div className="text-green-600 text-sm font-medium">Winners</div>
+                                        <div className="text-3xl font-bold text-green-700">{counts.winners}</div>
+                                    </div>
+                                    <div className="bg-emerald-50 border-2 border-emerald-200 rounded-lg p-4">
+                                        <div className="text-emerald-600 text-sm font-medium">Big Winners (100%+)</div>
+                                        <div className="text-3xl font-bold text-emerald-700">{counts.big}</div>
+                                    </div>
+                                </div>
+                                <input type="text" placeholder="Search..." className="w-full px-4 py-2 border rounded-lg mb-6" value={search} onChange={e=>setSearch(e.target.value)} />
+                            </>
+                        )}
+                    </div>
+                    {data.length > 0 && (
+                        <div className="bg-white rounded-lg shadow overflow-auto">
+                            <table className="w-full">
+                                <thead className="bg-gray-50 border-b">
+                                    <tr>
+                                        <th className="px-6 py-4 text-left text-xs font-bold uppercase">#</th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold uppercase">Ticker</th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold uppercase">Company</th>
+                                        <th className="px-6 py-4 text-center text-xs font-bold uppercase">IPO Date</th>
+                                        <th className="px-6 py-4 text-center text-xs font-bold uppercase">Age</th>
+                                        <th className="px-6 py-4 text-right text-xs font-bold uppercase">IPO Price</th>
+                                        <th className="px-6 py-4 text-right text-xs font-bold uppercase">Current</th>
+                                        <th className="px-6 py-4 text-right text-xs font-bold uppercase">Market Cap</th>
+                                        <th className="px-6 py-4 text-right text-xs font-bold uppercase">Change Since IPO</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y">{stocks.map((s,i) => (
+                                    <tr key={s.ticker} className="hover:bg-gray-50">
+                                        <td className="px-6 py-4"><div className="font-bold text-gray-400">#{i+1}</div></td>
+                                        <td className="px-6 py-4"><div className="font-bold">{s.ticker}</div></td>
+                                        <td className="px-6 py-4"><div className="text-sm">{s.company}</div></td>
+                                        <td className="px-6 py-4 text-center"><div className="text-xs">{s.ipoDate}</div></td>
+                                        <td className="px-6 py-4 text-center"><div className="text-xs">{s.yearsSinceIPO}y</div></td>
+                                        <td className="px-6 py-4 text-right"><div className="text-sm">${s.ipoPrice.toFixed(2)}</div></td>
+                                        <td className="px-6 py-4 text-right"><div className="text-sm font-bold">${s.currentPrice.toFixed(2)}</div></td>
+                                        <td className="px-6 py-4 text-right"><div className="text-sm">{fmt(s.marketCap)}</div></td>
+                                        <td className="px-6 py-4 text-right">
+                                            <span className={`px-3 py-1.5 rounded-full text-sm font-bold ${getColor(s.changeSinceIPO)}`}>
+                                                {s.changeSinceIPO>0?'+':''}{s.changeSinceIPO.toFixed(1)}%
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))}</tbody>
+                            </table>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const Sectors = () => {
+            const [data, setData] = useState([]);
+            const [loading, setLoading] = useState(false);
+            const [tf, setTf] = useState('30d');
+            const [exp, setExp] = useState(null);
+            const fetch = async () => {
+                setLoading(true);
+                try { const res = await window.fetch('http://localhost:8000/api/sectors'); setData(await res.json()); } catch(e) {}
+                setLoading(false);
+            };
+            const sorted = useMemo(() => [...data].sort((a,b) => {
+                const av = tf==='7d'?a.avg_change_7d:tf==='30d'?a.avg_change_30d:a.avg_change_90d;
+                const bv = tf==='7d'?b.avg_change_7d:tf==='30d'?b.avg_change_30d:b.avg_change_90d;
+                return bv-av;
+            }), [data,tf]);
+            const getC = s => tf==='7d'?s.avg_change_7d:tf==='30d'?s.avg_change_30d:s.avg_change_90d;
+            return (
+                <div className="max-w-7xl mx-auto">
+                    <div className="bg-white rounded-lg shadow p-6 mb-6">
+                        <div className="flex justify-between mb-6">
+                            <h1 className="text-3xl font-bold">Hot Sectors Analysis</h1>
+                            <button onClick={fetch} disabled={loading} className="px-5 py-2 bg-blue-600 text-white rounded-lg">{loading?'Loading (3-5 min)':'Refresh'}</button>
+                        </div>
+                        {data.length > 0 && (
+                            <>
+                                <div className="grid grid-cols-2 gap-4 mb-6">
+                                    <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
+                                        <div className="text-green-600 text-sm font-medium">Top Sector</div>
+                                        <div className="text-2xl font-bold text-green-700">{sorted[0]?.sector}</div>
+                                        <div className="text-xs text-green-600">+{getC(sorted[0])}%</div>
+                                    </div>
+                                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                        <div className="text-gray-600 text-sm font-medium">Sectors Tracked</div>
+                                        <div className="text-3xl font-bold text-gray-700">{data.length}</div>
+                                    </div>
+                                </div>
+                                <div className="flex gap-3 mb-6">{['7d','30d','90d'].map(t => (
+                                    <button key={t} onClick={()=>setTf(t)} className={`px-5 py-2 rounded-lg font-medium ${tf===t?'bg-blue-600 text-white':'bg-white border'}`}>
+                                        {t==='7d'?'1 Week':t==='30d'?'1 Month':'3 Months'}
+                                    </button>
+                                ))}</div>
+                            </>
+                        )}
+                    </div>
+                    {data.length > 0 && (
+                        <div className="space-y-4">{sorted.map((s,i) => (
+                            <div key={s.sector} className="bg-white rounded-lg shadow">
+                                <div className="p-6 cursor-pointer hover:bg-gray-50" onClick={()=>setExp(exp===s.sector?null:s.sector)}>
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex items-center gap-4">
+                                            <div className="text-2xl font-bold text-gray-400">#{i+1}</div>
+                                            <div>
+                                                <h3 className="text-xl font-bold">{s.sector}</h3>
+                                                <p className="text-sm text-gray-500">{s.stock_count} stocks</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <span className={`px-4 py-2 rounded-full text-lg font-bold ${getC(s)>=5?'bg-green-600 text-white':getC(s)>0?'bg-green-50 text-green-700':'bg-red-50 text-red-700'}`}>
+                                                {getC(s)>0?'+':''}{getC(s)}%
+                                            </span>
+                                            <div className="text-gray-400">{exp===s.sector?'▼':'▶'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {exp===s.sector && (
+                                    <div className="border-t p-6 bg-gray-50">
+                                        <h4 className="font-bold mb-4">Top Performers</h4>
+                                        <div className="space-y-2">{s.top_stocks.map(st => {
+                                            const c = tf==='7d'?st.change_7d:tf==='30d'?st.change_30d:st.change_90d;
+                                            return (
+                                                <div key={st.ticker} className="flex justify-between p-3 bg-white rounded-lg">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="font-bold">{st.ticker}</div>
+                                                        <div className="text-sm text-gray-600">{st.company}</div>
+                                                    </div>
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="text-sm font-medium">${st.currentPrice.toFixed(2)}</div>
+                                                        <span className={`px-3 py-1 rounded-full text-sm font-bold ${c>=10?'bg-green-600 text-white':c>0?'bg-green-100 text-green-800':'bg-red-100 text-red-800'}`}>
+                                                            {c>0?'+':''}{c?.toFixed(2)}%
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}</div>
+                                    </div>
+                                )}
+                            </div>
+                        ))}</div>
+                    )}
+                </div>
+            );
+        };
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
