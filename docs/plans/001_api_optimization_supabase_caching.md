@@ -261,3 +261,7 @@ def refresh_stocks():
 - Frontend HTML files need no changes
 - Add `/refresh` endpoints for manual cache invalidation
 - Consider adding `updated_at` to API response so frontend can show data freshness
+
+
+
+

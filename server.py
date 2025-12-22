@@ -17,27 +17,36 @@ TICKERS = [
 
 @app.route('/api/stocks', methods=['GET'])
 def get_stocks():
+    print(f"Fetching {len(TICKERS)} tickers in batch...")
+    
+    # Batch fetch all price data in ONE API call
+    data = yf.download(TICKERS, period='1mo', group_by='ticker', progress=False)
+    
     results = []
     
     for ticker in TICKERS:
         try:
-            print(f"Fetching {ticker}...")
-            stock = yf.Ticker(ticker)
+            # Extract data for this ticker
+            if len(TICKERS) == 1:
+                ticker_data = data
+            else:
+                if ticker not in data.columns.get_level_values(0):
+                    print(f"No data for {ticker}")
+                    continue
+                ticker_data = data[ticker]
             
-            # Get 30 days of historical data
-            hist = stock.history(period='1mo')
-            
-            if hist.empty:
-                print(f"No data for {ticker}")
+            if ticker_data.empty:
+                print(f"Empty data for {ticker}")
                 continue
             
             # Get current price (most recent close)
-            current_price = float(hist['Close'].iloc[-1])
+            current_price = float(ticker_data['Close'].iloc[-1])
             
             # Get 30-day high
-            high_30d = float(hist['High'].max())
+            high_30d = float(ticker_data['High'].max())
             
-            # Get company info
+            # Get company info (still needs individual call for metadata)
+            stock = yf.Ticker(ticker)
             info = stock.info
             company_name = info.get('longName', info.get('shortName', ticker))
             sector = info.get('sector', 'Unknown')
@@ -51,9 +60,10 @@ def get_stocks():
             })
             
         except Exception as e:
-            print(f"Error fetching {ticker}: {e}")
+            print(f"Error processing {ticker}: {e}")
             continue
     
+    print(f"Successfully processed {len(results)} stocks")
     return jsonify(results)
 
 # Expanded stock list covering major sectors
@@ -105,20 +115,29 @@ EXPANDED_TICKERS = [
 
 @app.route('/api/sectors', methods=['GET'])
 def get_sectors():
+    print(f"Fetching {len(EXPANDED_TICKERS)} tickers in batch...")
+    
+    # Batch fetch all price data in ONE API call
+    data = yf.download(EXPANDED_TICKERS, period='3mo', group_by='ticker', progress=False)
+    
     sector_data = {}
     
     for ticker in EXPANDED_TICKERS:
         try:
-            print(f"Fetching sector data for {ticker}...")
-            stock = yf.Ticker(ticker)
+            # Extract data for this ticker
+            if len(EXPANDED_TICKERS) == 1:
+                ticker_data = data
+            else:
+                if ticker not in data.columns.get_level_values(0):
+                    print(f"No data for {ticker}")
+                    continue
+                ticker_data = data[ticker]
             
-            # Get historical data for different timeframes
-            hist_90d = stock.history(period='3mo')
-            
-            if hist_90d.empty:
+            if ticker_data.empty:
                 continue
             
-            # Get sector info
+            # Get sector info (still needs individual call for metadata)
+            stock = yf.Ticker(ticker)
             info = stock.info
             sector = info.get('sector', 'Unknown')
             company_name = info.get('longName', info.get('shortName', ticker))
@@ -127,25 +146,25 @@ def get_sectors():
                 continue
             
             # Calculate performance for different timeframes
-            current_price = float(hist_90d['Close'].iloc[-1])
+            current_price = float(ticker_data['Close'].iloc[-1])
             
             # 7-day performance
-            if len(hist_90d) >= 7:
-                price_7d_ago = float(hist_90d['Close'].iloc[-7])
+            if len(ticker_data) >= 7:
+                price_7d_ago = float(ticker_data['Close'].iloc[-7])
                 change_7d = ((current_price - price_7d_ago) / price_7d_ago) * 100
             else:
                 change_7d = None
             
             # 30-day performance
-            if len(hist_90d) >= 30:
-                price_30d_ago = float(hist_90d['Close'].iloc[-30])
+            if len(ticker_data) >= 30:
+                price_30d_ago = float(ticker_data['Close'].iloc[-30])
                 change_30d = ((current_price - price_30d_ago) / price_30d_ago) * 100
             else:
                 change_30d = None
             
             # 90-day performance
-            if len(hist_90d) >= 90:
-                price_90d_ago = float(hist_90d['Close'].iloc[0])
+            if len(ticker_data) >= 90:
+                price_90d_ago = float(ticker_data['Close'].iloc[0])
                 change_90d = ((current_price - price_90d_ago) / price_90d_ago) * 100
             else:
                 change_90d = None
@@ -180,7 +199,7 @@ def get_sectors():
                 sector_data[sector]['changes_90d'].append(change_90d)
                 
         except Exception as e:
-            print(f"Error fetching {ticker}: {e}")
+            print(f"Error processing {ticker}: {e}")
             continue
     
     # Calculate sector averages and sort stocks
@@ -210,45 +229,53 @@ def get_sectors():
 
 @app.route('/api/deep-pullbacks', methods=['GET'])
 def get_deep_pullbacks():
-    results = []
-    
     # Expanded ticker list for more coverage
     all_tickers = list(set(TICKERS + EXPANDED_TICKERS))
     
+    print(f"Fetching {len(all_tickers)} tickers in batch for deep pullbacks...")
+    
+    # Batch fetch all price data in ONE API call
+    data = yf.download(all_tickers, period='1y', group_by='ticker', progress=False)
+    
+    results = []
+    
     for ticker in all_tickers:
         try:
-            print(f"Fetching deep pullback data for {ticker}...")
-            stock = yf.Ticker(ticker)
+            # Extract data for this ticker
+            if len(all_tickers) == 1:
+                ticker_data = data
+            else:
+                if ticker not in data.columns.get_level_values(0):
+                    continue
+                ticker_data = data[ticker]
             
-            # Get 1 year of historical data
-            hist = stock.history(period='1y')
-            
-            if hist.empty or len(hist) < 60:
+            if ticker_data.empty or len(ticker_data) < 60:
                 continue
             
             # Get current price
-            current_price = float(hist['Close'].iloc[-1])
+            current_price = float(ticker_data['Close'].iloc[-1])
             
             # Calculate high prices for different timeframes
             # 3 month high (last 90 days)
-            hist_3mo = hist.iloc[-90:] if len(hist) >= 90 else hist
+            hist_3mo = ticker_data.iloc[-90:] if len(ticker_data) >= 90 else ticker_data
             high_3mo = float(hist_3mo['High'].max())
             change_3mo = ((current_price - high_3mo) / high_3mo) * 100 if high_3mo > 0 else 0
             
             # 6 month high (last 180 days)
-            hist_6mo = hist.iloc[-180:] if len(hist) >= 180 else hist
+            hist_6mo = ticker_data.iloc[-180:] if len(ticker_data) >= 180 else ticker_data
             high_6mo = float(hist_6mo['High'].max())
             change_6mo = ((current_price - high_6mo) / high_6mo) * 100 if high_6mo > 0 else 0
             
             # 1 year high (all data)
-            high_1yr = float(hist['High'].max())
+            high_1yr = float(ticker_data['High'].max())
             change_1yr = ((current_price - high_1yr) / high_1yr) * 100 if high_1yr > 0 else 0
             
             # Only include if down at least 50% in any timeframe
             if change_3mo > -50 and change_6mo > -50 and change_1yr > -50:
                 continue
             
-            # Get company info
+            # Get company info (still needs individual call for metadata)
+            stock = yf.Ticker(ticker)
             info = stock.info
             company_name = info.get('longName', info.get('shortName', ticker))
             sector = info.get('sector', 'Unknown')
@@ -269,12 +296,13 @@ def get_deep_pullbacks():
             })
             
         except Exception as e:
-            print(f"Error fetching {ticker}: {e}")
+            print(f"Error processing {ticker}: {e}")
             continue
     
     # Sort by worst 1-year performance by default
     results.sort(key=lambda x: x['change_1yr'])
     
+    print(f"Found {len(results)} stocks with deep pullbacks")
     return jsonify(results)
 
 # Comprehensive list of recent IPOs (last 5 years)
@@ -323,26 +351,38 @@ RECENT_IPOS = [
 
 @app.route('/api/ipos', methods=['GET'])
 def get_ipos():
+    # Extract just the tickers from RECENT_IPOS
+    ipo_tickers = [ticker for ticker, _, _ in RECENT_IPOS]
+    
+    print(f"Fetching {len(ipo_tickers)} IPO tickers in batch...")
+    
+    # Batch fetch all price data in ONE API call
+    data = yf.download(ipo_tickers, period='5d', group_by='ticker', progress=False)
+    
     results = []
     
     for ticker, ipo_date, ipo_price in RECENT_IPOS:
         try:
-            print(f"Fetching IPO data for {ticker}...")
-            stock = yf.Ticker(ticker)
+            # Extract data for this ticker
+            if len(ipo_tickers) == 1:
+                ticker_data = data
+            else:
+                if ticker not in data.columns.get_level_values(0):
+                    print(f"No data for {ticker}")
+                    continue
+                ticker_data = data[ticker]
             
-            # Get current price
-            hist = stock.history(period='5d')
-            
-            if hist.empty:
-                print(f"No data for {ticker}")
+            if ticker_data.empty:
+                print(f"Empty data for {ticker}")
                 continue
             
-            current_price = float(hist['Close'].iloc[-1])
+            current_price = float(ticker_data['Close'].iloc[-1])
             
             # Calculate change since IPO
             change_since_ipo = ((current_price - ipo_price) / ipo_price) * 100
             
-            # Get company info
+            # Get company info (still needs individual call for metadata)
+            stock = yf.Ticker(ticker)
             info = stock.info
             company_name = info.get('longName', info.get('shortName', ticker))
             sector = info.get('sector', 'Unknown')
@@ -368,12 +408,13 @@ def get_ipos():
             })
             
         except Exception as e:
-            print(f"Error fetching {ticker}: {e}")
+            print(f"Error processing {ticker}: {e}")
             continue
     
     # Sort by performance (best to worst)
     results.sort(key=lambda x: x['changeSinceIPO'], reverse=True)
     
+    print(f"Successfully processed {len(results)} IPOs")
     return jsonify(results)
 
 if __name__ == '__main__':
