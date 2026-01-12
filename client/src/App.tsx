@@ -1,6 +1,10 @@
 import { Routes, Route, Link } from 'react-router-dom';
 import { Button } from './components/ui/button';
 import Login from './pages/Login';
+import QuotesHome from "./pages/QuotesHome";
+import CompanyDashboard from "./pages/CompanyDashboard";
+import ResearchNotes from "./pages/ResearchNotes";
+import TickerMatrix from "./pages/TickerMatrix";
 
 function Home() {
   return (
@@ -20,6 +24,10 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/home" element={<Home />} />
+      <Route path="/quotes" element={<QuotesHome />} />
+      <Route path="/dashboard" element={<CompanyDashboard />} />
+      <Route path="/notes" element={<ResearchNotes />} />
+      <Route path="/matrix" element={<TickerMatrix />} />
     </Routes>
   );
 }

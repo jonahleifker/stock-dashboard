@@ -20,9 +20,15 @@ module.exports = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
+          DEFAULT: "#53d22d", // Stitch primary
           foreground: "hsl(var(--primary-foreground))",
         },
+        "background-light": "#f6f8f6",
+        "background-dark": "#131712",
+        "input-dark": "#202025",
+        "surface-dark": "#1a2119",
+        "accent-red": "#ff4d4d",
+        "text-secondary": "#a5b6a0",
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
@@ -47,6 +53,10 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+      },
+      fontFamily: {
+        display: ["Manrope", "sans-serif"],
+        body: ["Noto Sans", "sans-serif"],
       },
       borderRadius: {
         lg: "var(--radius)",
