@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Quotes Home - Loading State</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Manrope -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#53d22d",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#152012", // Deep organic charcoal/green-black
+                        "surface-dark": "#1a2517",   // Slightly lighter for cards/sections
+                        "skeleton": "#2A3826",       // Specific color for loading states
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem", 
+                        "lg": "2rem", 
+                        "xl": "3rem", 
+                        "full": "9999px"
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'shimmer': 'shimmer 2s linear infinite',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #152012; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2d372a; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #42513e; 
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display overflow-hidden h-screen flex selection:bg-primary selection:text-black">
+<!-- Sidebar -->
+<aside class="w-72 hidden lg:flex flex-col border-r border-white/5 bg-background-dark h-full shrink-0">
+<div class="p-6">
+<div class="flex items-center gap-3">
+<div class="bg-primary/20 p-2 rounded-xl">
+<span class="material-symbols-outlined text-primary" style="font-size: 28px;">candlestick_chart</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-white text-lg font-bold leading-none tracking-tight">QuoteSheet</h1>
+<p class="text-white/40 text-xs font-medium mt-1">v2.0 Pro</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 px-4 flex flex-col gap-2 overflow-y-auto">
+<a class="flex items-center gap-3 px-4 py-3 rounded-full bg-surface-dark border border-primary/10 transition-colors group" href="#">
+<span class="material-symbols-outlined text-primary fill-1">dashboard</span>
+<span class="text-white text-sm font-semibold">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full hover:bg-white/5 text-white/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">visibility</span>
+<span class="text-sm font-medium">Watchlist</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full hover:bg-white/5 text-white/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">newspaper</span>
+<span class="text-sm font-medium">News Feed</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full hover:bg-white/5 text-white/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">pie_chart</span>
+<span class="text-sm font-medium">Portfolio</span>
+</a>
+<div class="h-px bg-white/5 my-2 mx-4"></div>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full hover:bg-white/5 text-white/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+</nav>
+<div class="p-6 flex flex-col gap-4">
+<button class="flex w-full cursor-pointer items-center justify-center rounded-full h-12 bg-primary text-background-dark text-sm font-bold tracking-wide hover:brightness-110 transition-all">
+                Upgrade Plan
+            </button>
+<div class="flex items-center gap-3 p-2 rounded-full hover:bg-white/5 cursor-pointer transition-colors border border-transparent hover:border-white/5">
+<div class="size-10 rounded-full bg-cover bg-center border-2 border-surface-dark" data-alt="User profile avatar showing a smiling person" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAGYS15H5RFLfrkA-UM4YEHdJsRnto-eCjHo_4Kq2cYeV3370SUkveGdCxSzbMIbdqjWnVxKlf8cUGIyJ2ePtYsdiYloDAVV1ewThMrsQnAopeHCGtf42WB3jZ79JVoMEytIwSstAric14bs9Oah8LZeLQ3T8jkyFljiT6A-aXKlVdkTurrSDpBncTvcGzTykOV-0plXnXoMrjMIufsdYEnonHoUsk7IiUrIQAzAogAKwAnyvwOw_0UbkdSY25CKj7pz9IbUmQkaA");'></div>
+<div class="flex flex-col">
+<p class="text-white text-sm font-semibold">Alex Trader</p>
+<p class="text-white/40 text-xs">Pro Member</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col h-full min-w-0 bg-background-dark relative">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between border-b border-white/5 px-8 py-5 shrink-0 bg-background-dark/95 backdrop-blur-sm sticky top-0 z-30">
+<div class="flex items-center gap-8 flex-1">
+<!-- Mobile Menu Button -->
+<button class="lg:hidden text-white/60 hover:text-white">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">monitoring</span>
+<h2 class="text-white text-xl font-bold tracking-tight hidden md:block">Market Overview</h2>
+</div>
+<!-- Search -->
+<div class="hidden md:flex max-w-md w-full relative group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-white/40 group-focus-within:text-primary transition-colors">search</span>
+</div>
+<input class="block w-full rounded-full border-none bg-surface-dark py-2.5 pl-11 pr-4 text-white placeholder:text-white/30 focus:ring-1 focus:ring-primary focus:bg-surface-dark/80 transition-all text-sm font-medium" placeholder="Search symbol, company, or news..." type="text"/>
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+<kbd class="hidden lg:inline-flex items-center rounded bg-white/5 px-2 py-0.5 text-xs font-sans font-medium text-white/40">⌘K</kbd>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden xl:flex items-center gap-6 mr-4 border-r border-white/10 pr-6">
+<div class="flex items-center gap-2">
+<span class="relative flex h-2.5 w-2.5">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
+</span>
+<span class="text-white text-xs font-bold uppercase tracking-wider">Market Open</span>
+</div>
+<span class="text-white/40 text-sm font-medium">Oct 24, 2023</span>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center justify-center size-10 rounded-full bg-surface-dark text-white hover:bg-white/10 transition-colors relative">
+<span class="material-symbols-outlined" style="font-size: 20px;">notifications</span>
+<span class="absolute top-2.5 right-2.5 size-2 bg-red-500 rounded-full border-2 border-surface-dark"></span>
+</button>
+<button class="flex items-center justify-center size-10 rounded-full bg-surface-dark text-white hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined" style="font-size: 20px;">bookmark</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Scrollable Body -->
+<div class="flex-1 overflow-y-auto overflow-x-hidden relative">
+<!-- Loading Indicator Line -->
+<div class="absolute top-0 left-0 w-full h-0.5 bg-surface-dark overflow-hidden">
+<div class="h-full bg-primary/50 w-1/3 absolute top-0 left-0 animate-[shimmer_1.5s_infinite_linear]"></div>
+</div>
+<div class="max-w-[1280px] mx-auto px-4 sm:px-8 py-8 flex flex-col gap-6">
+<!-- Headline Section -->
+<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+<div>
+<h2 class="text-white text-3xl font-bold tracking-tight mb-2">Market Movers</h2>
+<p class="text-white/50 text-sm">Top performing stocks based on your preferences.</p>
+</div>
+</div>
+<!-- Toolbar -->
+<div class="flex flex-wrap items-center justify-between gap-4 p-1">
+<div class="flex items-center bg-surface-dark/50 p-1 rounded-full">
+<button class="px-4 py-2 rounded-full bg-white/10 text-white text-sm font-bold shadow-sm">All</button>
+<button class="px-4 py-2 rounded-full text-white/60 hover:text-white text-sm font-medium transition-colors">Gainers</button>
+<button class="px-4 py-2 rounded-full text-white/60 hover:text-white text-sm font-medium transition-colors">Losers</button>
+<button class="px-4 py-2 rounded-full text-white/60 hover:text-white text-sm font-medium transition-colors">Active</button>
+</div>
+<div class="flex gap-2">
+<button class="p-2.5 rounded-full text-white/70 hover:text-white hover:bg-surface-dark transition-colors">
+<span class="material-symbols-outlined">tune</span>
+</button>
+<button class="p-2.5 rounded-full text-white/70 hover:text-white hover:bg-surface-dark transition-colors">
+<span class="material-symbols-outlined">sort</span>
+</button>
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary/10 hover:bg-primary/20 text-primary text-sm font-bold transition-colors">
+<span class="material-symbols-outlined" style="font-size: 20px;">add</span>
+<span>Add Ticker</span>
+</button>
+</div>
+</div>
+<!-- Data Table (Skeleton State) -->
+<div class="w-full rounded-3xl border border-white/5 bg-surface-dark/30 overflow-hidden shadow-2xl shadow-black/40">
+<div class="overflow-x-auto">
+<table class="w-full min-w-[800px]">
+<thead>
+<tr class="border-b border-white/5 bg-surface-dark">
+<th class="px-6 py-4 text-left text-xs font-bold text-white/40 uppercase tracking-wider w-[25%]">Symbol</th>
+<th class="px-6 py-4 text-right text-xs font-bold text-white/40 uppercase tracking-wider w-[15%]">Price</th>
+<th class="px-6 py-4 text-right text-xs font-bold text-white/40 uppercase tracking-wider w-[15%]">Change %</th>
+<th class="px-6 py-4 text-right text-xs font-bold text-white/40 uppercase tracking-wider w-[15%]">Market Cap</th>
+<th class="px-6 py-4 text-right text-xs font-bold text-white/40 uppercase tracking-wider w-[15%]">Volume</th>
+<th class="px-6 py-4 text-right text-xs font-bold text-white/40 uppercase tracking-wider w-[15%]">7-Day Trend</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+<!-- Skeleton Row 1 -->
+<tr class="group animate-pulse">
+<td class="px-6 py-5">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-full bg-skeleton"></div>
+<div class="flex flex-col gap-2">
+<div class="h-4 w-16 bg-skeleton rounded-full"></div>
+<div class="h-3 w-24 bg-skeleton/50 rounded-full"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5"><div class="h-5 w-20 bg-skeleton rounded-full ml-auto"></div></td>
+<td class="px-6 py-5"><div class="h-5 w-16 bg-skeleton/70 rounded-full ml-auto"></div></td>
+<td class="px-6 py-5"><div class="h-5 w-24 bg-skeleton rounded-full ml-auto"></div></td>
+<td class="px-6 py-5"><div class="h-5 w-20 bg-skeleton/50 rounded-full ml-auto"></div></td>
+<td class="px-6 py-5">
+<div class="h-8 w-24 bg-skeleton/30 rounded ml-auto relative overflow-hidden">
+<!-- Simulated Trend Wave -->
+<svg class="absolute bottom-0 left-0 right-0 h-full w-full text-skeleton" preserveaspectratio="none" viewbox="0 0 100 40">
+<path d="M0 30 Q 10 20, 20 30 T 40 30 T 60 20 T 80 30 T 100 10" fill="none" stroke="currentColor" stroke-width="2"></path>
+</svg>
+</div>
+</td>
+</tr>
+<!-- Skeleton Row 2 -->
+<tr class="group animate-pulse delay-[75ms]">
+<td class="px-6 py-5">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-full bg-skeleton"></div>
+<div class="flex flex-col gap-2">
+<div class="h-4 w-12 bg-skeleton rounded-full"></div>
+<div class="h-3 w-32 bg-skeleton/50 rounded-full"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5"><div class="h-5 w-16 bg-skeleton rounded-full ml-auto"></div></td>
+<td class="px-6 py-5"><div class="h-5 w-14 bg-skeleton/70 rounded-full ml-auto"></div></td>
+<td class="px-6 py-5"><div class="h-5 w-20 bg-skeleton rounded-full ml-auto"></div></td>
+<td class="px-6 py-5"><div class="h-5 w-16 bg-skeleton/50 rounded-full ml-auto"></div></td>
+<td class="px-6 py-5">
+<div class="h-8 w-24 bg-skeleton/30 rounded ml-auto relative overflow-hidden">
+<svg class="absolute bottom-0 left-0 right-0 h-full w-full text-skeleton" preserveaspectratio="none" viewbox="0 0 100 40">
+<path d="M0 20 Q 20 10, 40 30 T 80 20 T 100 35" fill="none" stroke="currentColor" stroke-width="2"></path>
+</svg>
+</div>
+</td>
+</tr>
+<!-- Skeleton Row 3 -->
+<tr class="group animate-pulse delay-[150ms]">
+<td class="px-6 py-5">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-full bg-skeleton"></div>
+<div class="flex flex-col gap-2">
+<div class="h-4 w-14 bg-skeleton rounded-full"></div>
+<div class="h-3 w-20 bg-skeleton/50 rounded-full"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5"><div class="h-5 w-24 bg-skeleton rounded-full ml-auto"></div></td>
+<td class="px-6 py-5"><div class="h-5 w-16 bg-skeleton/70 rounded-full ml-auto"></div></td>
+<td class="px-6 py-5"><div class="h-5 w-28 bg-skeleton rounded-full ml-auto"></div></td>
+<td class="px-6 py-5"><div class="h-5 w-20 bg-skeleton/50 rounded-full ml-auto"></div></td>
+<td class="px-6 py-5">
+<div class="h-8 w-24 bg-skeleton/30 rounded ml-auto relative overflow-hidden">
+<svg class="absolute bottom-0 left-0 right-0 h-full w-full text-skeleton" preserveaspectratio="none" viewbox="0 0 100 40">
+<path d="M0 35 Q 20 20, 40 25 T 80 15 T 100 20" fill="none" stroke="currentColor" stroke-width="2"></path>
+</svg>
+</div>
+</td>
+</tr>
+<!-- Skeleton Row 4 -->
+<tr class="group animate-pulse delay-[225ms]">
+<td class="px-6 py-5">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-full bg-skeleton"></div>
+<div class="flex flex-col gap-2">
+<div class="h-4 w-20 bg-skeleton rounded-full"></div>
+<div class="h-3 w-28 bg-skeleton/50 rounded-full"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5"><div class="h-5 w-18 bg-skeleton rounded-full ml-auto"></div></td>
+<td class="px-6 py-5"><div class="h-5 w-12 bg-skeleton/70 rounded-full ml-auto"></div></td>
+<td class="px-6 py-5"><div class="h-5 w-22 bg-skeleton rounded-full ml-auto"></div></td>
+<td class="px-6 py-5"><div class="h-5 w-18 bg-skeleton/50 rounded-full ml-auto"></div></td>
+<td class="px-6 py-5">
+<div class="h-8 w-24 bg-skeleton/30 rounded ml-auto relative overflow-hidden">
+<svg class="absolute bottom-0 left-0 right-0 h-full w-full text-skeleton" preserveaspectratio="none" viewbox="0 0 100 40">
+<path d="M0 10 Q 30 35, 60 20 T 100 30" fill="none" stroke="currentColor" stroke-width="2"></path>
+</svg>
+</div>
+</td>
+</tr>
+<!-- Skeleton Row 5 -->
+<tr class="group animate-pulse delay-[300ms]">
+<td class="px-6 py-5">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-full bg-skeleton"></div>
+<div class="flex flex-col gap-2">
+<div class="h-4 w-10 bg-skeleton rounded-full"></div>
+<div class="h-3 w-16 bg-skeleton/50 rounded-full"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5"><div class="h-5 w-20 bg-skeleton rounded-full ml-auto"></div></td>
+<td class="px-6 py-5"><div class="h-5 w-16 bg-skeleton/70 rounded-full ml-auto"></div></td>
+<td class="px-6 py-5"><div class="h-5 w-24 bg-skeleton rounded-full ml-auto"></div></td>
+<td class="px-6 py-5"><div class="h-5 w-14 bg-skeleton/50 rounded-full ml-auto"></div></td>
+<td class="px-6 py-5">
+<div class="h-8 w-24 bg-skeleton/30 rounded ml-auto relative overflow-hidden">
+<svg class="absolute bottom-0 left-0 right-0 h-full w-full text-skeleton" preserveaspectratio="none" viewbox="0 0 100 40">
+<path d="M0 30 Q 10 20, 20 30 T 40 30 T 60 20 T 80 30 T 100 10" fill="none" stroke="currentColor" stroke-width="2"></path>
+</svg>
+</div>
+</td>
+</tr>
+<!-- Skeleton Row 6 -->
+<tr class="group animate-pulse delay-[375ms]">
+<td class="px-6 py-5">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-full bg-skeleton"></div>
+<div class="flex flex-col gap-2">
+<div class="h-4 w-16 bg-skeleton rounded-full"></div>
+<div class="h-3 w-24 bg-skeleton/50 rounded-full"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5"><div class="h-5 w-16 bg-skeleton rounded-full ml-auto"></div></td>
+<td class="px-6 py-5"><div class="h-5 w-16 bg-skeleton/70 rounded-full ml-auto"></div></td>
+<td class="px-6 py-5"><div class="h-5 w-20 bg-skeleton rounded-full ml-auto"></div></td>
+<td class="px-6 py-5"><div class="h-5 w-20 bg-skeleton/50 rounded-full ml-auto"></div></td>
+<td class="px-6 py-5">
+<div class="h-8 w-24 bg-skeleton/30 rounded ml-auto relative overflow-hidden">
+<svg class="absolute bottom-0 left-0 right-0 h-full w-full text-skeleton" preserveaspectratio="none" viewbox="0 0 100 40">
+<path d="M0 25 Q 25 35, 50 15 T 100 25" fill="none" stroke="currentColor" stroke-width="2"></path>
+</svg>
+</div>
+</td>
+</tr>
+<!-- Skeleton Row 7 -->
+<tr class="group animate-pulse delay-[450ms]">
+<td class="px-6 py-5">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-full bg-skeleton"></div>
+<div class="flex flex-col gap-2">
+<div class="h-4 w-12 bg-skeleton rounded-full"></div>
+<div class="h-3 w-16 bg-skeleton/50 rounded-full"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5"><div class="h-5 w-14 bg-skeleton rounded-full ml-auto"></div></td>
+<td class="px-6 py-5"><div class="h-5 w-12 bg-skeleton/70 rounded-full ml-auto"></div></td>
+<td class="px-6 py-5"><div class="h-5 w-18 bg-skeleton rounded-full ml-auto"></div></td>
+<td class="px-6 py-5"><div class="h-5 w-16 bg-skeleton/50 rounded-full ml-auto"></div></td>
+<td class="px-6 py-5">
+<div class="h-8 w-24 bg-skeleton/30 rounded ml-auto relative overflow-hidden">
+<svg class="absolute bottom-0 left-0 right-0 h-full w-full text-skeleton" preserveaspectratio="none" viewbox="0 0 100 40">
+<path d="M0 30 Q 15 15, 30 30 T 60 30 T 100 15" fill="none" stroke="currentColor" stroke-width="2"></path>
+</svg>
+</div>
+</td>
+</tr>
+<!-- Skeleton Row 8 -->
+<tr class="group animate-pulse delay-[525ms]">
+<td class="px-6 py-5">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-full bg-skeleton"></div>
+<div class="flex flex-col gap-2">
+<div class="h-4 w-24 bg-skeleton rounded-full"></div>
+<div class="h-3 w-10 bg-skeleton/50 rounded-full"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5"><div class="h-5 w-20 bg-skeleton rounded-full ml-auto"></div></td>
+<td class="px-6 py-5"><div class="h-5 w-16 bg-skeleton/70 rounded-full ml-auto"></div></td>
+<td class="px-6 py-5"><div class="h-5 w-24 bg-skeleton rounded-full ml-auto"></div></td>
+<td class="px-6 py-5"><div class="h-5 w-20 bg-skeleton/50 rounded-full ml-auto"></div></td>
+<td class="px-6 py-5">
+<div class="h-8 w-24 bg-skeleton/30 rounded ml-auto relative overflow-hidden">
+<svg class="absolute bottom-0 left-0 right-0 h-full w-full text-skeleton" preserveaspectratio="none" viewbox="0 0 100 40">
+<path d="M0 10 Q 20 40, 40 20 T 80 10 T 100 25" fill="none" stroke="currentColor" stroke-width="2"></path>
+</svg>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Footer / Pagination Placeholders -->
+<div class="flex items-center justify-between px-2 pt-2 pb-6">
+<div class="h-4 w-32 bg-skeleton/50 rounded-full animate-pulse"></div>
+<div class="flex gap-2">
+<div class="h-8 w-8 bg-skeleton rounded-full animate-pulse"></div>
+<div class="h-8 w-8 bg-skeleton rounded-full animate-pulse"></div>
+<div class="h-8 w-8 bg-skeleton rounded-full animate-pulse"></div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

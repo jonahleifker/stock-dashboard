@@ -57,13 +57,19 @@ export interface IPOPerformance {
 export class StockService {
   private readonly CACHE_DURATION_HOURS = 1;
   private readonly repository = StockRepository;
+  private yahooFinance: any;
+
+  constructor() {
+    const YahooFinance = require('yahoo-finance2').default;
+    this.yahooFinance = new YahooFinance();
+  }
 
   /**
    * Fetch stock quotes from Yahoo Finance
    */
   private async fetchYahooQuote(ticker: string): Promise<any> {
     try {
-      const quote = await yahooFinance.quote(ticker);
+      const quote = await this.yahooFinance.quote(ticker);
       return quote;
     } catch (error) {
       console.error(`Error fetching quote for ${ticker}:`, error);
@@ -78,7 +84,7 @@ export class StockService {
     try {
       const endDate = new Date();
       const startDate = new Date();
-      
+
       // Calculate start date based on period
       switch (period) {
         case '7d':
@@ -98,7 +104,7 @@ export class StockService {
           break;
       }
 
-      const historical = await yahooFinance.historical(ticker, {
+      const historical = await this.yahooFinance.historical(ticker, {
         period1: startDate,
         period2: endDate,
         interval: '1d',
@@ -228,9 +234,9 @@ export class StockService {
       const batch = tickers.slice(i, i + batchSize);
       const batchPromises = batch.map(ticker => this.getStock(ticker, forceRefresh));
       const batchResults = await Promise.all(batchPromises);
-      
+
       results.push(...batchResults.filter((stock): stock is StockQuote => stock !== null));
-      
+
       // Small delay between batches to respect rate limits
       if (i + batchSize < tickers.length) {
         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -245,7 +251,7 @@ export class StockService {
    */
   async analyzeSectors(tickers: string[] = EXPANDED_TICKERS): Promise<SectorPerformance[]> {
     const stocks = await this.getStocks(tickers);
-    
+
     // Group by sector
     const sectorMap = new Map<string, StockQuote[]>();
     stocks.forEach(stock => {
@@ -258,7 +264,7 @@ export class StockService {
 
     // Calculate sector averages
     const sectorPerformance: SectorPerformance[] = [];
-    
+
     sectorMap.forEach((stocks, sector) => {
       const validStocks7d = stocks.filter(s => s.change7d !== undefined && s.change7d !== null);
       const validStocks30d = stocks.filter(s => s.change30d !== undefined && s.change30d !== null);
@@ -267,11 +273,11 @@ export class StockService {
       const avgChange7d = validStocks7d.length > 0
         ? validStocks7d.reduce((sum, s) => sum + s.change7d!, 0) / validStocks7d.length
         : 0;
-      
+
       const avgChange30d = validStocks30d.length > 0
         ? validStocks30d.reduce((sum, s) => sum + s.change30d!, 0) / validStocks30d.length
         : 0;
-      
+
       const avgChange90d = validStocks90d.length > 0
         ? validStocks90d.reduce((sum, s) => sum + s.change90d!, 0) / validStocks90d.length
         : 0;
@@ -310,7 +316,7 @@ export class StockService {
 
     stocks.forEach(stock => {
       let high: number | undefined;
-      
+
       switch (timeframe) {
         case '3mo':
           high = stock.high3mo;
@@ -325,7 +331,7 @@ export class StockService {
 
       if (high && stock.currentPrice) {
         const percentFromHigh = ((stock.currentPrice - high) / high) * 100;
-        
+
         if (percentFromHigh <= -50) {
           pullbacks.push({
             ticker: stock.ticker,
@@ -349,7 +355,7 @@ export class StockService {
    */
   async analyzeIPOs(): Promise<IPOPerformance[]> {
     const stocks = await this.getStocks(RECENT_IPOS);
-    
+
     // Note: Yahoo Finance doesn't always have IPO price data
     // This is a simplified version - you may need to maintain a separate IPO price database
     const ipoPerformance: IPOPerformance[] = stocks.map(stock => ({
@@ -381,7 +387,7 @@ export class StockService {
       } else {
         failed++;
       }
-      
+
       // Small delay to respect rate limits
       await new Promise(resolve => setTimeout(resolve, 200));
     }

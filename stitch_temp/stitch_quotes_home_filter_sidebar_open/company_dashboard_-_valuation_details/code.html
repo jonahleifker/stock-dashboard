@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Stock Quote Sheet - Valuation Details</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#53d22d",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#131712", /* Matching the snippet background */
+                        "surface-dark": "#1d241c", /* Slightly lighter than bg */
+                        "element-dark": "#2d372a", /* Component bg from snippet */
+                        "text-muted": "#a5b6a0",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #131712; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2d372a; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #42513e; 
+        }
+        
+        /* Hide default details marker */
+        details > summary {
+            list-style: none;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+        
+        .glass-panel {
+            background: rgba(45, 55, 42, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white overflow-hidden selection:bg-primary selection:text-black">
+<div class="flex h-screen w-full">
+<!-- Sidebar -->
+<aside class="hidden md:flex flex-col w-72 h-full border-r border-[#2d372a] bg-[#131712] p-6 justify-between flex-shrink-0">
+<div class="flex flex-col gap-8">
+<!-- Brand -->
+<div class="flex items-center gap-3">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 shadow-[0_0_15px_rgba(83,210,45,0.3)]" data-alt="Abstract green financial geometric logo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCHm49rFKK7EMH4QVOtbUI8Q0cIJXNxAtA2KOBc9TdshxCzxlZAB11nkn0BkcsiHNRyswGK4SrpGSRa4dfcT7xr-BgnHRnT1O6gc6s--4hx9juiO2T9_j9IKLhzbvDJStADZOqgQDl8GQeydP5mi2m9ZGLQ1Rz9pO8mr8DVFL-JWpuCgxxbtV7tIkj8Uxp220CDccBSRN9kJvaDzEMWXAjLZFiUHweMn8hdbKcViw9R7RMADDnoTQtEZ49sNE9TjnadTwaA_bWTSA");'></div>
+<h1 class="text-white text-lg font-bold tracking-tight">QuoteSheet</h1>
+</div>
+<!-- Nav Menu -->
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-full bg-primary/10 border border-primary/20 hover:bg-primary/20 transition-colors group" href="#">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">dashboard</span>
+<p class="text-white text-sm font-semibold">Dashboard</p>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full hover:bg-[#2d372a] transition-colors group text-[#a5b6a0] hover:text-white" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">bookmark_border</span>
+<p class="text-sm font-medium">Watchlist</p>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full hover:bg-[#2d372a] transition-colors group text-[#a5b6a0] hover:text-white" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">newspaper</span>
+<p class="text-sm font-medium">News</p>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full hover:bg-[#2d372a] transition-colors group text-[#a5b6a0] hover:text-white" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">pie_chart</span>
+<p class="text-sm font-medium">Portfolio</p>
+</a>
+</nav>
+</div>
+<!-- Bottom Actions -->
+<div class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-full hover:bg-[#2d372a] transition-colors group text-[#a5b6a0] hover:text-white" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">settings</span>
+<p class="text-sm font-medium">Settings</p>
+</a>
+<div class="mt-4 p-4 rounded-xl bg-gradient-to-br from-[#2d372a] to-[#1a2119] border border-[#3e4a3b]">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-bold text-primary uppercase tracking-wider">Market Open</span>
+<span class="size-2 rounded-full bg-primary animate-pulse"></span>
+</div>
+<p class="text-xs text-[#a5b6a0]">NASDAQ is currently trading.</p>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex flex-col flex-1 min-w-0 h-full relative">
+<!-- Top Header -->
+<header class="flex items-center justify-between border-b border-[#2d372a] bg-[#131712]/90 backdrop-blur-md sticky top-0 z-30 px-6 py-4 md:px-10">
+<!-- Search -->
+<div class="flex-1 max-w-lg">
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-[#a5b6a0] group-focus-within:text-primary transition-colors">search</span>
+</div>
+<input class="block w-full rounded-full border-none bg-[#2d372a] py-2.5 pl-12 pr-4 text-white placeholder-[#a5b6a0] focus:ring-2 focus:ring-primary/50 focus:bg-[#364232] transition-all sm:text-sm" placeholder="Search ticker (e.g. AAPL)..." type="text" value="AAPL"/>
+<div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+<kbd class="hidden sm:inline-block items-center gap-1 rounded border border-[#42513e] bg-[#1d241c] px-2 py-0.5 text-[10px] font-medium text-[#a5b6a0]">⌘ K</kbd>
+</div>
+</div>
+</div>
+<!-- Right Actions -->
+<div class="flex items-center gap-4 ml-4">
+<button class="relative p-2 rounded-full hover:bg-[#2d372a] text-[#a5b6a0] hover:text-white transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-[#131712]"></span>
+</button>
+<div class="h-8 w-px bg-[#2d372a]"></div>
+<div class="flex items-center gap-3 pl-2 cursor-pointer group">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-9 border-2 border-transparent group-hover:border-primary transition-all" data-alt="Profile picture of a user in a suit" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCW7OPEaxBfrbUgondbIZZOHjMwH5Zu31rH7s7U7FtrmuJo1rSxUdFvxRxvbFnUJBNK5lQasc13aUGLk7EzKD5E2iLhxwee0eV4GvHn8xB8VK0ks_MGF3TB9GYxtkv4mP_Nq-OHdBH0r_eIYZqzJ-FYrKPO2IMEUTiTZUSx66NLYYWRzybtdZWsNh0wXyNHoJNKz9NrL1zDszx-0e5SmsmGccngs_S1-XsbYCSQTxx_vtZnr-VGiEC0dVKBCIUp-TTIHkM-dgguLQ");'></div>
+<div class="hidden lg:block">
+<p class="text-sm font-bold text-white leading-none">Alex M.</p>
+<p class="text-xs text-[#a5b6a0] mt-1">Pro Member</p>
+</div>
+</div>
+</div>
+</header>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto bg-[#131712] p-4 md:p-8 lg:px-12 pb-20">
+<div class="max-w-5xl mx-auto flex flex-col gap-6">
+<!-- Profile Header & Main Stats -->
+<div class="flex flex-col xl:flex-row gap-6 items-start xl:items-end justify-between animate-fade-in">
+<div class="flex gap-5 items-center">
+<div class="bg-white rounded-2xl p-3 size-20 md:size-24 flex items-center justify-center shrink-0 shadow-lg shadow-black/50">
+<img alt="Apple Inc Logo" class="w-full h-full object-contain p-1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6f21-rQMvyyMymaDMqBFM9MykuRTQFPK607eKa8Nf1IBI3De8YwGurL2VVe7ZJBigfCRXirss-2SA0uUGStPYUsBo4sQuwwwe0MclUNBzvhRJw1s8_6hFgYRRnwlC31SNFQor_In_jwlWgsV5WnPIu4fpm7emlrKY1_hIhAxq_hSgfiCCGaJATtY7v6QAtfaJV5OEY3VPH9R-pcN8MG3ndh4nV0w2Fg0ebD7iNgXe95dP-4SsTiZor-B90rpeSrxkIhpoKQTvAQ"/>
+</div>
+<div>
+<div class="flex items-center gap-3 mb-1">
+<h1 class="text-3xl md:text-4xl font-bold text-white tracking-tight">Apple Inc.</h1>
+<span class="px-2 py-1 rounded bg-[#2d372a] text-[#a5b6a0] text-xs font-bold tracking-wider">NASDAQ: AAPL</span>
+</div>
+<p class="text-[#a5b6a0] text-sm md:text-base">Consumer Electronics • Mega Cap • Tech</p>
+</div>
+</div>
+<!-- Price Large -->
+<div class="flex flex-col items-end">
+<div class="flex items-baseline gap-3">
+<span class="text-4xl md:text-5xl font-bold text-white tracking-tighter">$174.50</span>
+<span class="text-lg md:text-xl font-bold text-primary flex items-center bg-primary/10 px-2 py-0.5 rounded-lg">
+<span class="material-symbols-outlined text-sm mr-1">trending_up</span>
+                                    1.20%
+                                </span>
+</div>
+<p class="text-[#a5b6a0] text-sm mt-1">At close: 4:00 PM EDT</p>
+</div>
+</div>
+<!-- Quick Stats Row -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="p-4 rounded-2xl bg-[#1d241c] border border-[#2d372a]">
+<p class="text-[#a5b6a0] text-xs font-medium uppercase tracking-wider mb-1">Market Cap</p>
+<p class="text-white text-xl font-bold">2.71T</p>
+</div>
+<div class="p-4 rounded-2xl bg-[#1d241c] border border-[#2d372a]">
+<p class="text-[#a5b6a0] text-xs font-medium uppercase tracking-wider mb-1">Vol (Avg)</p>
+<p class="text-white text-xl font-bold">54.2M</p>
+</div>
+<div class="p-4 rounded-2xl bg-[#1d241c] border border-[#2d372a]">
+<p class="text-[#a5b6a0] text-xs font-medium uppercase tracking-wider mb-1">Day Range</p>
+<p class="text-white text-lg font-bold truncate">$172.10 - $175.05</p>
+</div>
+<div class="p-4 rounded-2xl bg-[#1d241c] border border-[#2d372a]">
+<p class="text-[#a5b6a0] text-xs font-medium uppercase tracking-wider mb-1">52W Range</p>
+<p class="text-white text-lg font-bold truncate">$124.17 - $198.23</p>
+</div>
+</div>
+<!-- Main Content Sections (Accordions) -->
+<div class="flex flex-col gap-4 mt-4">
+<!-- Collapsed: Earnings -->
+<details class="group rounded-2xl bg-[#1d241c] border border-[#2d372a] overflow-hidden transition-all duration-300">
+<summary class="flex cursor-pointer items-center justify-between px-6 py-4 select-none hover:bg-[#2d372a] transition-colors">
+<div class="flex items-center gap-4">
+<div class="p-2 rounded-lg bg-blue-500/10 text-blue-400">
+<span class="material-symbols-outlined">attach_money</span>
+</div>
+<h3 class="text-white text-lg font-bold">Earnings Summary</h3>
+</div>
+<span class="material-symbols-outlined text-[#a5b6a0] transition-transform duration-300 group-open:rotate-180">expand_more</span>
+</summary>
+<div class="px-6 py-4 border-t border-[#2d372a]">
+<!-- Content placeholder -->
+</div>
+</details>
+<!-- Expanded: Valuation Ratios -->
+<details class="group rounded-[2rem] bg-[#1a2019] border border-primary/30 shadow-[0_0_20px_rgba(83,210,45,0.05)] overflow-hidden transition-all duration-500" open="">
+<summary class="flex cursor-pointer items-center justify-between px-6 py-5 select-none bg-[#232c21] hover:bg-[#2a3428] transition-colors sticky top-0 z-10 border-b border-[#2d372a]">
+<div class="flex items-center gap-4">
+<div class="p-2 rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined">query_stats</span>
+</div>
+<div class="flex flex-col">
+<h3 class="text-white text-xl font-bold">Valuation Ratios</h3>
+<span class="text-xs text-[#a5b6a0] font-medium hidden md:inline-block">Detailed breakdown of P/E, P/S, and P/B vs Industry</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-white transition-transform duration-300 group-open:rotate-180">expand_more</span>
+</summary>
+<div class="p-6 md:p-8">
+<!-- Valuation Content Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+<!-- Card 1: Trailing P/E -->
+<div class="bg-[#151a14] rounded-3xl p-5 border border-[#2d372a] flex flex-col justify-between group/card hover:border-primary/50 transition-colors relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover/card:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl">history</span>
+</div>
+<div>
+<div class="flex justify-between items-start mb-2">
+<p class="text-[#a5b6a0] text-sm font-semibold">Trailing P/E</p>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-500/10 text-orange-400 border border-orange-500/20">PREMIUM</span>
+</div>
+<p class="text-3xl font-bold text-white mt-1">28.4x</p>
+<p class="text-xs text-[#a5b6a0] mt-1">vs 24.1x Industry Avg</p>
+</div>
+<div class="mt-6 h-16 flex items-end gap-1">
+<!-- Simple Bar Chart Visualization -->
+<div class="w-1/3 bg-[#2d372a] rounded-t-sm h-[60%] relative group/bar" title="Industry">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] text-white bg-black px-1 rounded opacity-0 group-hover/bar:opacity-100 transition-opacity">24.1</div>
+</div>
+<div class="w-1/3 bg-[#2d372a] rounded-t-sm h-[80%] relative group/bar" title="5Y Avg">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] text-white bg-black px-1 rounded opacity-0 group-hover/bar:opacity-100 transition-opacity">26.5</div>
+</div>
+<div class="w-1/3 bg-orange-400/80 rounded-t-md h-[95%] relative group/bar shadow-[0_0_10px_rgba(251,146,60,0.3)]" title="Current">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] text-white bg-black px-1 rounded">28.4</div>
+</div>
+</div>
+</div>
+<!-- Card 2: Forward P/E -->
+<div class="bg-[#151a14] rounded-3xl p-5 border border-[#2d372a] flex flex-col justify-between group/card hover:border-primary/50 transition-colors relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover/card:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl">update</span>
+</div>
+<div>
+<div class="flex justify-between items-start mb-2">
+<p class="text-[#a5b6a0] text-sm font-semibold">Forward P/E</p>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">ATTRACTIVE</span>
+</div>
+<p class="text-3xl font-bold text-white mt-1">25.1x</p>
+<p class="text-xs text-[#a5b6a0] mt-1 text-primary">↓ 3.3x from Trailing</p>
+</div>
+<div class="mt-6 relative h-16 w-full flex items-center justify-center">
+<!-- Gauge Visualization using SVG -->
+<svg class="w-full h-full overflow-visible" viewbox="0 0 100 50">
+<path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#2d372a" stroke-linecap="round" stroke-width="8"></path>
+<path d="M 10 50 A 40 40 0 0 1 65 20" fill="none" stroke="#53d22d" stroke-dasharray="100" stroke-dashoffset="0" stroke-linecap="round" stroke-width="8"></path>
+<circle class="shadow-lg" cx="65" cy="20" fill="white" r="4"></circle>
+<text fill="#a5b6a0" font-family="Manrope" font-size="8" text-anchor="middle" x="50" y="45">Fair Value</text>
+</svg>
+</div>
+</div>
+<!-- Card 3: Price / Sales -->
+<div class="bg-[#151a14] rounded-3xl p-5 border border-[#2d372a] flex flex-col justify-between group/card hover:border-primary/50 transition-colors relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover/card:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl">shopping_cart</span>
+</div>
+<div>
+<div class="flex justify-between items-start mb-2">
+<p class="text-[#a5b6a0] text-sm font-semibold">Price / Sales</p>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#2d372a] text-[#a5b6a0] border border-[#42513e]">NEUTRAL</span>
+</div>
+<p class="text-3xl font-bold text-white mt-1">6.2x</p>
+<p class="text-xs text-[#a5b6a0] mt-1">In line with peers</p>
+</div>
+<!-- Trend line visualization -->
+<div class="mt-6 h-16 w-full relative">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 100 40">
+<defs>
+<lineargradient id="gradientPS" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#53d22d" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#53d22d" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<path d="M0,35 Q10,32 20,28 T40,25 T60,20 T80,15 T100,22" fill="url(#gradientPS)" stroke="none"></path>
+<path d="M0,35 Q10,32 20,28 T40,25 T60,20 T80,15 T100,22" fill="none" stroke="#53d22d" stroke-width="2"></path>
+<circle cx="100" cy="22" fill="#53d22d" r="3"></circle>
+</svg>
+</div>
+</div>
+<!-- Card 4: Price / Book -->
+<div class="bg-[#151a14] rounded-3xl p-5 border border-[#2d372a] flex flex-col justify-between group/card hover:border-primary/50 transition-colors relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover/card:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl">auto_stories</span>
+</div>
+<div>
+<div class="flex justify-between items-start mb-2">
+<p class="text-[#a5b6a0] text-sm font-semibold">Price / Book</p>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/20">HIGH</span>
+</div>
+<p class="text-3xl font-bold text-white mt-1">42.1x</p>
+<p class="text-xs text-[#a5b6a0] mt-1">High ROI justifies premium</p>
+</div>
+<!-- Multi-bar comparison -->
+<div class="mt-6 space-y-2">
+<div class="flex items-center gap-2 text-[10px]">
+<span class="w-8 text-[#a5b6a0]">AAPL</span>
+<div class="flex-1 h-2 bg-[#2d372a] rounded-full overflow-hidden">
+<div class="h-full bg-red-400 w-[90%] rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center gap-2 text-[10px]">
+<span class="w-8 text-[#a5b6a0]">MSFT</span>
+<div class="flex-1 h-2 bg-[#2d372a] rounded-full overflow-hidden">
+<div class="h-full bg-[#a5b6a0] w-[75%] rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center gap-2 text-[10px]">
+<span class="w-8 text-[#a5b6a0]">GOOG</span>
+<div class="flex-1 h-2 bg-[#2d372a] rounded-full overflow-hidden">
+<div class="h-full bg-[#a5b6a0] w-[60%] rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Analysis Footer inside Accordion -->
+<div class="mt-6 pt-6 border-t border-[#2d372a] flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-sm text-[#a5b6a0]">
+<span class="text-primary font-bold">Analyst Note:</span> Valuation remains elevated but consistent with high-margin services growth.
+                                    </p>
+<button class="text-sm font-bold text-white hover:text-primary transition-colors flex items-center gap-1 group">
+                                        View Full Valuation Report 
+                                        <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+</details>
+<!-- Collapsed: Analyst Ratings -->
+<details class="group rounded-2xl bg-[#1d241c] border border-[#2d372a] overflow-hidden transition-all duration-300">
+<summary class="flex cursor-pointer items-center justify-between px-6 py-4 select-none hover:bg-[#2d372a] transition-colors">
+<div class="flex items-center gap-4">
+<div class="p-2 rounded-lg bg-purple-500/10 text-purple-400">
+<span class="material-symbols-outlined">stars</span>
+</div>
+<h3 class="text-white text-lg font-bold">Analyst Ratings</h3>
+</div>
+<span class="material-symbols-outlined text-[#a5b6a0] transition-transform duration-300 group-open:rotate-180">expand_more</span>
+</summary>
+<div class="px-6 py-4 border-t border-[#2d372a]">
+<!-- Content placeholder -->
+</div>
+</details>
+<!-- Collapsed: News Feed -->
+<details class="group rounded-2xl bg-[#1d241c] border border-[#2d372a] overflow-hidden transition-all duration-300">
+<summary class="flex cursor-pointer items-center justify-between px-6 py-4 select-none hover:bg-[#2d372a] transition-colors">
+<div class="flex items-center gap-4">
+<div class="p-2 rounded-lg bg-yellow-500/10 text-yellow-400">
+<span class="material-symbols-outlined">feed</span>
+</div>
+<h3 class="text-white text-lg font-bold">News Feed</h3>
+</div>
+<span class="material-symbols-outlined text-[#a5b6a0] transition-transform duration-300 group-open:rotate-180">expand_more</span>
+</summary>
+<div class="px-6 py-4 border-t border-[#2d372a]">
+<!-- Content placeholder -->
+</div>
+</details>
+</div>
+</div>
+<!-- Footer area -->
+<div class="mt-12 text-center">
+<p class="text-[#a5b6a0] text-xs">Data provided for informational purposes only. Last updated: 1 min ago.</p>
+</div>
+</div>
+</main>
+</div>
+</body></html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Stock Quote Sheet - TSLA Notes</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#53d22d",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#152012",
+                        "surface-dark": "#1d2919",
+                        "surface-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "1.5rem",
+                        "xl": "2rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for a cleaner look in the editor */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2d372a;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #53d22d;
+        }
+        
+        .editor-content:focus {
+            outline: none;
+        }
+        /* Typographic enhancements for the editor */
+        .prose-headings {
+            color: white;
+            font-weight: 700;
+            margin-bottom: 0.5em;
+            margin-top: 1em;
+        }
+        .prose-p {
+            color: #d1d5db;
+            line-height: 1.75;
+            margin-bottom: 1em;
+        }
+        .prose-li {
+            margin-bottom: 0.5em;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen flex flex-col overflow-x-hidden">
+<!-- Global Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-slate-200 dark:border-b-[#2d372a] px-6 py-4 sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3 text-slate-900 dark:text-white">
+<div class="size-6 text-primary">
+<span class="material-symbols-outlined !text-3xl">candlestick_chart</span>
+</div>
+<h2 class="text-lg font-extrabold leading-tight tracking-tight">Stock Quote Sheet</h2>
+</div>
+<!-- Desktop Search -->
+<label class="hidden md:flex flex-col min-w-40 h-10 w-64 group">
+<div class="flex w-full flex-1 items-stretch rounded-full bg-slate-100 dark:bg-[#2d372a] transition-all group-focus-within:ring-2 group-focus-within:ring-primary/50">
+<div class="text-slate-500 dark:text-[#a5b6a0] flex items-center justify-center pl-4 pr-2">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="flex w-full min-w-0 flex-1 bg-transparent border-none text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-[#a5b6a0] focus:ring-0 h-full rounded-r-full" placeholder="Search ticker (e.g. AAPL)" value=""/>
+</div>
+</label>
+</div>
+<div class="flex items-center gap-6">
+<nav class="hidden lg:flex items-center gap-8">
+<a class="text-slate-600 dark:text-[#a5b6a0] hover:text-primary dark:hover:text-primary text-sm font-semibold transition-colors" href="#">Dashboard</a>
+<a class="text-primary text-sm font-bold flex items-center gap-1 bg-primary/10 px-3 py-1.5 rounded-full" href="#">
+<span>Quotes</span>
+</a>
+<a class="text-slate-600 dark:text-[#a5b6a0] hover:text-primary dark:hover:text-primary text-sm font-semibold transition-colors" href="#">Research</a>
+</nav>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 ring-2 ring-white/10" data-alt="User profile avatar showing a smiling person" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDzOSu1MrtFCB0HRnQTfpfXJh6gkJmiDPlwLdHRhPeXz1u5hZ4JCWaDPr_xFSTbX_bi5hza53WBv8YC0p9GbSyScqngB7vWIXKObvyguTLvTTctxQAxCFHhy4x3JghlboZmC4D7-bI1_DRlDvj2EOXpgcscYTsvUmkvxkg6xey6Ndclld1mS1t_5IwsNYRt-CvoUS_XwxXnqNxobHgkMPtA5sGb4K9x8lbWBexI6nt47G2oDKixIKGjEV8CX6IafJTZKnHs5fIXSQ");'></div>
+</div>
+</header>
+<!-- Main Layout -->
+<div class="flex-1 w-full max-w-[1440px] mx-auto p-4 md:p-8 flex flex-col">
+<!-- Breadcrumbs & Heading Area -->
+<div class="mb-8">
+<div class="flex items-center gap-2 text-sm font-medium mb-4 text-[#a5b6a0]">
+<a class="hover:text-white transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">arrow_back</span>
+                    Quotes
+                </a>
+<span>/</span>
+<span class="text-primary">TSLA</span>
+</div>
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#2d372a] pb-6">
+<div>
+<h1 class="text-4xl md:text-5xl font-black tracking-tight text-white mb-2">Notes <span class="text-[#2d372a] dark:text-[#2d372a] font-light mx-2">|</span> <span class="text-primary">TSLA</span></h1>
+<div class="flex items-center gap-4 text-[#a5b6a0]">
+<span class="text-lg font-medium text-white">Tesla, Inc.</span>
+<span class="size-1 rounded-full bg-[#a5b6a0]"></span>
+<span class="text-sm">Last updated: Oct 24, 2023</span>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#2d372a] hover:bg-[#3a4736] text-white text-sm font-bold transition-colors">
+<span class="material-symbols-outlined text-[18px]">share</span>
+                        Share
+                    </button>
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary hover:bg-[#45b025] text-background-dark text-sm font-bold transition-colors shadow-[0_0_15px_rgba(83,210,45,0.3)]">
+<span class="material-symbols-outlined text-[18px]">save</span>
+                        Save Note
+                    </button>
+</div>
+</div>
+</div>
+<!-- Split Pane Content -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full">
+<!-- LEFT COLUMN: Structured Analysis (4 cols) -->
+<div class="lg:col-span-4 flex flex-col gap-8">
+<!-- Scenario Cards Stack -->
+<section class="flex flex-col gap-4">
+<h3 class="text-xs font-bold uppercase tracking-widest text-[#a5b6a0] ml-1">Price Scenarios</h3>
+<!-- Bull Case -->
+<div class="group relative overflow-hidden rounded-xl bg-surface-dark border border-[#2d372a] p-5 transition-all hover:border-primary/50 hover:bg-[#1f2e1b]">
+<div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl text-primary">trending_up</span>
+</div>
+<div class="flex justify-between items-start mb-2">
+<p class="text-primary text-sm font-bold uppercase tracking-wide">Bull Case</p>
+<span class="bg-primary/20 text-primary text-xs font-bold px-2 py-1 rounded-md">+40%</span>
+</div>
+<p class="text-white text-3xl font-black mb-1">$350.00</p>
+<p class="text-[#a5b6a0] text-sm leading-relaxed">FSD adoption accelerates beyond projections. Energy storage margin expansion beats auto.</p>
+</div>
+<!-- Base Case -->
+<div class="group relative overflow-hidden rounded-xl bg-surface-dark border border-[#2d372a] p-5 transition-all hover:border-white/30">
+<div class="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
+<span class="material-symbols-outlined text-6xl text-white">trending_flat</span>
+</div>
+<div class="flex justify-between items-start mb-2">
+<p class="text-white text-sm font-bold uppercase tracking-wide opacity-80">Base Case</p>
+<span class="bg-white/10 text-white text-xs font-bold px-2 py-1 rounded-md">0%</span>
+</div>
+<p class="text-white text-3xl font-black mb-1">$250.00</p>
+<p class="text-[#a5b6a0] text-sm leading-relaxed">Deliveries meet consensus. Margins stabilize at 18%. Cybertruck ramp follows standard curve.</p>
+</div>
+<!-- Bear Case -->
+<div class="group relative overflow-hidden rounded-xl bg-surface-dark border border-[#2d372a] p-5 transition-all hover:border-red-500/50 hover:bg-[#2e1b1b]">
+<div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl text-red-500">trending_down</span>
+</div>
+<div class="flex justify-between items-start mb-2">
+<p class="text-red-500 text-sm font-bold uppercase tracking-wide">Bear Case</p>
+<span class="bg-red-500/20 text-red-500 text-xs font-bold px-2 py-1 rounded-md">-40%</span>
+</div>
+<p class="text-white text-3xl font-black mb-1">$150.00</p>
+<p class="text-[#a5b6a0] text-sm leading-relaxed">Competition erodes market share. Margins compress further due to price cuts. Regulatory hurdles.</p>
+</div>
+</section>
+<!-- Catalysts & Risks -->
+<section class="flex flex-col gap-6">
+<div>
+<h3 class="text-xs font-bold uppercase tracking-widest text-[#a5b6a0] ml-1 mb-3">Catalysts</h3>
+<div class="flex flex-wrap gap-2">
+<div class="flex h-8 items-center gap-2 rounded-full bg-primary/10 border border-primary/20 pl-2 pr-4 hover:bg-primary/20 cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-primary text-[18px]">bolt</span>
+<span class="text-primary text-sm font-bold">CyberTruck</span>
+</div>
+<div class="flex h-8 items-center gap-2 rounded-full bg-primary/10 border border-primary/20 pl-2 pr-4 hover:bg-primary/20 cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-primary text-[18px]">smart_toy</span>
+<span class="text-primary text-sm font-bold">AI Day</span>
+</div>
+<div class="flex h-8 items-center gap-2 rounded-full bg-primary/10 border border-primary/20 pl-2 pr-4 hover:bg-primary/20 cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-primary text-[18px]">trending_down</span>
+<span class="text-primary text-sm font-bold">Rate Cuts</span>
+</div>
+</div>
+</div>
+<div>
+<h3 class="text-xs font-bold uppercase tracking-widest text-[#a5b6a0] ml-1 mb-3">Risks</h3>
+<div class="flex flex-wrap gap-2">
+<div class="flex h-8 items-center gap-2 rounded-full bg-orange-500/10 border border-orange-500/20 pl-2 pr-4 hover:bg-orange-500/20 cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-orange-500 text-[18px]">warning</span>
+<span class="text-orange-500 text-sm font-bold">Competition</span>
+</div>
+<div class="flex h-8 items-center gap-2 rounded-full bg-orange-500/10 border border-orange-500/20 pl-2 pr-4 hover:bg-orange-500/20 cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-orange-500 text-[18px]">person_alert</span>
+<span class="text-orange-500 text-sm font-bold">Key Man Risk</span>
+</div>
+<div class="flex h-8 items-center gap-2 rounded-full bg-orange-500/10 border border-orange-500/20 pl-2 pr-4 hover:bg-orange-500/20 cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-orange-500 text-[18px]">gavel</span>
+<span class="text-orange-500 text-sm font-bold">Regulatory</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- RIGHT COLUMN: Rich Text Editor (8 cols) -->
+<div class="lg:col-span-8 flex flex-col h-full min-h-[600px] rounded-xl bg-surface-dark border border-[#2d372a] shadow-2xl relative overflow-hidden">
+<!-- Editor Toolbar -->
+<div class="sticky top-0 z-10 flex flex-wrap items-center gap-1 border-b border-[#2d372a] bg-[#1a2517] p-2 px-4">
+<div class="flex items-center gap-1 border-r border-[#2d372a] pr-2 mr-1">
+<select class="bg-transparent text-white text-sm font-medium border-none focus:ring-0 cursor-pointer hover:bg-[#2d372a] rounded px-2 py-1">
+<option>Normal Text</option>
+<option>Heading 1</option>
+<option>Heading 2</option>
+<option>Heading 3</option>
+</select>
+</div>
+<button class="p-1.5 rounded hover:bg-[#2d372a] text-[#a5b6a0] hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">format_bold</span>
+</button>
+<button class="p-1.5 rounded hover:bg-[#2d372a] text-[#a5b6a0] hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">format_italic</span>
+</button>
+<button class="p-1.5 rounded hover:bg-[#2d372a] text-[#a5b6a0] hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">format_underlined</span>
+</button>
+<button class="p-1.5 rounded hover:bg-[#2d372a] text-primary hover:text-primary transition-colors bg-primary/10">
+<span class="material-symbols-outlined text-[20px]">format_list_bulleted</span>
+</button>
+<button class="p-1.5 rounded hover:bg-[#2d372a] text-[#a5b6a0] hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">format_list_numbered</span>
+</button>
+<div class="w-[1px] h-6 bg-[#2d372a] mx-1"></div>
+<button class="p-1.5 rounded hover:bg-[#2d372a] text-[#a5b6a0] hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">link</span>
+</button>
+<button class="p-1.5 rounded hover:bg-[#2d372a] text-[#a5b6a0] hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">image</span>
+</button>
+<button class="p-1.5 rounded hover:bg-[#2d372a] text-[#a5b6a0] hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">code_blocks</span>
+</button>
+<div class="ml-auto text-xs text-[#a5b6a0] font-mono">
+                        Markdown supported
+                    </div>
+</div>
+<!-- Editor Surface -->
+<div class="flex-1 p-8 md:p-10 overflow-y-auto">
+<div class="max-w-[75ch] mx-auto editor-content outline-none" contenteditable="true">
+<h2 class="text-2xl font-bold text-white mb-4">Q3 Earnings Call Takeaways</h2>
+<p class="text-[#d1d5db] mb-6 leading-relaxed">
+                            Margins are tighter this quarter, hovering around <strong class="text-white">17.9%</strong> excluding regulatory credits. This was expected given the aggressive price cuts in China and Europe, but volume is the key metric to watch. Management emphasized that they are prioritizing fleet growth over short-term profitability, betting heavily on FSD software revenue down the line.
+                        </p>
+<div class="my-6 p-4 rounded-lg bg-[#2d372a]/30 border-l-4 border-primary">
+<p class="text-sm italic text-[#a5b6a0]">"We are the only car company that can sell cars at zero profit and make it up on software economics later." — Elon Musk</p>
+</div>
+<h3 class="text-xl font-bold text-white mb-3 mt-8">Energy Segment Performance</h3>
+<p class="text-[#d1d5db] mb-4 leading-relaxed">
+                            The energy storage segment is growing significantly faster than automotive right now. Megapack deployment reached <span class="bg-primary/20 text-primary px-1 rounded">4.0 GWh</span>, a record high. This is becoming a material contributor to the bottom line and could buffer auto margin compression.
+                        </p>
+<h3 class="text-xl font-bold text-white mb-3 mt-8">Key Action Items</h3>
+<ul class="list-none space-y-2 mb-8">
+<li class="flex items-start gap-3">
+<div class="mt-1 size-4 rounded border border-[#a5b6a0] flex items-center justify-center shrink-0"></div>
+<span class="text-[#d1d5db]">Review Model 3 Highland refresh reviews in China for initial demand signals.</span>
+</li>
+<li class="flex items-start gap-3">
+<div class="mt-1 size-4 rounded bg-primary border border-primary flex items-center justify-center shrink-0 text-background-dark">
+<span class="material-symbols-outlined text-[12px] font-bold">check</span>
+</div>
+<span class="text-[#a5b6a0] line-through">Update DCF model with new margin guidance of 16-18% for FY24.</span>
+</li>
+<li class="flex items-start gap-3">
+<div class="mt-1 size-4 rounded border border-[#a5b6a0] flex items-center justify-center shrink-0"></div>
+<span class="text-[#d1d5db]">Monitor weekly insurance registration data in China.</span>
+</li>
+</ul>
+<p class="text-[#d1d5db] mb-4 leading-relaxed">
+                             Technically, the stock is testing the 200 DMA. If it holds $210, we might see a run up to earnings next quarter. If it breaks, $180 is the next major support level.
+                        </p>
+</div>
+</div>
+<!-- Gradient Overlay at bottom to indicate scroll/depth -->
+<div class="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-surface-dark to-transparent pointer-events-none"></div>
+</div>
+</div>
+</div>
+</body></html>

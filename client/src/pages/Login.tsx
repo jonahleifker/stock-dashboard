@@ -1,7 +1,40 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
 
 const Login: React.FC = () => {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        navigate('/matrix');
+      } else {
+        setError(data.message || 'Login failed');
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="bg-background-light dark:bg-background-dark font-display min-h-screen flex flex-col items-center justify-center relative overflow-hidden selection:bg-primary selection:text-black">
       {/* Ambient Background Elements */}
@@ -56,7 +89,8 @@ const Login: React.FC = () => {
           </div>
 
           {/* Form Section */}
-          <form action="#" className="flex flex-col gap-4">
+          <form onSubmit={handleLogin} className="flex flex-col gap-4">
+            {error && <div className="p-3 text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-lg">{error}</div>}
             {/* Email Field */}
             <div className="space-y-1.5">
               <label
@@ -76,6 +110,9 @@ const Login: React.FC = () => {
                   id="email"
                   placeholder="name@example.com"
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
                 />
               </div>
             </div>
@@ -101,6 +138,9 @@ const Login: React.FC = () => {
                   id="password"
                   placeholder="••••••••"
                   type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
                 />
                 <button
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-black transition-colors cursor-pointer"
@@ -123,15 +163,16 @@ const Login: React.FC = () => {
             </div>
 
             {/* Submit Button */}
-            <Link
-              to="/matrix"
-              className="mt-2 w-full bg-primary hover:bg-primary/90 text-background-dark font-bold py-3 px-4 rounded-lg transition-all transform active:scale-[0.98] shadow-[0_0_20px_-5px_rgba(83,210,45,0.3)] hover:shadow-[0_0_25px_-5px_rgba(83,210,45,0.5)] flex items-center justify-center gap-2"
+            <button
+              type="submit"
+              disabled={loading}
+              className="mt-2 w-full bg-primary hover:bg-primary/90 text-background-dark font-bold py-3 px-4 rounded-lg transition-all transform active:scale-[0.98] shadow-[0_0_20px_-5px_rgba(83,210,45,0.3)] hover:shadow-[0_0_25px_-5px_rgba(83,210,45,0.5)] flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              <span>Sign In</span>
-              <span className="material-symbols-outlined text-[20px] font-bold">
+              <span>{loading ? 'Signing In...' : 'Sign In'}</span>
+              {!loading && <span className="material-symbols-outlined text-[20px] font-bold">
                 arrow_forward
-              </span>
-            </Link>
+              </span>}
+            </button>
           </form>
 
           {/* Divider */}

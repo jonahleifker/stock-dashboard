@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Quotes Home - Filter Sidebar Open</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#53d22d",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#131712", 
+                        "surface-dark": "#1a2119",
+                        "accent-red": "#ff4d4d",
+                        "text-secondary": "#a5b6a0"
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom slider styling for the filter drawer */
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #ffffff;
+            cursor: pointer;
+            margin-top: -8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #2d372a;
+            border-radius: 2px;
+        }
+        /* Styling for the filled part of slider - purely CSS trick for single handle, 
+           for dual handle typically requires JS, simulating appearance here */
+        .slider-track-fill {
+            background: linear-gradient(to right, #2d372a 20%, #53d22d 20%, #53d22d 80%, #2d372a 80%);
+        }
+    </style>
+</head>
+<body class="bg-background-dark font-display antialiased text-white overflow-hidden h-screen flex flex-col">
+<!-- Top Navigation (Background Layer) -->
+<div class="w-full bg-[#131712] border-b border-[#2d372a]">
+<div class="px-6 lg:px-10 py-4 flex items-center justify-between">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3 text-white">
+<div class="size-8 flex items-center justify-center bg-primary/20 rounded-lg text-primary">
+<span class="material-symbols-outlined">candlestick_chart</span>
+</div>
+<h2 class="text-white text-xl font-bold tracking-tight">Stock Quote Sheet</h2>
+</div>
+<!-- Search Bar -->
+<div class="hidden md:flex items-center bg-[#2d372a] rounded-xl h-10 w-80 px-4 group focus-within:ring-1 ring-primary/50 transition-all">
+<span class="material-symbols-outlined text-[#a5b6a0] text-[20px]">search</span>
+<input class="bg-transparent border-none text-white placeholder-[#a5b6a0] text-sm w-full focus:ring-0" placeholder="Search tickers, companies..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="relative text-[#a5b6a0] hover:text-white transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 size-2 bg-accent-red rounded-full border-2 border-[#131712]"></span>
+</button>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-[#2d372a]" data-alt="User profile avatar showing abstract geometric pattern" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB6NjdPzyMl1UkwO2a4kWQQc3KpcVci9Mkk782SRrF0TODZMGHCn-6V423km0SbNW1LV2-1AUy3SVVtUEuXOnCq_I4CS4xvl_FlmsvLBLSN3lYVpKOgfN1ZH6O1URpsP1zj5ShTddnFVdeWyFMmhFbqlJUl2HX2kDi4Xeff7XgS1ZcVWDQUzHXbTqBiE5uz8yR3ob7WgMdh62Rth9oLvDpgFAD_7OKcK4hsxjeLZtROEwwKFfN8Evzy0grviIoWi7HvB5wCNvmhFQ");'></div>
+</div>
+</div>
+</div>
+<!-- Main Content Area (Dimmed Background) -->
+<main class="flex-1 overflow-y-auto relative bg-[#131712]">
+<div class="layout-container max-w-[1400px] mx-auto px-6 lg:px-10 py-8">
+<!-- Page Header -->
+<div class="flex flex-wrap justify-between items-end gap-4 mb-8">
+<div>
+<h1 class="text-4xl font-black tracking-tight text-white mb-2">Market Quotes</h1>
+<p class="text-[#a5b6a0] text-base">Real-time data and fundamentals across global markets</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 h-10 px-5 rounded-full bg-[#2d372a] hover:bg-[#384435] text-white text-sm font-bold transition-colors">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span>Export CSV</span>
+</button>
+<!-- Filter Toggle Button (Simulated Active State) -->
+<button class="flex items-center gap-2 h-10 px-5 rounded-full bg-primary text-black text-sm font-bold shadow-[0_0_15px_rgba(83,210,45,0.3)]">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+<span>Filters (4)</span>
+</button>
+</div>
+</div>
+<!-- Data Table -->
+<div class="rounded-2xl border border-[#2d372a] bg-[#1a2119] overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-[#232b22] border-b border-[#2d372a]">
+<th class="p-4 text-xs font-semibold text-[#a5b6a0] uppercase tracking-wider w-[120px]">Ticker</th>
+<th class="p-4 text-xs font-semibold text-[#a5b6a0] uppercase tracking-wider">Price</th>
+<th class="p-4 text-xs font-semibold text-[#a5b6a0] uppercase tracking-wider">Performance</th>
+<th class="p-4 text-xs font-semibold text-[#a5b6a0] uppercase tracking-wider">Market Cap</th>
+<th class="p-4 text-xs font-semibold text-[#a5b6a0] uppercase tracking-wider">P/E Ratio</th>
+<th class="p-4 text-xs font-semibold text-[#a5b6a0] uppercase tracking-wider text-right">Volume</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#2d372a]">
+<!-- Row 1: AAPL -->
+<tr class="group hover:bg-[#232b22] transition-colors">
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-white/10 flex items-center justify-center text-xs font-bold">A</div>
+<div>
+<div class="font-bold text-white">AAPL</div>
+<div class="text-xs text-[#a5b6a0]">Apple Inc.</div>
+</div>
+</div>
+</td>
+<td class="p-4 font-mono text-white">$150.23</td>
+<td class="p-4">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/20 text-primary text-xs font-bold">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span> 1.2%
+                                    </span>
+</td>
+<td class="p-4 text-[#a5b6a0]">$2.4T</td>
+<td class="p-4 text-[#a5b6a0]">28.5</td>
+<td class="p-4 text-right text-white font-mono">55.2M</td>
+</tr>
+<!-- Row 2: TSLA -->
+<tr class="group hover:bg-[#232b22] transition-colors">
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-white/10 flex items-center justify-center text-xs font-bold">T</div>
+<div>
+<div class="font-bold text-white">TSLA</div>
+<div class="text-xs text-[#a5b6a0]">Tesla Inc.</div>
+</div>
+</div>
+</td>
+<td class="p-4 font-mono text-white">$240.50</td>
+<td class="p-4">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-accent-red/20 text-accent-red text-xs font-bold">
+<span class="material-symbols-outlined text-[14px]">arrow_downward</span> 0.5%
+                                    </span>
+</td>
+<td class="p-4 text-[#a5b6a0]">$750B</td>
+<td class="p-4 text-[#a5b6a0]">52.1</td>
+<td class="p-4 text-right text-white font-mono">12.1M</td>
+</tr>
+<!-- Row 3: MSFT -->
+<tr class="group hover:bg-[#232b22] transition-colors">
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-white/10 flex items-center justify-center text-xs font-bold">M</div>
+<div>
+<div class="font-bold text-white">MSFT</div>
+<div class="text-xs text-[#a5b6a0]">Microsoft</div>
+</div>
+</div>
+</td>
+<td class="p-4 font-mono text-white">$310.00</td>
+<td class="p-4">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/20 text-primary text-xs font-bold">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span> 0.8%
+                                    </span>
+</td>
+<td class="p-4 text-[#a5b6a0]">$2.3T</td>
+<td class="p-4 text-[#a5b6a0]">32.0</td>
+<td class="p-4 text-right text-white font-mono">22.4M</td>
+</tr>
+<!-- Row 4: NVDA -->
+<tr class="group hover:bg-[#232b22] transition-colors">
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-white/10 flex items-center justify-center text-xs font-bold">N</div>
+<div>
+<div class="font-bold text-white">NVDA</div>
+<div class="text-xs text-[#a5b6a0]">NVIDIA</div>
+</div>
+</div>
+</td>
+<td class="p-4 font-mono text-white">$420.00</td>
+<td class="p-4">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/20 text-primary text-xs font-bold">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span> 2.1%
+                                    </span>
+</td>
+<td class="p-4 text-[#a5b6a0]">$1.1T</td>
+<td class="p-4 text-[#a5b6a0]">110.5</td>
+<td class="p-4 text-right text-white font-mono">45.8M</td>
+</tr>
+<!-- Row 5: AMZN -->
+<tr class="group hover:bg-[#232b22] transition-colors">
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-white/10 flex items-center justify-center text-xs font-bold">A</div>
+<div>
+<div class="font-bold text-white">AMZN</div>
+<div class="text-xs text-[#a5b6a0]">Amazon</div>
+</div>
+</div>
+</td>
+<td class="p-4 font-mono text-white">$130.00</td>
+<td class="p-4">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-accent-red/20 text-accent-red text-xs font-bold">
+<span class="material-symbols-outlined text-[14px]">arrow_downward</span> 1.1%
+                                    </span>
+</td>
+<td class="p-4 text-[#a5b6a0]">$1.3T</td>
+<td class="p-4 text-[#a5b6a0]">105.2</td>
+<td class="p-4 text-right text-white font-mono">33.2M</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+<!-- Overlay (Backdrop Blur) -->
+<div class="fixed inset-0 bg-[#0a0f09]/70 backdrop-blur-[3px] z-40 transition-opacity duration-300"></div>
+<!-- Filter Drawer -->
+<aside class="fixed right-0 top-0 h-full w-full max-w-[420px] bg-[#152012] border-l border-[#2d372a] shadow-2xl z-50 flex flex-col transform transition-transform duration-300 ease-in-out">
+<!-- Drawer Header -->
+<div class="flex items-center justify-between px-6 py-5 border-b border-[#2d372a] bg-[#152012]">
+<div>
+<h3 class="text-white text-xl font-bold">Filter Quotes</h3>
+<p class="text-xs text-[#a5b6a0] mt-0.5">Refine your market view</p>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-xs font-medium text-[#a5b6a0] hover:text-primary transition-colors underline decoration-dotted underline-offset-4">Reset All</button>
+<button class="size-8 rounded-full bg-[#2d372a] hover:bg-[#384435] text-white flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+</div>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto p-6 space-y-8">
+<!-- Sector Filter -->
+<div class="space-y-3">
+<label class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">pie_chart</span> Sector
+                </label>
+<div class="flex flex-wrap gap-2">
+<button class="px-3 py-1.5 rounded-full bg-primary text-black text-sm font-bold flex items-center gap-1.5">
+                        Technology <span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+<button class="px-3 py-1.5 rounded-full bg-primary text-black text-sm font-bold flex items-center gap-1.5">
+                        Finance <span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+<button class="px-3 py-1.5 rounded-full bg-[#2d372a] hover:bg-[#384435] text-[#a5b6a0] hover:text-white text-sm font-medium transition-colors border border-transparent hover:border-[#42513e]">
+                        Healthcare
+                    </button>
+<button class="px-3 py-1.5 rounded-full bg-[#2d372a] hover:bg-[#384435] text-[#a5b6a0] hover:text-white text-sm font-medium transition-colors border border-transparent hover:border-[#42513e]">
+                        Energy
+                    </button>
+<button class="px-3 py-1.5 rounded-full bg-[#2d372a] hover:bg-[#384435] text-[#a5b6a0] hover:text-white text-sm font-medium transition-colors border border-transparent hover:border-[#42513e]">
+                        Consumer
+                    </button>
+<button class="px-3 py-1.5 rounded-full bg-[#2d372a] hover:bg-[#384435] text-[#a5b6a0] hover:text-white text-sm font-medium transition-colors border border-transparent hover:border-[#42513e]">
+                        Industrial
+                    </button>
+</div>
+</div>
+<!-- Market Cap Filter -->
+<div class="space-y-3">
+<label class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">bar_chart</span> Market Cap
+                </label>
+<div class="flex bg-[#2d372a] p-1 rounded-xl">
+<button class="flex-1 py-2 rounded-lg text-sm font-medium text-[#a5b6a0] hover:text-white transition-colors">Small</button>
+<button class="flex-1 py-2 rounded-lg text-sm font-medium text-[#a5b6a0] hover:text-white transition-colors">Mid</button>
+<button class="flex-1 py-2 rounded-lg bg-primary text-black text-sm font-bold shadow-sm">Large</button>
+</div>
+<p class="text-xs text-[#a5b6a0] pl-1">Showing companies &gt; $100B</p>
+</div>
+<!-- Valuation Filter -->
+<div class="space-y-3">
+<label class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">price_check</span> Valuation
+                </label>
+<div class="grid grid-cols-3 gap-2">
+<button class="group flex flex-col items-center justify-center gap-1 p-3 rounded-2xl bg-[#232b22] border-2 border-primary/50 hover:bg-[#2d372a] transition-all">
+<span class="size-2 rounded-full bg-primary"></span>
+<span class="text-xs font-bold text-white">Undervalued</span>
+</button>
+<button class="group flex flex-col items-center justify-center gap-1 p-3 rounded-2xl bg-[#1e251d] border border-[#2d372a] hover:border-[#42513e] transition-all">
+<span class="size-2 rounded-full bg-gray-500"></span>
+<span class="text-xs font-medium text-[#a5b6a0]">Fair Value</span>
+</button>
+<button class="group flex flex-col items-center justify-center gap-1 p-3 rounded-2xl bg-[#1e251d] border border-[#2d372a] hover:border-[#42513e] transition-all">
+<span class="size-2 rounded-full bg-accent-red"></span>
+<span class="text-xs font-medium text-[#a5b6a0]">Overvalued</span>
+</button>
+</div>
+</div>
+<!-- Performance Range Slider -->
+<div class="space-y-4 pt-2">
+<div class="flex justify-between items-end">
+<label class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">trending_up</span> Performance
+                    </label>
+<span class="text-primary font-mono font-bold text-sm bg-primary/10 px-2 py-1 rounded-md">+5.2% to +24%</span>
+</div>
+<div class="relative h-10 flex items-center">
+<!-- Visual Track Background -->
+<div class="absolute w-full h-1 bg-[#2d372a] rounded-full"></div>
+<!-- Active Track Section (Simulated) -->
+<div class="absolute left-[20%] right-[20%] h-1 bg-primary rounded-full"></div>
+<!-- Left Thumb (Simulated) -->
+<div class="absolute left-[20%] size-5 bg-white rounded-full shadow-[0_0_10px_rgba(0,0,0,0.5)] cursor-pointer flex items-center justify-center transform -translate-x-1/2 hover:scale-110 transition-transform">
+<div class="size-1.5 bg-primary rounded-full"></div>
+</div>
+<!-- Right Thumb (Simulated) -->
+<div class="absolute right-[20%] size-5 bg-white rounded-full shadow-[0_0_10px_rgba(0,0,0,0.5)] cursor-pointer flex items-center justify-center transform translate-x-1/2 hover:scale-110 transition-transform">
+<div class="size-1.5 bg-primary rounded-full"></div>
+</div>
+</div>
+<div class="flex justify-between text-xs text-[#a5b6a0] font-mono">
+<span>-50%</span>
+<span>0%</span>
+<span>+50%</span>
+</div>
+</div>
+<!-- Additional Quick Toggles -->
+<div class="space-y-3 pt-2 border-t border-[#2d372a]">
+<div class="flex items-center justify-between py-2">
+<span class="text-sm text-white font-medium">Show Fundamentals</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-[#2d372a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between py-2">
+<span class="text-sm text-white font-medium">Include OTC Markets</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-[#2d372a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</div>
+<!-- Drawer Footer -->
+<div class="p-6 border-t border-[#2d372a] bg-[#1a2119]">
+<button class="w-full flex items-center justify-center gap-2 h-12 bg-primary hover:bg-[#46b325] text-black text-base font-bold rounded-full transition-all shadow-[0_0_20px_rgba(83,210,45,0.2)] hover:shadow-[0_0_25px_rgba(83,210,45,0.4)]">
+                Show 24 Results
+                <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+</aside>
+</body></html>

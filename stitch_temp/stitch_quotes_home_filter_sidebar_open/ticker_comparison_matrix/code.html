@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ticker Comparison Matrix</title>
+<!-- Google Fonts: Manrope -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#53d22d",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#152012",
+                        "surface-dark": "#1f2b1b",
+                        "surface-dark-lighter": "#2a3825",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for table horizontal scroll */
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #152012; 
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #2a3825; 
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #53d22d; 
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#131712] dark:text-white font-display min-h-screen flex flex-col overflow-x-hidden selection:bg-primary selection:text-black">
+<!-- Top Navigation -->
+<header class="sticky top-0 z-50 border-b border-[#2d372a] bg-background-dark/95 backdrop-blur-md px-6 py-3">
+<div class="max-w-[1400px] mx-auto flex items-center justify-between">
+<div class="flex items-center gap-8">
+<!-- Logo -->
+<div class="flex items-center gap-3 text-white">
+<div class="size-8 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-white text-xl font-extrabold tracking-tight">Stock Quote Sheet</h2>
+</div>
+<!-- Nav Links -->
+<nav class="hidden lg:flex items-center gap-6">
+<a class="text-[#a5b6a0] hover:text-white transition-colors text-sm font-semibold" href="#">Dashboard</a>
+<a class="text-[#a5b6a0] hover:text-white transition-colors text-sm font-semibold" href="#">Screeners</a>
+<a class="text-white text-sm font-bold bg-white/10 px-3 py-1.5 rounded-full" href="#">Watchlist</a>
+<a class="text-[#a5b6a0] hover:text-white transition-colors text-sm font-semibold" href="#">News</a>
+<a class="text-[#a5b6a0] hover:text-white transition-colors text-sm font-semibold" href="#">Portfolio</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<!-- Search -->
+<div class="hidden md:flex items-center bg-surface-dark rounded-full px-4 h-10 border border-[#2d372a] focus-within:border-primary transition-colors w-64 group">
+<span class="material-symbols-outlined text-[#a5b6a0] group-focus-within:text-primary">search</span>
+<input class="bg-transparent border-none text-white placeholder-[#586355] text-sm w-full focus:ring-0" placeholder="Search ticker..." type="text"/>
+</div>
+<!-- Profile -->
+<div class="size-10 rounded-full bg-cover bg-center border border-[#2d372a] cursor-pointer hover:border-primary transition-colors" data-alt="User profile picture showing a man in a suit" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuARW3tsyIB-WbIoVBGLgsGgLXluhcvU5dJfOhRMJLvvoZc-nKDny7hTKv2yFvSNCIGUfdEp3q12TqCgcCG3WTPdiyrwpPlrWJZBXjMSYRs9MO8EwZeOr5qfbCrfP85acRdwXD9v_rP_L3w65Vg6VZtNr9MnjBfDyUWNGXZfFnHvz2NcJf0K5JhlAews2idrnDdxv76y58WYlXG_686bc64_L6CbB1Qv764l5HAFJ_Imt_4fUPo20l00IkWxGVoEsud8avzP-Wu0jQ');">
+</div>
+</div>
+</div>
+</header>
+<main class="flex-1 flex flex-col items-center py-8 px-4 sm:px-6 lg:px-8">
+<div class="max-w-[1400px] w-full flex flex-col gap-6">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="px-2 py-0.5 rounded text-xs font-bold bg-primary/20 text-primary uppercase tracking-wider">Analysis</span>
+<span class="text-[#a5b6a0] text-xs">Updated 15m ago</span>
+</div>
+<h1 class="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">Ticker Comparison</h1>
+<p class="text-[#a5b6a0] text-lg mt-2 font-medium max-w-2xl">
+                        Side-by-side fundamentals matrix. <span class="text-primary">Highlights active</span> for best-in-class metrics.
+                    </p>
+</div>
+<!-- Action Toolbar -->
+<div class="flex flex-wrap items-center gap-3 bg-surface-dark p-2 rounded-2xl border border-[#2d372a]">
+<!-- Highlights Toggle -->
+<label class="flex items-center gap-3 cursor-pointer bg-surface-dark-lighter hover:bg-[#34442e] px-4 py-2 rounded-xl transition-all select-none border border-transparent has-[:checked]:border-primary/30 has-[:checked]:bg-primary/10">
+<div class="relative inline-flex items-center">
+<input checked="" class="peer sr-only" type="checkbox"/>
+<div class="w-9 h-5 bg-[#42513e] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</div>
+<span class="text-sm font-bold text-white">Highlights</span>
+</label>
+<div class="w-px h-8 bg-[#42513e]"></div>
+<button class="flex items-center justify-center size-10 rounded-xl bg-surface-dark-lighter text-white hover:bg-[#34442e] transition-colors border border-transparent hover:border-[#42513e]">
+<span class="material-symbols-outlined">tune</span>
+</button>
+<button class="flex items-center justify-center size-10 rounded-xl bg-surface-dark-lighter text-white hover:bg-[#34442e] transition-colors border border-transparent hover:border-[#42513e]">
+<span class="material-symbols-outlined">download</span>
+</button>
+<button class="bg-primary hover:bg-[#45b025] text-background-dark px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all">
+<span class="material-symbols-outlined icon-fill text-[20px]">add</span>
+                        Add Ticker
+                    </button>
+</div>
+</div>
+<!-- Comparison Table Container -->
+<div class="w-full overflow-hidden rounded-3xl border border-[#2d372a] bg-surface-dark shadow-2xl relative">
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full min-w-[1000px] border-collapse">
+<!-- Table Head -->
+<thead>
+<tr class="bg-[#1a2318] border-b border-[#2d372a]">
+<!-- Metric Column Header -->
+<th class="sticky left-0 z-20 bg-[#1a2318] p-6 text-left border-r border-[#2d372a] w-[200px] shadow-[4px_0_12px_rgba(0,0,0,0.5)]">
+<div class="flex flex-col gap-1">
+<span class="text-[#a5b6a0] text-xs font-semibold uppercase tracking-wider">Metric</span>
+<span class="text-white text-lg font-bold">Key Data</span>
+</div>
+</th>
+<!-- AAPL Header -->
+<th class="p-6 text-left min-w-[200px] group hover:bg-[#222d1f] transition-colors relative">
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-white flex items-center justify-center p-1 overflow-hidden shrink-0">
+<img class="w-full h-full object-contain" data-alt="Apple Logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRVHcxCbe4PPy0bbjGD9qGudOljpB5HjyUaXC1_QIEbwJDBylj7CYmIHL2zOs8K3nHZ537g5gXLl9BHIRtxFpZaja8JGb-Dy85_zkfLcsF1lSIeipGzUhpxHpGy8gve_Zzmkwj8229VDWYmN2Momqtv16Ck5hgZMZs3998wCixPyVenc31RxiyQCGvvTkhu86JeExIalFm0IzgDfOvQK-yngYEBLtMnxjndVCkCv8evz79aaIup8l-slxK2BEmsYIF0kChAK9mOQ"/>
+</div>
+<div>
+<div class="text-white font-black text-xl leading-none">AAPL</div>
+<div class="text-[#a5b6a0] text-xs font-medium mt-1">Apple Inc.</div>
+</div>
+</div>
+<!-- Price & Sparkline -->
+<div class="flex items-end justify-between mt-2">
+<div>
+<div class="text-white font-bold text-2xl font-mono">$175.43</div>
+<div class="text-primary text-sm font-bold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+                                                    +1.2%
+                                                </div>
+</div>
+<svg class="opacity-50 group-hover:opacity-100 transition-opacity" fill="none" height="30" viewbox="0 0 60 30" width="60">
+<path d="M1 25L10 20L20 22L30 10L40 15L50 5L59 2" stroke="#53d22d" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-[#a5b6a0] hover:text-white">
+<span class="material-symbols-outlined">close</span>
+</div>
+</th>
+<!-- MSFT Header -->
+<th class="p-6 text-left min-w-[200px] group hover:bg-[#222d1f] transition-colors relative border-l border-[#2d372a]/30">
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-white flex items-center justify-center p-2 overflow-hidden shrink-0">
+<img class="w-full h-full object-contain" data-alt="Microsoft Logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDU2NprG7cNX6cWNxvDwjk93_doZyA2uy-emUlbLCeZ0n-QAxUJwQm-PXZV0ukkXP0EvlB-wAGS9Eu7-vaEIQPefxycYpueGSNEs8NTkPYIftV2j4QILdkIeOWomYfQ8c5MHpRCDQ2GXYRKzE-v53M_hIqUHF6jdQzpfIMtFpSnEtGzNz-pAK2wP_0kGWg3QK0OBzT331Jf93veHC3X9zMQMwDcJWCBYVnyMSph5oaXHY3ZtqsCQED5OoqeXoIJuZEuH4FZYgbDOw"/>
+</div>
+<div>
+<div class="text-white font-black text-xl leading-none">MSFT</div>
+<div class="text-[#a5b6a0] text-xs font-medium mt-1">Microsoft</div>
+</div>
+</div>
+<div class="flex items-end justify-between mt-2">
+<div>
+<div class="text-white font-bold text-2xl font-mono">$320.12</div>
+<div class="text-primary text-sm font-bold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+                                                    +0.8%
+                                                </div>
+</div>
+<svg class="opacity-50 group-hover:opacity-100 transition-opacity" fill="none" height="30" viewbox="0 0 60 30" width="60">
+<path d="M1 15L15 18L30 5L45 10L59 2" stroke="#53d22d" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-[#a5b6a0] hover:text-white">
+<span class="material-symbols-outlined">close</span>
+</div>
+</th>
+<!-- GOOGL Header -->
+<th class="p-6 text-left min-w-[200px] group hover:bg-[#222d1f] transition-colors relative border-l border-[#2d372a]/30">
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-white flex items-center justify-center p-2 overflow-hidden shrink-0">
+<img class="w-full h-full object-contain" data-alt="Google Logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjd7TpcOuakd-c4rRdtDrp6tKur1mHgNpWPxq51CYF2ao71YJEus3Ak9Oua3KdQHhHSliAsRIrHPLPkGH_2c21sTxEMfEfzpwFMAniPrWzRh2Sy7itQO-b6PqhwTlas9OVJMoZ8ksro8ATNPl4ownE-8gDfQV9F2_Qm7hlc3DRSyzOQW8Ldy3XpcsvVWy3waZhZ42WjHt0jzj4zpySrmIWJDURbAtkKionZejBf0bRF7Gye8RSK-k6xflf1rPL0zUcJUsQgIJTXA"/>
+</div>
+<div>
+<div class="text-white font-black text-xl leading-none">GOOGL</div>
+<div class="text-[#a5b6a0] text-xs font-medium mt-1">Alphabet</div>
+</div>
+</div>
+<div class="flex items-end justify-between mt-2">
+<div>
+<div class="text-white font-bold text-2xl font-mono">$135.60</div>
+<div class="text-red-500 text-sm font-bold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[16px]">trending_down</span>
+                                                    -0.4%
+                                                </div>
+</div>
+<svg class="opacity-50 group-hover:opacity-100 transition-opacity" fill="none" height="30" viewbox="0 0 60 30" width="60">
+<path d="M1 5L15 8L30 25L45 20L59 28" stroke="#ef4444" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-[#a5b6a0] hover:text-white">
+<span class="material-symbols-outlined">close</span>
+</div>
+</th>
+<!-- AMZN Header -->
+<th class="p-6 text-left min-w-[200px] group hover:bg-[#222d1f] transition-colors relative border-l border-[#2d372a]/30">
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-white flex items-center justify-center p-2 overflow-hidden shrink-0">
+<img class="w-full h-full object-contain" data-alt="Amazon Logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsQaKXg9cbx3OAdyopk7agpZ50HHA7o1hI-eue79vPDYB8uqW1xmZq1743w799eNcCAtQ-U_iIigxL16b5OcCS21JTzp8B3ivEVcAhToeplskJtKpPb8AmBlQZffTiASjrH0EkwHV_QrvCqjUQSX952-ehySgmrTQZixdaOH6yh1na1VIYcuvw2RD6TzYxH6IWyqqPqfyemCho7OT5uTbANm9OLv_sxSf9--Ka-qeBFYedH67wQJG2jFGcUBmiDv9nSNQiMXmxvQ"/>
+</div>
+<div>
+<div class="text-white font-black text-xl leading-none">AMZN</div>
+<div class="text-[#a5b6a0] text-xs font-medium mt-1">Amazon.com</div>
+</div>
+</div>
+<div class="flex items-end justify-between mt-2">
+<div>
+<div class="text-white font-bold text-2xl font-mono">$140.20</div>
+<div class="text-primary text-sm font-bold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+                                                    +2.1%
+                                                </div>
+</div>
+<svg class="opacity-50 group-hover:opacity-100 transition-opacity" fill="none" height="30" viewbox="0 0 60 30" width="60">
+<path d="M1 20L15 25L30 15L45 10L59 2" stroke="#53d22d" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-[#a5b6a0] hover:text-white">
+<span class="material-symbols-outlined">close</span>
+</div>
+</th>
+</tr>
+</thead>
+<!-- Table Body -->
+<tbody class="text-white">
+<!-- Market Cap Row -->
+<tr class="group border-b border-[#2d372a] hover:bg-[#1f2b1b]">
+<td class="sticky left-0 bg-surface-dark group-hover:bg-[#1f2b1b] p-6 font-semibold text-[#a5b6a0] border-r border-[#2d372a] shadow-[4px_0_12px_rgba(0,0,0,0.5)] z-10 transition-colors">
+<div class="flex items-center gap-2">
+                                        Market Cap
+                                        <span class="material-symbols-outlined text-[16px] text-[#586355] cursor-help" title="Total value of a company's shares of stock">info</span>
+</div>
+</td>
+<!-- AAPL (Winner) -->
+<td class="p-6 font-mono text-lg bg-primary/10 relative">
+<div class="flex items-center justify-between">
+<span class="text-primary font-bold">2.7T</span>
+<div class="size-2 rounded-full bg-primary animate-pulse"></div>
+</div>
+</td>
+<td class="p-6 font-mono text-lg text-[#d1dcd0] border-l border-[#2d372a]/30">2.4T</td>
+<td class="p-6 font-mono text-lg text-[#d1dcd0] border-l border-[#2d372a]/30">1.7T</td>
+<td class="p-6 font-mono text-lg text-[#d1dcd0] border-l border-[#2d372a]/30">1.4T</td>
+</tr>
+<!-- P/E Ratio Row -->
+<tr class="group border-b border-[#2d372a] hover:bg-[#1f2b1b]">
+<td class="sticky left-0 bg-surface-dark group-hover:bg-[#1f2b1b] p-6 font-semibold text-[#a5b6a0] border-r border-[#2d372a] shadow-[4px_0_12px_rgba(0,0,0,0.5)] z-10 transition-colors">
+<div class="flex items-center gap-2">
+                                        P/E Ratio
+                                        <span class="material-symbols-outlined text-[16px] text-[#586355]" title="Price-to-Earnings Ratio">info</span>
+</div>
+</td>
+<td class="p-6 font-mono text-lg text-[#d1dcd0]">28.5</td>
+<td class="p-6 font-mono text-lg text-[#d1dcd0] border-l border-[#2d372a]/30">35.2</td>
+<!-- GOOGL (Winner - Lower is better usually) -->
+<td class="p-6 font-mono text-lg bg-primary/10 relative border-l border-[#2d372a]/30">
+<div class="flex items-center justify-between">
+<span class="text-primary font-bold">25.1</span>
+<div class="size-2 rounded-full bg-primary animate-pulse"></div>
+</div>
+</td>
+<td class="p-6 font-mono text-lg text-[#d1dcd0] border-l border-[#2d372a]/30">60.4</td>
+</tr>
+<!-- Revenue Growth Row -->
+<tr class="group border-b border-[#2d372a] hover:bg-[#1f2b1b]">
+<td class="sticky left-0 bg-surface-dark group-hover:bg-[#1f2b1b] p-6 font-semibold text-[#a5b6a0] border-r border-[#2d372a] shadow-[4px_0_12px_rgba(0,0,0,0.5)] z-10 transition-colors">
+<div class="flex items-center gap-2">
+                                        Rev. Growth <span class="text-xs font-normal opacity-50">(YoY)</span>
+</div>
+</td>
+<td class="p-6 font-mono text-lg text-[#d1dcd0]">+2.1%</td>
+<td class="p-6 font-mono text-lg text-[#d1dcd0] border-l border-[#2d372a]/30">+7.8%</td>
+<td class="p-6 font-mono text-lg text-[#d1dcd0] border-l border-[#2d372a]/30">+5.4%</td>
+<!-- AMZN (Winner) -->
+<td class="p-6 font-mono text-lg bg-primary/10 relative border-l border-[#2d372a]/30">
+<div class="flex items-center justify-between">
+<span class="text-primary font-bold">+10.2%</span>
+<div class="size-2 rounded-full bg-primary animate-pulse"></div>
+</div>
+</td>
+</tr>
+<!-- ROE Row -->
+<tr class="group border-b border-[#2d372a] hover:bg-[#1f2b1b]">
+<td class="sticky left-0 bg-surface-dark group-hover:bg-[#1f2b1b] p-6 font-semibold text-[#a5b6a0] border-r border-[#2d372a] shadow-[4px_0_12px_rgba(0,0,0,0.5)] z-10 transition-colors">
+<div class="flex items-center gap-2">
+                                        ROE
+                                        <span class="material-symbols-outlined text-[16px] text-[#586355]" title="Return on Equity">info</span>
+</div>
+</td>
+<!-- AAPL (Winner) -->
+<td class="p-6 font-mono text-lg bg-primary/10 relative">
+<div class="flex items-center justify-between">
+<span class="text-primary font-bold">145%</span>
+<div class="size-2 rounded-full bg-primary animate-pulse"></div>
+</div>
+</td>
+<td class="p-6 font-mono text-lg text-[#d1dcd0] border-l border-[#2d372a]/30">40%</td>
+<td class="p-6 font-mono text-lg text-[#d1dcd0] border-l border-[#2d372a]/30">25%</td>
+<td class="p-6 font-mono text-lg text-[#d1dcd0] border-l border-[#2d372a]/30">15%</td>
+</tr>
+<!-- Debt/Equity Row -->
+<tr class="group border-b border-[#2d372a] hover:bg-[#1f2b1b]">
+<td class="sticky left-0 bg-surface-dark group-hover:bg-[#1f2b1b] p-6 font-semibold text-[#a5b6a0] border-r border-[#2d372a] shadow-[4px_0_12px_rgba(0,0,0,0.5)] z-10 transition-colors">
+<div class="flex items-center gap-2">
+                                        Debt/Equity
+                                    </div>
+</td>
+<td class="p-6 font-mono text-lg text-[#d1dcd0]">1.8</td>
+<td class="p-6 font-mono text-lg text-[#d1dcd0] border-l border-[#2d372a]/30">0.4</td>
+<!-- GOOGL (Winner - Lower is better) -->
+<td class="p-6 font-mono text-lg bg-primary/10 relative border-l border-[#2d372a]/30">
+<div class="flex items-center justify-between">
+<span class="text-primary font-bold">0.05</span>
+<div class="size-2 rounded-full bg-primary animate-pulse"></div>
+</div>
+</td>
+<td class="p-6 font-mono text-lg text-[#d1dcd0] border-l border-[#2d372a]/30">0.6</td>
+</tr>
+<!-- EPS (TTM) Row - Extra row for completeness -->
+<tr class="group border-b border-transparent hover:bg-[#1f2b1b]">
+<td class="sticky left-0 bg-surface-dark group-hover:bg-[#1f2b1b] p-6 font-semibold text-[#a5b6a0] border-r border-[#2d372a] shadow-[4px_0_12px_rgba(0,0,0,0.5)] z-10 transition-colors rounded-bl-3xl">
+<div class="flex items-center gap-2">
+                                        EPS (TTM)
+                                    </div>
+</td>
+<td class="p-6 font-mono text-lg text-[#d1dcd0]">$6.13</td>
+<!-- MSFT (Winner) -->
+<td class="p-6 font-mono text-lg bg-primary/10 relative border-l border-[#2d372a]/30">
+<div class="flex items-center justify-between">
+<span class="text-primary font-bold">$9.68</span>
+<div class="size-2 rounded-full bg-primary animate-pulse"></div>
+</div>
+</td>
+<td class="p-6 font-mono text-lg text-[#d1dcd0] border-l border-[#2d372a]/30">$5.80</td>
+<td class="p-6 font-mono text-lg text-[#d1dcd0] border-l border-[#2d372a]/30">$2.90</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Floating Action Bar at the bottom of table area -->
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-[#131712]/90 backdrop-blur-md px-4 py-2 rounded-full border border-[#2d372a] shadow-xl opacity-0 hover:opacity-100 transition-opacity">
+<button class="text-xs font-bold text-[#a5b6a0] hover:text-white px-2 py-1 uppercase tracking-wide">Export CSV</button>
+<div class="w-px h-3 bg-[#2d372a]"></div>
+<button class="text-xs font-bold text-[#a5b6a0] hover:text-white px-2 py-1 uppercase tracking-wide">Share View</button>
+</div>
+</div>
+<!-- Additional Insights / Cards below table -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+<div class="bg-surface-dark rounded-3xl p-6 border border-[#2d372a] flex items-start gap-4 hover:border-primary/50 transition-colors cursor-pointer group">
+<div class="bg-primary/10 p-3 rounded-full text-primary group-hover:bg-primary group-hover:text-black transition-colors">
+<span class="material-symbols-outlined icon-fill">lightbulb</span>
+</div>
+<div>
+<h3 class="text-white font-bold text-lg">Analyst Consensus</h3>
+<p class="text-[#a5b6a0] mt-1 leading-relaxed">
+                            GOOGL shows the strongest buy signal among the selected group based on current P/E valuations relative to sector growth.
+                        </p>
+</div>
+</div>
+<div class="bg-surface-dark rounded-3xl p-6 border border-[#2d372a] flex items-start gap-4 hover:border-primary/50 transition-colors cursor-pointer group">
+<div class="bg-primary/10 p-3 rounded-full text-primary group-hover:bg-primary group-hover:text-black transition-colors">
+<span class="material-symbols-outlined icon-fill">notifications_active</span>
+</div>
+<div>
+<h3 class="text-white font-bold text-lg">Upcoming Earnings</h3>
+<p class="text-[#a5b6a0] mt-1 leading-relaxed">
+                            MSFT is reporting in 3 days. Volatility expected to increase +/- 5% based on implied volatility metrics.
+                        </p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="mt-auto border-t border-[#2d372a] bg-background-dark py-12 px-6">
+<div class="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex items-center gap-2 text-[#a5b6a0]">
+<span class="font-bold text-white">Stock Quote Sheet</span>
+<span>© 2023</span>
+</div>
+<div class="flex items-center gap-8">
+<a class="text-[#a5b6a0] hover:text-primary transition-colors text-sm" href="#">Privacy Policy</a>
+<a class="text-[#a5b6a0] hover:text-primary transition-colors text-sm" href="#">Terms of Service</a>
+<a class="text-[#a5b6a0] hover:text-primary transition-colors text-sm" href="#">Help Center</a>
+</div>
+<div class="text-[#586355] text-xs max-w-md text-center md:text-right">
+                Market data delayed by 15 minutes. Not investment advice. Past performance is not indicative of future results.
+            </div>
+</div>
+</footer>
+</body></html>

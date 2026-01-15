@@ -2,6 +2,58 @@ import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 
 const CompanyDashboard: React.FC = () => {
+    const [stockData, setStockData] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    React.useEffect(() => {
+        const fetchStock = async () => {
+            try {
+                // Hardcoded to AAPL for now as per the static design, but could be dynamic from params
+                const response = await fetch('/api/stocks/AAPL');
+                const data = await response.json();
+
+                if (data.success) {
+                    setStockData(data.data);
+                } else {
+                    setError(data.message || 'Failed to fetch stock data');
+                }
+            } catch (err) {
+                setError('Failed to connect to server');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStock();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="bg-background-light dark:bg-background-dark font-display flex items-center justify-center min-h-screen">
+                <div className="text-white">Loading...</div>
+            </div>
+        );
+    }
+
+    if (error) {
+        // Fallback to static data if API fails (for demo purposes) or show error?
+        // For now let's show error but maybe we can keep the static structure as default state?
+        // Actually, let's just return the error view or the static view with an overlay.
+        // Given the user wants to "make sure backend services are running", distinct failure is better than silent falback.
+        return (
+            <div className="bg-background-light dark:bg-background-dark font-display flex items-center justify-center min-h-screen flex-col gap-4">
+                <div className="text-red-500 text-xl font-bold">Error: {error}</div>
+                <button onClick={() => window.location.reload()} className="text-white underline">Retry</button>
+            </div>
+        );
+    }
+
+    // Use stockData values where available, fallback to static/default
+    const currentPrice = stockData?.currentPrice || 174.50;
+    const changePercent = stockData?.change30d || 1.20; // Using 30d change as proxy for main display if 7d not avail
+    const isPositive = changePercent >= 0;
+
     return (
         <div className="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white overflow-hidden selection:bg-primary selection:text-black min-h-screen flex flex-col">
             <Navbar />
@@ -20,22 +72,23 @@ const CompanyDashboard: React.FC = () => {
                             <div className="flex gap-5 items-center">
                                 <div className="bg-white rounded-2xl p-3 size-20 md:size-24 flex items-center justify-center shrink-0 shadow-lg shadow-black/50">
                                     <img
-                                        alt="Apple Inc Logo"
+                                        alt={`${stockData?.companyName} Logo`}
                                         className="w-full h-full object-contain p-1"
-                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6f21-rQMvyyMymaDMqBFM9MykuRTQFPK607eKa8Nf1IBI3De8YwGurL2VVe7ZJBigfCRXirss-2SA0uUGStPYUsBo4sQuwwwe0MclUNBzvhRJw1s8_6hFgYRRnwlC31SNFQor_In_jwlWgsV5WnPIu4fpm7emlrKY1_hIhAxq_hSgfiCCGaJATtY7v6QAtfaJV5OEY3VPH9R-pcN8MG3ndh4nV0w2Fg0ebD7iNgXe95dP-4SsTiZor-B90rpeSrxkIhpoKQTvAQ"
+                                        src={`https://logo.clearbit.com/${stockData?.companyName?.split(' ')[0].toLowerCase()}.com`}
+                                        onError={(e) => { (e.target as HTMLImageElement).src = "https://lh3.googleusercontent.com/aida-public/AB6AXuC6f21-rQMvyyMymaDMqBFM9MykuRTQFPK607eKa8Nf1IBI3De8YwGurL2VVe7ZJBigfCRXirss-2SA0uUGStPYUsBo4sQuwwwe0MclUNBzvhRJw1s8_6hFgYRRnwlC31SNFQor_In_jwlWgsV5WnPIu4fpm7emlrKY1_hIhAxq_hSgfiCCGaJATtY7v6QAtfaJV5OEY3VPH9R-pcN8MG3ndh4nV0w2Fg0ebD7iNgXe95dP-4SsTiZor-B90rpeSrxkIhpoKQTvAQ" }}
                                     />
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-3 mb-1">
                                         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
-                                            Apple Inc.
+                                            {stockData?.companyName || 'Apple Inc.'}
                                         </h1>
                                         <span className="px-2 py-1 rounded bg-[#2d372a] text-[#a5b6a0] text-xs font-bold tracking-wider">
-                                            NASDAQ: AAPL
+                                            {stockData?.ticker || 'AAPL'}
                                         </span>
                                     </div>
                                     <p className="text-[#a5b6a0] text-sm md:text-base">
-                                        Consumer Electronics • Mega Cap • Tech
+                                        {stockData?.sector || 'Consumer Electronics'} • Mega Cap • Tech
                                     </p>
                                 </div>
                             </div>
@@ -43,17 +96,17 @@ const CompanyDashboard: React.FC = () => {
                             <div className="flex flex-col items-end">
                                 <div className="flex items-baseline gap-3">
                                     <span className="text-4xl md:text-5xl font-bold text-white tracking-tighter">
-                                        $174.50
+                                        ${currentPrice.toFixed(2)}
                                     </span>
-                                    <span className="text-lg md:text-xl font-bold text-primary flex items-center bg-primary/10 px-2 py-0.5 rounded-lg">
+                                    <span className={`text-lg md:text-xl font-bold flex items-center px-2 py-0.5 rounded-lg ${isPositive ? 'text-primary bg-primary/10' : 'text-red-500 bg-red-500/10'}`}>
                                         <span className="material-symbols-outlined text-sm mr-1">
-                                            trending_up
+                                            {isPositive ? 'trending_up' : 'trending_down'}
                                         </span>
-                                        1.20%
+                                        {Math.abs(changePercent).toFixed(2)}%
                                     </span>
                                 </div>
                                 <p className="text-[#a5b6a0] text-sm mt-1">
-                                    At close: 4:00 PM EDT
+                                    Last Updated: {new Date().toLocaleTimeString()}
                                 </p>
                             </div>
                         </div>
@@ -64,20 +117,20 @@ const CompanyDashboard: React.FC = () => {
                                 <p className="text-[#a5b6a0] text-xs font-medium uppercase tracking-wider mb-1">
                                     Market Cap
                                 </p>
-                                <p className="text-white text-xl font-bold">2.71T</p>
+                                <p className="text-white text-xl font-bold">{stockData?.marketCap ? (stockData.marketCap / 1e12).toFixed(2) + 'T' : '2.71T'}</p>
                             </div>
                             <div className="p-4 rounded-2xl bg-[#1d241c] border border-[#2d372a]">
                                 <p className="text-[#a5b6a0] text-xs font-medium uppercase tracking-wider mb-1">
-                                    Vol (Avg)
+                                    High (1Y)
                                 </p>
-                                <p className="text-white text-xl font-bold">54.2M</p>
+                                <p className="text-white text-xl font-bold">${stockData?.high1yr?.toFixed(2) || '198.23'}</p>
                             </div>
                             <div className="p-4 rounded-2xl bg-[#1d241c] border border-[#2d372a]">
                                 <p className="text-[#a5b6a0] text-xs font-medium uppercase tracking-wider mb-1">
-                                    Day Range
+                                    High (30d)
                                 </p>
                                 <p className="text-white text-lg font-bold truncate">
-                                    $172.10 - $175.05
+                                    ${stockData?.high30d?.toFixed(2) || '175.05'}
                                 </p>
                             </div>
                             <div className="p-4 rounded-2xl bg-[#1d241c] border border-[#2d372a]">
@@ -85,7 +138,7 @@ const CompanyDashboard: React.FC = () => {
                                     52W Range
                                 </p>
                                 <p className="text-white text-lg font-bold truncate">
-                                    $124.17 - $198.23
+                                    -
                                 </p>
                             </div>
                         </div>
