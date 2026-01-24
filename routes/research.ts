@@ -2,6 +2,8 @@ import express from 'express';
 import passport from '../auth/passport';
 import * as researchController from '../controllers/researchController';
 
+import { authenticate } from '../middleware/auth';
+
 const router = express.Router();
 
 /**
@@ -11,7 +13,7 @@ const router = express.Router();
  */
 
 // Middleware to require JWT authentication
-const requireAuth = passport.authenticate('jwt', { session: false });
+const requireAuth = authenticate;
 
 /**
  * GET /api/research/status
@@ -33,6 +35,13 @@ router.get('/user/me', requireAuth, researchController.getMyResearchRequests);
  * Requires authentication
  */
 router.get('/result/:requestId', requireAuth, researchController.getResearchResult);
+
+/**
+ * PATCH /api/research/result/:requestId
+ * Update research result (e.g. save notes)
+ * Requires authentication and ownership
+ */
+router.patch('/result/:requestId', requireAuth, researchController.updateResearchResult);
 
 /**
  * POST /api/research/:ticker/request
@@ -63,5 +72,19 @@ router.post('/:ticker/cancel/:requestId', requireAuth, researchController.cancel
  * Requires authentication
  */
 router.get('/:ticker', requireAuth, researchController.getResearchByTicker);
+
+/**
+ * POST /api/research/portfolio
+ * Analyze portfolio holdings with AI
+ * Requires authentication
+ */
+router.post('/portfolio', requireAuth, researchController.analyzePortfolio);
+
+/**
+ * POST /api/research/news/analyze
+ * Analyze news article
+ * Requires authentication
+ */
+router.post('/news/analyze', requireAuth, researchController.analyzeNews);
 
 export default router;

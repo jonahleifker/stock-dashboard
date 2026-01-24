@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Ticker {
+  symbol    String   @id
+  name      String?
+  sector    String?
+  industry  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  prices    StockPrice[]
+  news      NewsItem[]
+  earnings  EarningsReport[]
+}
+
+model StockPrice {
+  id        Int      @id @default(autoincrement())
+  tickerId  String
+  ticker    Ticker   @relation(fields: [tickerId], references: [symbol])
+  price     Float
+  change    Float?
+  changePercent Float?
+  timestamp DateTime @default(now())
+  
+  // To handle historical data if needed, or just daily snapshots
+  date      DateTime @default(now()) // Stored as date only usually
+}
+
+model NewsItem {
+  id        Int      @id @default(autoincrement())
+  tickerId  String
+  ticker    Ticker   @relation(fields: [tickerId], references: [symbol])
+  title     String
+  url       String?
+  summary   String?  // For uploaded content or easy reading
+  source    String?
+  publishedAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model EarningsReport {
+  id        Int      @id @default(autoincrement())
+  tickerId  String
+  ticker    Ticker   @relation(fields: [tickerId], references: [symbol])
+  quarter   String   // e.g., "Q1 2024"
+  reportDate DateTime
+  
+  // Financials (flexible)
+  revenue   Float?
+  eps       Float?
+  
+  // Custom uploaded content
+  notes     String?
+  documentUrl String? // Path to stored file if we implement file upload later
+  
+  createdAt DateTime @default(now())
+}

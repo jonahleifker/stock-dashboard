@@ -19,44 +19,32 @@ module.exports = {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "#53d22d", // Stitch primary
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        "background-light": "#f6f8f6",
-        "background-dark": "#131712",
-        "input-dark": "#202025",
-        "surface-dark": "#1a2119",
-        "accent-red": "#ff4d4d",
+        "background-light": "#fafafa",
+        "background-dark": "#121416",
+        "surface-dark": "#212529",
         "text-secondary": "#a5b6a0",
+        growth: "#4CAF50",
+        loss: "#EF5350",
+        primary: {
+          DEFAULT: "#195f76", // Market Overview teal
+          foreground: "#ffffff",
+        },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+          DEFAULT: "#2d372a", // Stitch secondary/border
+          foreground: "#ffffff",
         },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+        border: "#2d372a",
+        input: "#2d372a",
+        ring: "#53d22d",
+        brand: {
+          DEFAULT: "#195f76",
+          hover: "#1a6d87",
         },
       },
       fontFamily: {
         display: ["Manrope", "sans-serif"],
         body: ["Noto Sans", "sans-serif"],
+        mono: ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"],
       },
       borderRadius: {
         lg: "var(--radius)",

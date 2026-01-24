@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Stock Notebook - Desktop</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#195f76",
+                        "primary-dark": "#124556",
+                        "background-light": "#fafafa",
+                        "background-dark": "#121416",
+                        "surface-dark": "#1e2124",
+                        "surface-light": "#ffffff",
+                        "surface-accent": "#262a2f",
+                        "bullish": "#4ade80",
+                        "bearish": "#f87171",
+                        "neutral": "#94a3b8",
+                        "border-dark": "rgba(255,255,255,0.08)",
+                        "border-light": "rgba(0,0,0,0.08)"
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .bg-grid-pattern {
+            background-image: linear-gradient(to right, #2d3238 1px, transparent 1px),
+                              linear-gradient(to bottom, #2d3238 1px, transparent 1px);
+            background-size: 40px 40px;
+        }::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569; 
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased text-slate-800 dark:text-slate-200 h-screen overflow-hidden flex">
+<aside class="w-20 lg:w-64 bg-surface-light dark:bg-surface-dark border-r border-slate-200 dark:border-border-dark flex flex-col justify-between shrink-0 h-full">
+<div>
+<div class="h-16 flex items-center px-6 border-b border-slate-200 dark:border-border-dark">
+<div class="flex items-center gap-3">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-primary/30">
+                        N
+                    </div>
+<span class="text-lg font-bold text-slate-900 dark:text-white hidden lg:block tracking-tight">Notebook</span>
+</div>
+</div>
+<nav class="p-3 space-y-1 mt-4">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-surface-accent hover:text-primary dark:hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">dashboard</span>
+<span class="hidden lg:block text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary dark:text-white font-semibold" href="#">
+<span class="material-symbols-outlined">edit_document</span>
+<span class="hidden lg:block text-sm">Notebook</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-surface-accent hover:text-primary dark:hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">monitoring</span>
+<span class="hidden lg:block text-sm font-medium">Screeners</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-surface-accent hover:text-primary dark:hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">folder_open</span>
+<span class="hidden lg:block text-sm font-medium">Files</span>
+</a>
+</nav>
+</div>
+<div class="p-4 border-t border-slate-200 dark:border-border-dark">
+<button class="flex items-center gap-3 w-full hover:bg-slate-100 dark:hover:bg-surface-accent p-2 rounded-lg transition-colors">
+<div class="size-8 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+<img alt="User" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_7mMHKeVqSU1KjjrVPVgkCxtc6IhgYD5MTdME2p0WGqPm7Nb5KgPAVgGBCy6V6gr7Gp_m5l-Xe1QJh5LVa3aNWpYVJRn7QaRmNWTGP2yl0VByatwcz_xO10GXGV5BdpylH5SBqgz-svdJfTr818fTteYWFH1wK5LYqupp4CZI0ebN-ldKLj8fTD1sWPLtZbszq04jkoViWt9OqXNKQXQ1hWMx76frN-26snnny84esG9EpNnaQZO77R8VWURCn-YXTc2tcs62bl0"/>
+</div>
+<div class="hidden lg:flex flex-col items-start">
+<span class="text-sm font-bold text-slate-900 dark:text-white">Alex T.</span>
+<span class="text-xs text-slate-500">Pro Account</span>
+</div>
+</button>
+</div>
+</aside>
+<main class="flex-1 flex flex-col h-full min-w-0 bg-background-light dark:bg-background-dark">
+<header class="h-16 border-b border-slate-200 dark:border-border-dark bg-white/50 dark:bg-surface-dark/50 backdrop-blur-sm flex items-center justify-between px-6 shrink-0 z-10">
+<div class="flex items-center gap-4">
+<h1 class="text-xl font-bold text-slate-900 dark:text-white">Analysis Workspace</h1>
+<div class="h-6 w-px bg-slate-300 dark:bg-border-dark"></div>
+<div class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+<span class="hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer">Notebooks</span>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span class="text-slate-900 dark:text-white font-medium">Q3 Earnings Prep</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative group hidden md:block">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-slate-400 text-[18px]">search</span>
+</div>
+<input class="block w-64 pl-9 pr-4 py-1.5 bg-slate-100 dark:bg-surface-accent/50 border border-slate-200 dark:border-border-dark rounded-md text-sm placeholder-slate-400 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all shadow-sm" placeholder="Search notes..." type="text"/>
+</div>
+<button class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg text-sm font-semibold shadow-lg shadow-primary/20 flex items-center gap-2 transition-all">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    New Note
+                </button>
+</div>
+</header>
+<div class="flex-1 flex overflow-hidden">
+<div class="w-80 border-r border-slate-200 dark:border-border-dark flex flex-col bg-white dark:bg-surface-dark/30">
+<div class="p-4 border-b border-slate-200 dark:border-border-dark flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Reports &amp; Notes</h2>
+<button class="text-xs text-primary hover:underline">View All</button>
+</div>
+<div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+<button class="shrink-0 px-2 py-1 rounded bg-primary text-white text-xs font-medium">All</button>
+<button class="shrink-0 px-2 py-1 rounded bg-slate-100 dark:bg-surface-accent border border-slate-200 dark:border-border-dark text-slate-600 dark:text-slate-300 text-xs font-medium hover:border-primary/50 transition-colors">$TSLA</button>
+<button class="shrink-0 px-2 py-1 rounded bg-slate-100 dark:bg-surface-accent border border-slate-200 dark:border-border-dark text-slate-600 dark:text-slate-300 text-xs font-medium hover:border-primary/50 transition-colors">$NVDA</button>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto">
+<div class="sticky top-0 bg-slate-50/95 dark:bg-[#151719]/95 backdrop-blur px-4 py-2 border-b border-slate-200 dark:border-border-dark z-10">
+<span class="text-xs font-semibold text-slate-500">Today</span>
+</div>
+<div class="p-3 mx-2 mt-2 rounded-lg bg-primary/10 border border-primary/20 cursor-pointer">
+<div class="flex items-start justify-between mb-1">
+<span class="font-bold text-sm text-slate-900 dark:text-white">$TSLA Analysis</span>
+<span class="text-[10px] text-primary font-mono bg-primary/10 px-1 rounded">10:42 AM</span>
+</div>
+<p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 mb-2">
+                             Looking for an entry near $210. High volume observed on the breakdown...
+                        </p>
+<div class="flex items-center gap-2">
+<span class="px-1.5 py-0.5 rounded text-[10px] bg-bullish/10 text-bullish border border-bullish/20 font-bold uppercase">Bullish</span>
+<span class="text-[10px] text-slate-400 flex items-center gap-1"><span class="material-symbols-outlined text-[10px]">attach_file</span> 1</span>
+</div>
+</div>
+<div class="p-3 mx-2 mt-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 border border-transparent hover:border-slate-200 dark:hover:border-border-dark cursor-pointer transition-colors group">
+<div class="flex items-start justify-between mb-1">
+<span class="font-bold text-sm text-slate-900 dark:text-slate-300 group-hover:text-primary transition-colors">$NVDA Earnings Prep</span>
+<span class="text-[10px] text-slate-500 font-mono">1 hr ago</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-500 line-clamp-2 mb-2">
+                            Concerned about forward guidance on data center revenue saturation...
+                        </p>
+<div class="flex items-center gap-2">
+<span class="px-1.5 py-0.5 rounded text-[10px] bg-neutral/10 text-neutral border border-neutral/20 font-bold uppercase">Hold</span>
+</div>
+</div>
+<div class="sticky top-0 bg-slate-50/95 dark:bg-[#151719]/95 backdrop-blur px-4 py-2 border-y border-slate-200 dark:border-border-dark mt-2 z-10">
+<span class="text-xs font-semibold text-slate-500">Yesterday</span>
+</div>
+<div class="p-3 mx-2 mt-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 border border-transparent hover:border-slate-200 dark:hover:border-border-dark cursor-pointer transition-colors group">
+<div class="flex items-start justify-between mb-1">
+<span class="font-bold text-sm text-slate-900 dark:text-slate-300 group-hover:text-primary transition-colors">$AMD Technicals</span>
+<span class="text-[10px] text-slate-500 font-mono">Nov 13</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-500 line-clamp-2 mb-2">
+                            The 50 SMA crossed below the 200 SMA (Death Cross). Volume profile thin...
+                        </p>
+<div class="flex items-center gap-2">
+<span class="px-1.5 py-0.5 rounded text-[10px] bg-bearish/10 text-bearish border border-bearish/20 font-bold uppercase">Bearish</span>
+</div>
+</div>
+<div class="p-3 mx-2 mt-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 border border-transparent hover:border-slate-200 dark:hover:border-border-dark cursor-pointer transition-colors group flex items-center gap-3">
+<div class="size-8 rounded bg-red-500/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-red-500 text-lg">picture_as_pdf</span>
+</div>
+<div class="min-w-0">
+<p class="text-sm font-medium text-slate-900 dark:text-slate-300 truncate">Q3_Macro_Report.pdf</p>
+<p class="text-[10px] text-slate-500">2.4 MB • Uploaded Yesterday</p>
+</div>
+</div>
+</div>
+</div>
+<div class="flex-1 flex flex-col min-w-0 bg-background-light dark:bg-background-dark relative">
+<div class="h-12 border-b border-slate-200 dark:border-border-dark flex items-center justify-between px-6 bg-white dark:bg-surface-dark">
+<div class="flex items-center gap-1">
+<button class="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 dark:text-slate-400" title="Bold">
+<span class="material-symbols-outlined text-[20px]">format_bold</span>
+</button>
+<button class="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 dark:text-slate-400" title="Italic">
+<span class="material-symbols-outlined text-[20px]">format_italic</span>
+</button>
+<button class="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 dark:text-slate-400" title="List">
+<span class="material-symbols-outlined text-[20px]">format_list_bulleted</span>
+</button>
+<div class="w-px h-4 bg-slate-200 dark:bg-border-dark mx-2"></div>
+<button class="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 dark:text-slate-400" title="Insert Image">
+<span class="material-symbols-outlined text-[20px]">image</span>
+</button>
+<button class="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 dark:text-slate-400" title="Attach File">
+<span class="material-symbols-outlined text-[20px]">attach_file</span>
+</button>
+</div>
+<div class="text-xs text-slate-400 font-mono">
+                        Last edited: Today at 10:45 AM
+                    </div>
+</div>
+<div class="flex-1 overflow-y-auto p-8 lg:px-16">
+<div class="max-w-4xl mx-auto">
+<div class="mb-8 pb-6 border-b border-slate-200 dark:border-border-dark border-dashed">
+<div class="flex items-center gap-3 mb-4">
+<span class="px-2 py-1 rounded bg-slate-100 dark:bg-white/5 text-xs font-mono text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-border-dark">#EV</span>
+<span class="px-2 py-1 rounded bg-slate-100 dark:bg-white/5 text-xs font-mono text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-border-dark">#Macro</span>
+<span class="px-2 py-1 rounded bg-bullish/10 text-xs font-bold uppercase text-bullish border border-bullish/20">Bullish Setup</span>
+</div>
+<h1 class="text-4xl font-bold text-slate-900 dark:text-white tracking-tight mb-2">$TSLA Q3 Retracement Analysis</h1>
+<div class="flex items-center gap-2 text-sm text-slate-500">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+<span>Created Nov 15, 2023</span>
+<span>•</span>
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>10:42 AM</span>
+</div>
+</div>
+<div class="prose prose-slate dark:prose-invert max-w-none">
+<p class="text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
+                                Looking for an entry near <span class="font-bold text-slate-900 dark:text-white bg-yellow-100 dark:bg-yellow-500/20 px-1 rounded">$210</span>. High volume observed on the breakdown suggests institutional interest at the lower support band. The daily chart is showing a classic divergence on the RSI, which typically precedes a bounce.
+                            </p>
+<h3 class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">Key Support Levels</h3>
+<ul class="space-y-2 mb-6">
+<li class="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+<span class="size-1.5 rounded-full bg-bullish"></span>
+<span><strong>$208.50</strong> - 200 Day Moving Average support.</span>
+</li>
+<li class="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+<span class="size-1.5 rounded-full bg-neutral"></span>
+<span><strong>$212.00</strong> - Psychological level and previous resistance turned support.</span>
+</li>
+</ul>
+<h3 class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">Analyst Commentary</h3>
+<div class="bg-slate-50 dark:bg-surface-dark border-l-4 border-primary p-4 rounded-r-lg mb-6">
+<p class="italic text-slate-600 dark:text-slate-400">
+                                    "Delivery numbers missed slightly, but margins improved. The market is overreacting to the headline number while ignoring the efficiency gains in the Berlin factory."
+                                </p>
+</div>
+<div class="my-8 rounded-xl bg-surface-dark border border-border-dark overflow-hidden relative group">
+<div class="absolute inset-0 bg-grid-pattern opacity-20 pointer-events-none"></div>
+<div class="h-64 flex flex-col items-center justify-center text-slate-500">
+<span class="material-symbols-outlined text-4xl mb-2 opacity-50">ssid_chart</span>
+<span class="text-sm font-mono">TSLA_1D_Chart.png</span>
+</div>
+<div class="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+<button class="p-2 bg-black/50 hover:bg-black/70 rounded text-white backdrop-blur">
+<span class="material-symbols-outlined text-sm">zoom_in</span>
+</button>
+</div>
+</div>
+<p class="text-slate-600 dark:text-slate-300">
+                                Will monitor price action around 10:30 AM EST for confirmation. If volume dries up, I will scale in 1/3 position size.
+                            </p>
+</div>
+</div>
+<div class="h-32"></div>
+</div>
+</div>
+<div class="w-64 border-l border-slate-200 dark:border-border-dark bg-white dark:bg-surface-dark/30 hidden xl:flex flex-col">
+<div class="p-4 border-b border-slate-200 dark:border-border-dark">
+<h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Ticker Context</h3>
+</div>
+<div class="p-4 flex flex-col gap-6">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="font-bold text-lg text-slate-900 dark:text-white">$TSLA</span>
+<span class="text-xs font-mono text-slate-500">NASDAQ</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-bold text-slate-900 dark:text-white">214.50</span>
+<span class="text-sm font-bold text-bullish">+2.45%</span>
+</div>
+<div class="text-xs text-slate-500 mt-1">Last Updated: 10:44:02</div>
+</div>
+<div class="p-3 rounded-lg bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-border-dark">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-medium text-slate-500">Social Sentiment</span>
+<span class="text-xs font-bold text-bullish">Bullish</span>
+</div>
+<div class="h-1.5 w-full bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
+<div class="h-full bg-bullish w-3/4"></div>
+</div>
+</div>
+<div>
+<h4 class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-3 uppercase">Attachments</h4>
+<div class="space-y-2">
+<div class="flex items-center gap-2 p-2 rounded hover:bg-slate-100 dark:hover:bg-white/5 cursor-pointer border border-transparent hover:border-slate-200 dark:hover:border-border-dark transition-all">
+<span class="material-symbols-outlined text-red-500 text-lg">picture_as_pdf</span>
+<span class="text-xs text-slate-700 dark:text-slate-300 truncate">Q3_Report.pdf</span>
+</div>
+<div class="flex items-center gap-2 p-2 rounded hover:bg-slate-100 dark:hover:bg-white/5 cursor-pointer border border-transparent hover:border-slate-200 dark:hover:border-border-dark transition-all">
+<span class="material-symbols-outlined text-blue-500 text-lg">image</span>
+<span class="text-xs text-slate-700 dark:text-slate-300 truncate">Chart_Screenshot.png</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+
+</body></html>

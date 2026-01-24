@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>In-Depth Sector Details</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#195f76",
+                        "primary-light": "#2B6F7A",
+                        "background-light": "#fafafa",
+                        "background-dark": "#121416",
+                        "surface-dark": "#1c2024",
+                        "surface-highlight": "#252a30",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "mono": ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for clean UI */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Sticky column shadow logic */
+        .sticky-col-shadow::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -12px;
+            bottom: 0;
+            width: 12px;
+            background: linear-gradient(to right, rgba(0,0,0,0.3), transparent);
+            pointer-events: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased selection:bg-primary selection:text-white">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-hidden max-w-md mx-auto shadow-2xl bg-background-light dark:bg-background-dark">
+<!-- Sticky Header -->
+<header class="sticky top-0 z-40 bg-background-dark/95 backdrop-blur-md border-b border-white/5">
+<div class="flex items-center justify-between px-4 py-3">
+<button class="flex size-10 items-center justify-center rounded-full hover:bg-white/5 transition-colors text-slate-400 hover:text-white">
+<span class="material-symbols-outlined">arrow_back_ios_new</span>
+</button>
+<div class="text-center">
+<h1 class="text-sm font-medium text-slate-400 uppercase tracking-widest">Sector</h1>
+<div class="flex items-center gap-1 justify-center">
+<span class="text-white font-bold text-lg">Financials</span>
+</div>
+</div>
+<button class="flex size-10 items-center justify-center rounded-full hover:bg-white/5 transition-colors text-slate-400 hover:text-white">
+<span class="material-symbols-outlined">search</span>
+</button>
+</div>
+</header>
+<!-- Hero: Sector Summary & Chart -->
+<div class="pt-6 pb-2 px-0">
+<div class="px-5 mb-6 flex items-end justify-between">
+<div>
+<p class="text-slate-400 text-sm font-medium mb-1">Index Performance</p>
+<div class="flex items-baseline gap-3">
+<span class="text-4xl font-bold text-white tracking-tight">4,102.45</span>
+<div class="flex items-center gap-0.5 text-[#0bda57] bg-[#0bda57]/10 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span class="text-sm font-bold">+1.24%</span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<p class="text-slate-500 text-xs font-medium">30 Day Trend</p>
+</div>
+</div>
+<!-- Custom Sparkline Chart -->
+<div class="relative w-full h-32 mb-6 group cursor-crosshair">
+<!-- Grid lines -->
+<div class="absolute inset-0 flex flex-col justify-between px-5 py-2 opacity-10">
+<div class="w-full h-px bg-white"></div>
+<div class="w-full h-px bg-white"></div>
+<div class="w-full h-px bg-white"></div>
+</div>
+<!-- Chart Area -->
+<svg class="w-full h-full overflow-visible px-2" preserveaspectratio="none" viewbox="0 0 400 120">
+<defs>
+<lineargradient id="gradient-chart" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#195f76" stop-opacity="0.5"></stop>
+<stop offset="100%" stop-color="#195f76" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<!-- Area fill -->
+<path d="M0,80 C40,80 60,40 100,50 C140,60 160,90 200,70 C240,50 260,20 300,30 C340,40 360,10 400,20 V120 H0 Z" fill="url(#gradient-chart)"></path>
+<!-- Line -->
+<path d="M0,80 C40,80 60,40 100,50 C140,60 160,90 200,70 C240,50 260,20 300,30 C340,40 360,10 400,20" fill="none" stroke="#2B6F7A" stroke-linecap="round" stroke-width="3"></path>
+<!-- Interactive Point (Simulated) -->
+<circle class="animate-pulse" cx="400" cy="20" fill="#0bda57" r="4" stroke="white" stroke-width="2"></circle>
+</svg>
+</div>
+</div>
+<!-- Filter / Sort Bar -->
+<div class="sticky top-[65px] z-30 bg-background-dark/95 backdrop-blur-xl border-b border-white/5 pb-0">
+<div class="flex items-center gap-3 px-5 py-3 overflow-x-auto no-scrollbar">
+<span class="text-slate-400 text-xs font-bold uppercase tracking-wider shrink-0 mr-1">Sort:</span>
+<button class="flex items-center justify-center h-8 px-4 rounded-full bg-primary text-white text-sm font-semibold shadow-lg shadow-primary/20 shrink-0 border border-transparent transition-all">
+                    Market Cap
+                </button>
+<button class="flex items-center justify-center h-8 px-4 rounded-full bg-surface-dark border border-white/10 text-slate-300 text-sm font-medium hover:bg-surface-highlight hover:text-white transition-all shrink-0">
+                    Top Gainers
+                </button>
+<button class="flex items-center justify-center h-8 px-4 rounded-full bg-surface-dark border border-white/10 text-slate-300 text-sm font-medium hover:bg-surface-highlight hover:text-white transition-all shrink-0">
+                    P/E Ratio
+                </button>
+<button class="flex items-center justify-center h-8 px-4 rounded-full bg-surface-dark border border-white/10 text-slate-300 text-sm font-medium hover:bg-surface-highlight hover:text-white transition-all shrink-0">
+                    Div Yield
+                </button>
+<button class="flex items-center justify-center h-8 px-4 rounded-full bg-surface-dark border border-white/10 text-slate-300 text-sm font-medium hover:bg-surface-highlight hover:text-white transition-all shrink-0">
+                    Volume
+                </button>
+</div>
+</div>
+<!-- Data Table Wrapper -->
+<div class="flex-1 w-full overflow-hidden bg-background-dark relative">
+<div class="h-full overflow-auto no-scrollbar pb-20">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-dark/50 text-slate-400 text-xs font-semibold uppercase tracking-wider sticky top-0 z-20 backdrop-blur-sm">
+<tr>
+<th class="sticky left-0 z-30 bg-background-dark pl-5 pr-4 py-3 border-b border-white/5 sticky-col-shadow w-[100px]">Ticker</th>
+<th class="px-4 py-3 border-b border-white/5 text-right whitespace-nowrap">Price</th>
+<th class="px-4 py-3 border-b border-white/5 text-right whitespace-nowrap">Change</th>
+<th class="px-4 py-3 border-b border-white/5 text-right whitespace-nowrap">P/E</th>
+<th class="px-4 py-3 border-b border-white/5 text-right whitespace-nowrap">Mkt Cap</th>
+<th class="px-4 py-3 border-b border-white/5 text-right whitespace-nowrap pr-5">Div Yield</th>
+</tr>
+</thead>
+<tbody class="text-sm">
+<!-- Row 1: JPM -->
+<tr class="group hover:bg-white/[0.02] transition-colors">
+<td class="sticky left-0 z-10 bg-background-dark pl-5 pr-4 py-4 border-b border-white/5 sticky-col-shadow group-hover:bg-surface-highlight transition-colors">
+<div class="flex flex-col">
+<span class="text-primary-light font-bold text-base">JPM</span>
+<span class="text-slate-500 text-[10px] truncate max-w-[80px]">JPMorgan</span>
+</div>
+</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-white">$140.23</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-[#0bda57] bg-[#0bda57]/5">+0.51%</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300">10.5</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300">408B</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300 pr-5">3.2%</td>
+</tr>
+<!-- Row 2: BAC -->
+<tr class="group hover:bg-white/[0.02] transition-colors">
+<td class="sticky left-0 z-10 bg-background-dark pl-5 pr-4 py-4 border-b border-white/5 sticky-col-shadow group-hover:bg-surface-highlight transition-colors">
+<div class="flex flex-col">
+<span class="text-primary-light font-bold text-base">BAC</span>
+<span class="text-slate-500 text-[10px] truncate max-w-[80px]">Bank of America</span>
+</div>
+</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-white">$28.12</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-[#ef5350] bg-[#ef5350]/5">-1.20%</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300">9.8</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300">224B</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300 pr-5">2.9%</td>
+</tr>
+<!-- Row 3: V -->
+<tr class="group hover:bg-white/[0.02] transition-colors">
+<td class="sticky left-0 z-10 bg-background-dark pl-5 pr-4 py-4 border-b border-white/5 sticky-col-shadow group-hover:bg-surface-highlight transition-colors">
+<div class="flex flex-col">
+<span class="text-primary-light font-bold text-base">V</span>
+<span class="text-slate-500 text-[10px] truncate max-w-[80px]">Visa Inc.</span>
+</div>
+</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-white">$230.11</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-[#0bda57] bg-[#0bda57]/5">+0.12%</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300">28.4</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300">460B</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300 pr-5">0.8%</td>
+</tr>
+<!-- Row 4: MA -->
+<tr class="group hover:bg-white/[0.02] transition-colors">
+<td class="sticky left-0 z-10 bg-background-dark pl-5 pr-4 py-4 border-b border-white/5 sticky-col-shadow group-hover:bg-surface-highlight transition-colors">
+<div class="flex flex-col">
+<span class="text-primary-light font-bold text-base">MA</span>
+<span class="text-slate-500 text-[10px] truncate max-w-[80px]">Mastercard</span>
+</div>
+</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-white">$398.45</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-[#ef5350] bg-[#ef5350]/5">-0.38%</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300">32.1</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300">375B</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300 pr-5">0.6%</td>
+</tr>
+<!-- Row 5: WFC -->
+<tr class="group hover:bg-white/[0.02] transition-colors">
+<td class="sticky left-0 z-10 bg-background-dark pl-5 pr-4 py-4 border-b border-white/5 sticky-col-shadow group-hover:bg-surface-highlight transition-colors">
+<div class="flex flex-col">
+<span class="text-primary-light font-bold text-base">WFC</span>
+<span class="text-slate-500 text-[10px] truncate max-w-[80px]">Wells Fargo</span>
+</div>
+</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-white">$42.30</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-[#0bda57] bg-[#0bda57]/5">+1.14%</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300">11.2</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300">158B</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300 pr-5">3.4%</td>
+</tr>
+<!-- Row 6: GS -->
+<tr class="group hover:bg-white/[0.02] transition-colors">
+<td class="sticky left-0 z-10 bg-background-dark pl-5 pr-4 py-4 border-b border-white/5 sticky-col-shadow group-hover:bg-surface-highlight transition-colors">
+<div class="flex flex-col">
+<span class="text-primary-light font-bold text-base">GS</span>
+<span class="text-slate-500 text-[10px] truncate max-w-[80px]">Goldman Sachs</span>
+</div>
+</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-white">$340.55</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-[#0bda57] bg-[#0bda57]/5">+0.22%</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300">14.3</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300">112B</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300 pr-5">2.8%</td>
+</tr>
+<!-- Row 7: MS -->
+<tr class="group hover:bg-white/[0.02] transition-colors">
+<td class="sticky left-0 z-10 bg-background-dark pl-5 pr-4 py-4 border-b border-white/5 sticky-col-shadow group-hover:bg-surface-highlight transition-colors">
+<div class="flex flex-col">
+<span class="text-primary-light font-bold text-base">MS</span>
+<span class="text-slate-500 text-[10px] truncate max-w-[80px]">Morgan Stanley</span>
+</div>
+</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-white">$85.12</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-[#ef5350] bg-[#ef5350]/5">-0.76%</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300">13.8</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300">142B</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300 pr-5">3.8%</td>
+</tr>
+<!-- Row 8: C -->
+<tr class="group hover:bg-white/[0.02] transition-colors">
+<td class="sticky left-0 z-10 bg-background-dark pl-5 pr-4 py-4 border-b border-white/5 sticky-col-shadow group-hover:bg-surface-highlight transition-colors">
+<div class="flex flex-col">
+<span class="text-primary-light font-bold text-base">C</span>
+<span class="text-slate-500 text-[10px] truncate max-w-[80px]">Citigroup</span>
+</div>
+</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-white">$45.67</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-[#0bda57] bg-[#0bda57]/5">+1.50%</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300">7.1</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300">88B</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300 pr-5">4.2%</td>
+</tr>
+<!-- Row 9: AXP -->
+<tr class="group hover:bg-white/[0.02] transition-colors">
+<td class="sticky left-0 z-10 bg-background-dark pl-5 pr-4 py-4 border-b border-white/5 sticky-col-shadow group-hover:bg-surface-highlight transition-colors">
+<div class="flex flex-col">
+<span class="text-primary-light font-bold text-base">AXP</span>
+<span class="text-slate-500 text-[10px] truncate max-w-[80px]">American Exp</span>
+</div>
+</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-white">$165.20</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-[#0bda57] bg-[#0bda57]/5">+0.31%</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300">17.2</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300">122B</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300 pr-5">1.5%</td>
+</tr>
+<!-- Row 10: BLK -->
+<tr class="group hover:bg-white/[0.02] transition-colors">
+<td class="sticky left-0 z-10 bg-background-dark pl-5 pr-4 py-4 border-b border-white/5 sticky-col-shadow group-hover:bg-surface-highlight transition-colors">
+<div class="flex flex-col">
+<span class="text-primary-light font-bold text-base">BLK</span>
+<span class="text-slate-500 text-[10px] truncate max-w-[80px]">BlackRock</span>
+</div>
+</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-white">$710.45</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-[#0bda57] bg-[#0bda57]/5">+0.92%</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300">19.8</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300">106B</td>
+<td class="px-4 py-4 border-b border-white/5 text-right font-mono text-slate-300 pr-5">2.8%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Floating Action Button (Optional Context) -->
+<div class="absolute bottom-6 right-6 z-50">
+<button class="flex size-14 items-center justify-center rounded-full bg-primary text-white shadow-2xl hover:bg-primary-light transition-colors hover:scale-105 active:scale-95">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+</div>
+</div>
+</body></html>

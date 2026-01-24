@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Long-Term Trends</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#195f76",
+                        "primary-dark": "#124658",
+                        "background-light": "#fafafa",
+                        "background-dark": "#121416",
+                        "surface-dark": "#212529",
+                        "success": "#4CAF50",
+                        "danger": "#EF5350",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "mono": ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "monospace"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for cleaner mobile look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark font-display text-white overflow-hidden h-screen flex flex-col">
+<!-- Top App Bar -->
+<header class="shrink-0 pt-safe-top">
+<div class="flex items-center justify-between p-4 pb-2 bg-background-dark">
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-white/5 active:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-white" style="font-size: 24px;">arrow_back</span>
+</button>
+<div class="flex gap-4">
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-white/5 active:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-white" style="font-size: 24px;">search</span>
+</button>
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-white/5 active:bg-white/10 transition-colors bg-primary/20 text-primary">
+<span class="material-symbols-outlined" style="font-size: 24px;">tune</span>
+</button>
+</div>
+</div>
+<!-- Header Text -->
+<div class="px-5 pb-4">
+<h1 class="text-2xl font-bold leading-tight tracking-tight">Long-Term Trends</h1>
+<p class="text-[#9ca3af] text-sm font-medium mt-1">High-potential movers &amp; deep retracements</p>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col min-h-0 overflow-hidden relative">
+<!-- Segmented Control (Sticky-ish) -->
+<div class="px-5 pb-4 shrink-0 bg-background-dark z-20">
+<div class="flex p-1 bg-[#212529] rounded-xl relative">
+<!-- Sliding pill background could be added here with absolute positioning for animation, simplified for CSS-only approach -->
+<label class="flex-1 relative z-10 cursor-pointer">
+<input class="peer sr-only" name="trend_view" type="radio"/>
+<div class="py-2.5 text-center text-sm font-bold text-[#9ca3af] peer-checked:text-white rounded-lg transition-all hover:bg-white/5">
+                        52W Momentum
+                    </div>
+</label>
+<label class="flex-1 relative z-10 cursor-pointer">
+<input checked="" class="peer sr-only" name="trend_view" type="radio"/>
+<div class="py-2.5 text-center text-sm font-bold text-[#9ca3af] peer-checked:bg-primary peer-checked:text-white peer-checked:shadow-lg rounded-lg transition-all shadow-black/20">
+                        Peak Retracement
+                    </div>
+</label>
+</div>
+</div>
+<!-- Column Headers (Sticky) -->
+<div class="px-5 py-2 grid grid-cols-12 gap-2 text-xs font-semibold text-[#6c757d] uppercase tracking-wider border-b border-white/5 bg-background-dark/95 backdrop-blur-sm sticky top-0 z-10">
+<div class="col-span-5">Asset</div>
+<div class="col-span-3 text-right">Price</div>
+<div class="col-span-4 text-right">Drawdown Trend</div>
+</div>
+<!-- Scrollable List -->
+<div class="flex-1 overflow-y-auto no-scrollbar px-5 pb-24 space-y-3 pt-2">
+<!-- Card 1 -->
+<div class="group bg-surface-dark active:bg-surface-dark/80 transition-colors rounded-xl p-4 border border-white/5 shadow-sm">
+<div class="grid grid-cols-12 gap-2 items-center">
+<!-- Left: Symbol info -->
+<div class="col-span-5 flex items-center gap-3">
+<div class="size-10 rounded-lg bg-white/10 flex items-center justify-center shrink-0 overflow-hidden" data-alt="PayPal Logo Placeholder">
+<span class="text-lg font-bold text-white">P</span>
+</div>
+<div class="min-w-0">
+<div class="font-bold text-white text-base leading-none mb-1">PYPL</div>
+<div class="text-xs text-[#9ca3af] truncate">PayPal Holdings</div>
+</div>
+</div>
+<!-- Middle: Price info -->
+<div class="col-span-3 text-right flex flex-col justify-center">
+<div class="font-mono font-medium text-white">$62.40</div>
+<div class="inline-flex justify-end">
+<span class="text-[10px] font-bold text-danger bg-danger/10 px-1.5 py-0.5 rounded">-1.24%</span>
+</div>
+</div>
+<!-- Right: Trend Visual -->
+<div class="col-span-4 flex flex-col items-end justify-center pl-2">
+<!-- Mini Sparkline -->
+<div class="h-8 w-full max-w-[80px]">
+<svg class="w-full h-full overflow-visible" viewbox="0 0 80 30">
+<path d="M0,5 Q10,25 20,20 T40,25 T60,28 T80,30" fill="none" stroke="#EF5350" stroke-linecap="round" stroke-width="2"></path>
+<circle cx="80" cy="30" fill="#EF5350" r="2"></circle>
+</svg>
+</div>
+</div>
+</div>
+<!-- Bottom Metric Row -->
+<div class="mt-3 pt-3 border-t border-white/5 flex justify-between items-center">
+<span class="text-xs text-[#9ca3af]">Since Aug 2021</span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-danger text-sm">trending_down</span>
+<span class="text-sm font-medium text-white">-78% <span class="text-[#9ca3af] font-normal text-xs">from Peak ($308)</span></span>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="group bg-surface-dark active:bg-surface-dark/80 transition-colors rounded-xl p-4 border border-white/5 shadow-sm">
+<div class="grid grid-cols-12 gap-2 items-center">
+<div class="col-span-5 flex items-center gap-3">
+<div class="size-10 rounded-lg bg-white/10 flex items-center justify-center shrink-0 overflow-hidden" data-alt="Block Logo Placeholder">
+<span class="text-lg font-bold text-white">S</span>
+</div>
+<div class="min-w-0">
+<div class="font-bold text-white text-base leading-none mb-1">SQ</div>
+<div class="text-xs text-[#9ca3af] truncate">Block Inc.</div>
+</div>
+</div>
+<div class="col-span-3 text-right flex flex-col justify-center">
+<div class="font-mono font-medium text-white">$74.12</div>
+<div class="inline-flex justify-end">
+<span class="text-[10px] font-bold text-success bg-success/10 px-1.5 py-0.5 rounded">+2.15%</span>
+</div>
+</div>
+<div class="col-span-4 flex flex-col items-end justify-center pl-2">
+<div class="h-8 w-full max-w-[80px]">
+<svg class="w-full h-full overflow-visible" viewbox="0 0 80 30">
+<defs>
+<lineargradient id="gradSQ" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:#EF5350;stop-opacity:0.2"></stop>
+<stop offset="100%" style="stop-color:#EF5350;stop-opacity:0"></stop>
+</lineargradient>
+</defs>
+<path d="M0,2 Q10,15 20,12 T40,20 T60,25 T80,22" fill="none" stroke="#EF5350" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+</div>
+<div class="mt-3 pt-3 border-t border-white/5 flex justify-between items-center">
+<span class="text-xs text-[#9ca3af]">Since Oct 2021</span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-danger text-sm">trending_down</span>
+<span class="text-sm font-medium text-white">-73% <span class="text-[#9ca3af] font-normal text-xs">from Peak ($289)</span></span>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group bg-surface-dark active:bg-surface-dark/80 transition-colors rounded-xl p-4 border border-white/5 shadow-sm">
+<div class="grid grid-cols-12 gap-2 items-center">
+<div class="col-span-5 flex items-center gap-3">
+<div class="size-10 rounded-lg bg-white/10 flex items-center justify-center shrink-0 overflow-hidden" data-alt="Zoom Logo Placeholder">
+<span class="text-lg font-bold text-white">Z</span>
+</div>
+<div class="min-w-0">
+<div class="font-bold text-white text-base leading-none mb-1">ZM</div>
+<div class="text-xs text-[#9ca3af] truncate">Zoom Video</div>
+</div>
+</div>
+<div class="col-span-3 text-right flex flex-col justify-center">
+<div class="font-mono font-medium text-white">$68.50</div>
+<div class="inline-flex justify-end">
+<span class="text-[10px] font-bold text-white/40 bg-white/5 px-1.5 py-0.5 rounded">0.00%</span>
+</div>
+</div>
+<div class="col-span-4 flex flex-col items-end justify-center pl-2">
+<div class="h-8 w-full max-w-[80px]">
+<svg class="w-full h-full overflow-visible" viewbox="0 0 80 30">
+<path d="M0,0 Q20,25 40,28 T80,28" fill="none" stroke="#EF5350" stroke-dasharray="4 2" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+</div>
+<div class="mt-3 pt-3 border-t border-white/5 flex justify-between items-center">
+<span class="text-xs text-[#9ca3af]">Since Oct 2020</span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-danger text-sm">trending_down</span>
+<span class="text-sm font-medium text-white">-88% <span class="text-[#9ca3af] font-normal text-xs">from Peak ($568)</span></span>
+</div>
+</div>
+</div>
+<!-- Card 4 (Slightly different metric styling for visual variety) -->
+<div class="group bg-surface-dark active:bg-surface-dark/80 transition-colors rounded-xl p-4 border border-white/5 shadow-sm">
+<div class="grid grid-cols-12 gap-2 items-center">
+<div class="col-span-5 flex items-center gap-3">
+<div class="size-10 rounded-lg bg-white/10 flex items-center justify-center shrink-0 overflow-hidden" data-alt="Teladoc Logo Placeholder">
+<span class="text-lg font-bold text-white">T</span>
+</div>
+<div class="min-w-0">
+<div class="font-bold text-white text-base leading-none mb-1">TDOC</div>
+<div class="text-xs text-[#9ca3af] truncate">Teladoc Health</div>
+</div>
+</div>
+<div class="col-span-3 text-right flex flex-col justify-center">
+<div class="font-mono font-medium text-white">$14.22</div>
+<div class="inline-flex justify-end">
+<span class="text-[10px] font-bold text-danger bg-danger/10 px-1.5 py-0.5 rounded">-4.3%</span>
+</div>
+</div>
+<div class="col-span-4 flex flex-col items-end justify-center pl-2">
+<div class="h-8 w-full max-w-[80px]">
+<svg class="w-full h-full overflow-visible" viewbox="0 0 80 30">
+<path d="M0,5 L20,15 L40,20 L60,25 L80,29" fill="none" stroke="#EF5350" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+</div>
+<div class="mt-3 pt-3 border-t border-white/5 flex justify-between items-center">
+<span class="text-xs text-[#9ca3af]">Since Feb 2021</span>
+<div class="flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded bg-danger/20 text-danger text-xs font-bold border border-danger/20">CRITICAL</span>
+<span class="text-sm font-medium text-white">-95%</span>
+</div>
+</div>
+</div>
+<!-- Contextual Banner -->
+<div class="mt-4 p-4 rounded-xl bg-gradient-to-r from-primary/20 to-transparent border border-primary/20 flex gap-3 items-start">
+<span class="material-symbols-outlined text-primary mt-0.5">info</span>
+<div>
+<h4 class="text-sm font-bold text-white">Why track retracements?</h4>
+<p class="text-xs text-[#9ca3af] mt-1 leading-relaxed">Stocks down 70%+ from ATH often present asymmetric risk/reward if fundamentals remain intact. Watch for stabilization bases.</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation -->
+<nav class="shrink-0 bg-background-dark/90 backdrop-blur-xl border-t border-white/5 pb-safe-bottom pt-2 px-6">
+<ul class="flex justify-between items-center h-14">
+<li>
+<button class="flex flex-col items-center gap-1 text-[#9ca3af] hover:text-white group">
+<span class="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">dashboard</span>
+<span class="text-[10px] font-medium">Home</span>
+</button>
+</li>
+<li>
+<button class="flex flex-col items-center gap-1 text-primary group">
+<span class="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform filled">ssid_chart</span>
+<span class="text-[10px] font-medium">Trends</span>
+</button>
+</li>
+<li>
+<div class="relative -top-5">
+<button class="flex items-center justify-center size-14 rounded-full bg-primary text-white shadow-[0_0_15px_rgba(25,95,118,0.5)] active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+</div>
+</li>
+<li>
+<button class="flex flex-col items-center gap-1 text-[#9ca3af] hover:text-white group">
+<span class="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">notifications</span>
+<span class="text-[10px] font-medium">Alerts</span>
+</button>
+</li>
+<li>
+<button class="flex flex-col items-center gap-1 text-[#9ca3af] hover:text-white group">
+<span class="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">person</span>
+<span class="text-[10px] font-medium">Profile</span>
+</button>
+</li>
+</ul>
+</nav>
+<!-- Safe Area Padding for iOS Home Indicator -->
+<div class="h-6 bg-background-dark/90 backdrop-blur-xl shrink-0"></div>
+</body></html>

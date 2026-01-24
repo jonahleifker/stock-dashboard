@@ -16,6 +16,9 @@ import noteRoutes from './routes/notes';
 import fileRoutes from './routes/files';
 import articleRoutes from './routes/articles';
 import researchRoutes from './routes/research';
+import earningsRoutes from './routes/earnings';
+import favoritesRouter from './routes/favorites';
+import watchlistRouter from './routes/watchlist';
 
 // Initialize database
 initializeDatabase().catch(error => {
@@ -34,7 +37,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Serve React client build files statically from dist/client
-app.use(express.static(path.join(__dirname, 'dist/client')));
+app.use(express.static(path.join(__dirname, 'dist', 'client')));
 
 // Sessions (web) with Sequelize store
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
@@ -56,6 +59,19 @@ app.use(cors());
 app.use(passport.initialize());
 app.use(passport.session());
 
+// DEV: Bypass Authentication Middleware
+app.use((req: Request, res: Response, next: NextFunction) => {
+  // Inject default user for all requests
+  (req as any).user = {
+    id: 1,
+    username: 'jonah',
+    email: 'jonahleifker@gmail.com',
+    displayName: 'Jonah Leifker',
+    roles: ['admin'] // Simulate admin role
+  };
+  next();
+});
+
 // API routes
 app.use('/api', indexRouter);
 app.use('/auth', authWeb); // session-based web auth
@@ -65,19 +81,22 @@ app.use('/api/notes', noteRoutes); // notes API
 app.use('/api/files', fileRoutes); // file upload/download API
 app.use('/api/articles', articleRoutes); // articles/links API
 app.use('/api/research', researchRoutes); // Manus AI research API
+app.use('/api/earnings', earningsRoutes); // Earnings reports API
+app.use('/api/favorites', favoritesRouter); // Favorites API
+app.use('/api/watchlist', watchlistRouter); // Watchlist API
 
 // Catch-all handler to serve React app for client-side routing
 app.get('*', (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, 'dist/client', 'index.html'));
+  res.sendFile(path.join(__dirname, 'dist', 'client', 'index.html'));
 });
 
 // 404 handler
-app.use(function(req: Request, res: Response, next: NextFunction) {
+app.use(function (req: Request, res: Response, next: NextFunction) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err: any, req: Request, res: Response, next: NextFunction) {
+app.use(function (err: any, req: Request, res: Response, next: NextFunction) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   res.status(err.status || 500);

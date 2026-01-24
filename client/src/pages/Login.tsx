@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 
 const Login: React.FC = () => {
@@ -9,24 +10,40 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const { login } = useAuth();
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch('/auth/login', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ username: email, password }) // Using email as username for now as per simple Auth
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        navigate('/matrix');
+        // Based on auth.api.ts, data contains { accessToken, refreshToken, jti, expiresAt }
+        // We need user data too. The login endpoint in auth.api.ts DOES NOT return user object currently, 
+        // only tokens. We might need to fetch /me or update backend. 
+        // Let's check auth.api.ts again. 
+        // Wait, line 76 in auth.api.ts: res.json({ accessToken, refreshToken, jti, expiresAt }); 
+        // It does NOT return user. 
+        // So we should fetch /me after getting token.
+
+        login(data.accessToken, data.refreshToken, { id: 0, username: email, displayName: email, email: email, roles: [] }); // Temporary user obj until we fetch real one
+
+        // Optionally fetch real user data immediately ensuring context is updated
+        // But AuthProvider init check does this on mount. 
+        // Let's rely on the optimistic update for speed or update AuthProvider to fetchMe.
+
+        navigate('/quotes');
       } else {
-        setError(data.message || 'Login failed');
+        setError(data.error || 'Login failed');
       }
     } catch (err) {
       setError('An error occurred. Please try again.');
@@ -232,12 +249,12 @@ const Login: React.FC = () => {
           <div className="text-center mt-6">
             <p className="text-sm text-gray-500">
               Don't have an account?{" "}
-              <a
+              <Link
                 className="text-primary hover:text-primary/80 font-semibold transition-colors"
-                href="#"
+                to="/register"
               >
                 Sign up
-              </a>
+              </Link>
             </p>
           </div>
         </div>

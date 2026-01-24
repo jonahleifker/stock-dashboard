@@ -14,6 +14,24 @@ export interface StockData {
   change90d?: number;
   marketCap?: number;
   lastUpdated?: Date;
+  // Fundamentals
+  pe?: number;
+  peg?: number;
+  eps?: number;
+  dividendYield?: number;
+  roe?: number;
+  netMargin?: number;
+  operatingMargin?: number;
+  cash?: number;
+  totalDebt?: number;
+  earningsDate?: Date;
+  exDividendDate?: Date;
+  targetPrice?: number;
+  recommendation?: string;
+  description?: string;
+  website?: string;
+  employees?: number;
+  news?: any[]; // Stored as JSON
 }
 
 /**
@@ -107,7 +125,25 @@ export class StockRepository {
     const now = new Date();
     const lastUpdate = new Date(stock.lastUpdated);
     const hoursDiff = (now.getTime() - lastUpdate.getTime()) / (1000 * 60 * 60);
-    
+
+    // If fundamentals are missing (e.g. after migration), consider it stale
+    if (
+      stock.pe === null || stock.pe === undefined ||
+      stock.peg === null || stock.peg === undefined ||
+      stock.eps === null || stock.eps === undefined ||
+      stock.dividendYield === null || stock.dividendYield === undefined ||
+      stock.roe === null || stock.roe === undefined ||
+      stock.netMargin === null || stock.netMargin === undefined ||
+      stock.operatingMargin === null || stock.operatingMargin === undefined ||
+      stock.cash === null || stock.cash === undefined ||
+      stock.totalDebt === null || stock.totalDebt === undefined ||
+      stock.earningsDate === null || stock.earningsDate === undefined ||
+      stock.exDividendDate === null || stock.exDividendDate === undefined ||
+      stock.targetPrice === null || stock.targetPrice === undefined
+    ) {
+      return true;
+    }
+
     return hoursDiff > hoursOld;
   }
 
@@ -116,7 +152,7 @@ export class StockRepository {
    */
   async getStaleStocks(hoursOld: number = 1): Promise<Stock[]> {
     const cutoffTime = new Date(Date.now() - hoursOld * 60 * 60 * 1000);
-    
+
     return await Stock.findAll({
       where: {
         lastUpdated: {

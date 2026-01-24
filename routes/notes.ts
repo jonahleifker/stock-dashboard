@@ -1,6 +1,7 @@
 import express from 'express';
 import passport from '../auth/passport';
 import noteController from '../controllers/noteController';
+import { authenticate } from '../middleware/auth';
 
 const router = express.Router();
 
@@ -15,14 +16,14 @@ const router = express.Router();
 router.get('/user/:userId', noteController.getNotesByUser);
 
 // PUT /api/notes/:id - Update note (requires auth + ownership)
-router.put('/:id', 
-  passport.authenticate('jwt', { session: false }), 
+router.put('/:id',
+  authenticate,
   noteController.updateNote
 );
 
 // DELETE /api/notes/:id - Delete note (requires auth + ownership)
-router.delete('/:id', 
-  passport.authenticate('jwt', { session: false }), 
+router.delete('/:id',
+  authenticate,
   noteController.deleteNote
 );
 
@@ -30,8 +31,8 @@ router.delete('/:id',
 router.get('/:ticker', noteController.getNotesByTicker);
 
 // POST /api/notes/:ticker - Create new note (requires auth)
-router.post('/:ticker', 
-  passport.authenticate('jwt', { session: false }), 
+router.post('/:ticker',
+  authenticate,
   noteController.createNote
 );
 

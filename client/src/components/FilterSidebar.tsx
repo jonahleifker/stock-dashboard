@@ -1,40 +1,63 @@
 import React from "react";
 
+export interface FilterState {
+    sectors: string[];
+    marketCap: 'small' | 'mid' | 'large' | null;
+    valuation: 'undervalued' | 'fair' | 'overvalued' | null;
+    showFundamentals: boolean;
+    includeOTC: boolean;
+}
+
 interface FilterSidebarProps {
     isOpen: boolean;
     onClose: () => void;
+    filters: FilterState;
+    onFilterChange: (updates: Partial<FilterState>) => void;
+    onReset: () => void;
 }
 
-const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose }) => {
+const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose, filters, onFilterChange, onReset }) => {
+
+    const handleSectorToggle = (sector: string) => {
+        const newSectors = filters.sectors.includes(sector)
+            ? filters.sectors.filter(s => s !== sector)
+            : [...filters.sectors, sector];
+        onFilterChange({ sectors: newSectors });
+    };
+
+    const isSelected = (sector: string) => filters.sectors.includes(sector);
     return (
         <>
             {/* Overlay */}
             <div
-                className={`fixed inset-0 bg-[#0a0f09]/70 backdrop-blur-[3px] z-40 transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+                className={`fixed inset-0 bg-black/70 backdrop-blur-[3px] z-40 transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
                     }`}
                 onClick={onClose}
             ></div>
 
             {/* Sidebar */}
             <aside
-                className={`fixed right-0 top-0 h-full w-full max-w-[420px] bg-[#152012] border-l border-[#2d372a] shadow-2xl z-50 flex flex-col transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"
+                className={`fixed right-0 top-0 h-full w-full max-w-[420px] bg-surface-dark border-l border-border shadow-2xl z-50 flex flex-col transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"
                     }`}
             >
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-5 border-b border-[#2d372a] bg-[#152012]">
+                <div className="flex items-center justify-between px-6 py-5 border-b border-border bg-surface-dark">
                     <div>
                         <h3 className="text-white text-xl font-bold">Filter Quotes</h3>
-                        <p className="text-xs text-[#a5b6a0] mt-0.5">
+                        <p className="text-xs text-text-secondary mt-0.5">
                             Refine your market view
                         </p>
                     </div>
                     <div className="flex items-center gap-4">
-                        <button className="text-xs font-medium text-[#a5b6a0] hover:text-primary transition-colors underline decoration-dotted underline-offset-4">
+                        <button
+                            onClick={onReset}
+                            className="text-xs font-medium text-text-secondary hover:text-primary transition-colors underline decoration-dotted underline-offset-4"
+                        >
                             Reset All
                         </button>
                         <button
                             onClick={onClose}
-                            className="size-8 rounded-full bg-[#2d372a] hover:bg-[#384435] text-white flex items-center justify-center transition-colors"
+                            className="size-8 rounded-full bg-secondary hover:bg-[#384435] text-white flex items-center justify-center transition-colors"
                         >
                             <span className="material-symbols-outlined text-[20px]">
                                 close
@@ -54,25 +77,20 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose }) => {
                             Sector
                         </label>
                         <div className="flex flex-wrap gap-2">
-                            <button className="px-3 py-1.5 rounded-full bg-primary text-black text-sm font-bold flex items-center gap-1.5">
-                                Technology{" "}
-                                <span className="material-symbols-outlined text-[14px]">
-                                    close
-                                </span>
-                            </button>
-                            <button className="px-3 py-1.5 rounded-full bg-primary text-black text-sm font-bold flex items-center gap-1.5">
-                                Finance{" "}
-                                <span className="material-symbols-outlined text-[14px]">
-                                    close
-                                </span>
-                            </button>
-                            {["Healthcare", "Energy", "Consumer", "Industrial"].map(
+                            {["Technology", "Finance", "Healthcare", "Energy", "Consumer", "Industrial", "Utilities", "Real Estate"].map(
                                 (sector) => (
                                     <button
                                         key={sector}
-                                        className="px-3 py-1.5 rounded-full bg-[#2d372a] hover:bg-[#384435] text-[#a5b6a0] hover:text-white text-sm font-medium transition-colors border border-transparent hover:border-[#42513e]"
+                                        onClick={() => handleSectorToggle(sector)}
+                                        className={`px-3 py-1.5 rounded-full text-sm font-bold flex items-center gap-1.5 transition-colors ${isSelected(sector)
+                                            ? "bg-primary text-black"
+                                            : "bg-secondary hover:bg-[#384435] text-text-secondary hover:text-white"
+                                            }`}
                                     >
                                         {sector}
+                                        {isSelected(sector) && (
+                                            <span className="material-symbols-outlined text-[14px]">close</span>
+                                        )}
                                     </button>
                                 )
                             )}
@@ -87,18 +105,21 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose }) => {
                             </span>{" "}
                             Market Cap
                         </label>
-                        <div className="flex bg-[#2d372a] p-1 rounded-xl">
-                            <button className="flex-1 py-2 rounded-lg text-sm font-medium text-[#a5b6a0] hover:text-white transition-colors">
-                                Small
-                            </button>
-                            <button className="flex-1 py-2 rounded-lg text-sm font-medium text-[#a5b6a0] hover:text-white transition-colors">
-                                Mid
-                            </button>
-                            <button className="flex-1 py-2 rounded-lg bg-primary text-black text-sm font-bold shadow-sm">
-                                Large
-                            </button>
+                        <div className="flex bg-secondary p-1 rounded-xl">
+                            {(['small', 'mid', 'large'] as const).map((cap) => (
+                                <button
+                                    key={cap}
+                                    onClick={() => onFilterChange({ marketCap: filters.marketCap === cap ? null : cap })}
+                                    className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors capitalize ${filters.marketCap === cap
+                                        ? "bg-primary text-black font-bold shadow-sm"
+                                        : "text-text-secondary hover:text-white"
+                                        }`}
+                                >
+                                    {cap}
+                                </button>
+                            ))}
                         </div>
-                        <p className="text-xs text-[#a5b6a0] pl-1">
+                        <p className="text-xs text-text-secondary pl-1">
                             Showing companies &gt; $100B
                         </p>
                     </div>
@@ -112,21 +133,39 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose }) => {
                             Valuation
                         </label>
                         <div className="grid grid-cols-3 gap-2">
-                            <button className="group flex flex-col items-center justify-center gap-1 p-3 rounded-2xl bg-[#232b22] border-2 border-primary/50 hover:bg-[#2d372a] transition-all">
+                            <button
+                                onClick={() => onFilterChange({ valuation: filters.valuation === 'undervalued' ? null : 'undervalued' })}
+                                className={`group flex flex-col items-center justify-center gap-1 p-3 rounded-2xl border transition-all ${filters.valuation === 'undervalued'
+                                    ? "bg-[#232b22] border-primary/50"
+                                    : "bg-[#1e251d] border-border hover:border-[#42513e]"
+                                    }`}
+                            >
                                 <span className="size-2 rounded-full bg-primary"></span>
-                                <span className="text-xs font-bold text-white">
+                                <span className={`text-xs font-bold ${filters.valuation === 'undervalued' ? "text-white" : "text-text-secondary"}`}>
                                     Undervalued
                                 </span>
                             </button>
-                            <button className="group flex flex-col items-center justify-center gap-1 p-3 rounded-2xl bg-[#1e251d] border border-[#2d372a] hover:border-[#42513e] transition-all">
+                            <button
+                                onClick={() => onFilterChange({ valuation: filters.valuation === 'fair' ? null : 'fair' })}
+                                className={`group flex flex-col items-center justify-center gap-1 p-3 rounded-2xl border transition-all ${filters.valuation === 'fair'
+                                    ? "bg-[#232b22] border-gray-400"
+                                    : "bg-[#1e251d] border-border hover:border-[#42513e]"
+                                    }`}
+                            >
                                 <span className="size-2 rounded-full bg-gray-500"></span>
-                                <span className="text-xs font-medium text-[#a5b6a0]">
+                                <span className={`text-xs font-medium ${filters.valuation === 'fair' ? "text-white" : "text-text-secondary"}`}>
                                     Fair Value
                                 </span>
                             </button>
-                            <button className="group flex flex-col items-center justify-center gap-1 p-3 rounded-2xl bg-[#1e251d] border border-[#2d372a] hover:border-[#42513e] transition-all">
+                            <button
+                                onClick={() => onFilterChange({ valuation: filters.valuation === 'overvalued' ? null : 'overvalued' })}
+                                className={`group flex flex-col items-center justify-center gap-1 p-3 rounded-2xl border transition-all ${filters.valuation === 'overvalued'
+                                    ? "bg-[#232b22] border-accent-red"
+                                    : "bg-[#1e251d] border-border hover:border-[#42513e]"
+                                    }`}
+                            >
                                 <span className="size-2 rounded-full bg-accent-red"></span>
-                                <span className="text-xs font-medium text-[#a5b6a0]">
+                                <span className={`text-xs font-medium ${filters.valuation === 'overvalued' ? "text-white" : "text-text-secondary"}`}>
                                     Overvalued
                                 </span>
                             </button>
@@ -148,7 +187,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose }) => {
                         </div>
                         <div className="relative h-10 flex items-center">
                             {/* Visual Track Background */}
-                            <div className="absolute w-full h-1 bg-[#2d372a] rounded-full"></div>
+                            <div className="absolute w-full h-1 bg-secondary rounded-full"></div>
                             {/* Active Track Section (Simulated) */}
                             <div className="absolute left-[20%] right-[20%] h-1 bg-primary rounded-full"></div>
                             {/* Left Thumb (Simulated) */}
@@ -160,41 +199,51 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ isOpen, onClose }) => {
                                 <div className="size-1.5 bg-primary rounded-full"></div>
                             </div>
                         </div>
-                        <div className="flex justify-between text-xs text-[#a5b6a0] font-mono">
+                        <div className="flex justify-between text-xs text-text-secondary font-mono">
                             <span>-50%</span>
                             <span>0%</span>
                             <span>+50%</span>
                         </div>
                     </div>
 
+
                     {/* Additional Quick Toggles */}
-                    <div className="space-y-3 pt-2 border-t border-[#2d372a]">
-                        {[
-                            { label: "Show Fundamentals", checked: true },
-                            { label: "Include OTC Markets", checked: false },
-                        ].map((toggle, idx) => (
-                            <div key={idx} className="flex items-center justify-between py-2">
-                                <span className="text-sm text-white font-medium">
-                                    {toggle.label}
-                                </span>
-                                <label className="relative inline-flex items-center cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        value=""
-                                        className="sr-only peer"
-                                        defaultChecked={toggle.checked}
-                                    />
-                                    <div className="w-11 h-6 bg-[#2d372a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                                </label>
-                            </div>
-                        ))}
+                    <div className="space-y-3 pt-2 border-t border-border">
+                        <div className="flex items-center justify-between py-2">
+                            <span className="text-sm text-white font-medium">Show Fundamentals</span>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    className="sr-only peer"
+                                    checked={filters.showFundamentals}
+                                    onChange={(e) => onFilterChange({ showFundamentals: e.target.checked })}
+                                />
+                                <div className="w-11 h-6 bg-secondary peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                            </label>
+                        </div>
+                        <div className="flex items-center justify-between py-2">
+                            <span className="text-sm text-white font-medium">Include OTC Markets</span>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    className="sr-only peer"
+                                    checked={filters.includeOTC}
+                                    onChange={(e) => onFilterChange({ includeOTC: e.target.checked })}
+                                />
+                                <div className="w-11 h-6 bg-secondary peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                            </label>
+                        </div>
                     </div>
+
                 </div>
 
                 {/* Footer */}
-                <div className="p-6 border-t border-[#2d372a] bg-[#1a2119]">
-                    <button className="w-full flex items-center justify-center gap-2 h-12 bg-primary hover:bg-[#46b325] text-black text-base font-bold rounded-full transition-all shadow-[0_0_20px_rgba(83,210,45,0.2)] hover:shadow-[0_0_25px_rgba(83,210,45,0.4)]">
-                        Show 24 Results
+                <div className="p-6 border-t border-border bg-surface-dark">
+                    <button
+                        onClick={onClose}
+                        className="w-full flex items-center justify-center gap-2 h-12 bg-primary hover:bg-[#46b325] text-black text-base font-bold rounded-full transition-all shadow-[0_0_20px_rgba(83,210,45,0.2)] hover:shadow-[0_0_25px_rgba(83,210,45,0.4)]"
+                    >
+                        Show Results
                         <span className="material-symbols-outlined text-[20px]">
                             arrow_forward
                         </span>

@@ -1,12 +1,11 @@
 /**
- * Manus AI Service - Placeholder for research integration
+ * Manus AI Service - Powered by OpenAI
  * 
- * This service provides a framework for Manus AI research integration.
- * Currently returns mock data. To enable real Manus integration:
- * 1. Add MANUS_API_KEY to .env
- * 2. Add MANUS_API_URL to .env (default: https://api.manus.ai)
- * 3. Implement actual API calls in the methods below
+ * This service uses OpenAI (GPT-4o) to generate investment research analysis
+ * matching the dashboard's expected format.
  */
+
+import OpenAI from 'openai';
 
 export interface ResearchRequest {
   id: string;
@@ -26,6 +25,13 @@ export interface ResearchResult {
   ticker: string;
   summary: string;
   keyFindings: string[];
+  priceScenarios?: {
+    bull: { price: number; description: string; upsidePercent: number };
+    bear: { price: number; description: string; downsidePercent: number };
+    base: { price: number; description: string };
+  };
+  catalysts?: Array<{ name: string; impact: 'high' | 'medium' | 'low'; type: 'positive' | 'negative' | 'neutral' }>;
+  risks?: Array<{ name: string; impact: 'high' | 'medium' | 'low'; type: 'negative' }>;
   financialData?: Record<string, any>;
   sentiment?: {
     overall: 'positive' | 'negative' | 'neutral';
@@ -42,50 +48,68 @@ export interface ResearchResult {
     url: string;
   }>;
   completedAt: Date;
+  userNotes?: string;
 }
 
-/**
- * Manus AI Service - Handles research requests
- */
+export interface PortfolioAnalysisResult {
+  summary: string;
+  diversificationScore: number; // 0-10
+  diversificationAnalysis: string;
+  strengths: string[];
+  weaknesses: string[];
+  recommendations: Array<{
+    type: 'buy' | 'sell' | 'hold';
+    ticker?: string; // Ticker to buy/sell if specific
+    sector?: string; // Sector to look into
+    reasoning: string;
+  }>;
+  overallSentiment: 'bullish' | 'bearish' | 'neutral';
+  analyzedAt: Date;
+}
+
+export interface NewsAnalysisResult {
+  summary: string;
+  affectedStocks: Array<{
+    ticker: string;
+    impact: 'positive' | 'negative' | 'neutral';
+    reasoning: string;
+  }>;
+  generalMarketSentiment?: 'bullish' | 'bearish' | 'neutral';
+  confidenceScore: number; // 1-10
+}
+
 export class ManusService {
-  private apiKey: string | undefined;
-  private apiUrl: string;
-  private isEnabled: boolean;
-  
-  // In-memory storage for demo purposes (replace with database in production)
+  private openai: OpenAI | null = null;
+  private isEnabled: boolean = false;
+
+  // In-memory storage (replace with DB in production)
   private requestsCache: Map<string, ResearchRequest> = new Map();
   private resultsCache: Map<string, ResearchResult> = new Map();
 
   constructor() {
-    this.apiKey = process.env.MANUS_API_KEY;
-    this.apiUrl = process.env.MANUS_API_URL || 'https://api.manus.ai';
-    this.isEnabled = !!this.apiKey;
-
-    if (!this.isEnabled) {
-      console.log('⚠️  Manus AI integration disabled. Add MANUS_API_KEY to .env to enable.');
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (apiKey) {
+      this.openai = new OpenAI({ apiKey });
+      this.isEnabled = true;
+      console.log('✅ OpenAI integration enabled for Research Analysis.');
     } else {
-      console.log('✅ Manus AI integration enabled.');
+      console.log('⚠️  OpenAI API key missing. Research service will use mock data.');
     }
   }
 
-  /**
-   * Check if Manus integration is enabled
-   */
   isManusEnabled(): boolean {
     return this.isEnabled;
   }
 
-  /**
-   * Initiate a research request for a stock ticker
-   */
   async requestResearch(
     ticker: string,
     userId: number,
     requestType: string = 'comprehensive',
-    parameters?: Record<string, any>
+    parameters?: Record<string, any>,
+    currentPrice?: number
   ): Promise<ResearchRequest> {
     const requestId = this.generateRequestId();
-    
+
     const request: ResearchRequest = {
       id: requestId,
       ticker: ticker.toUpperCase(),
@@ -93,291 +117,336 @@ export class ManusService {
       status: 'pending',
       requestType,
       parameters,
+      // Store currentPrice in parameters if needed, or just pass it through to processing
+      ...(currentPrice ? { currentPrice } : {}),
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
-    // Store request
     this.requestsCache.set(requestId, request);
 
-    if (this.isEnabled) {
-      // TODO: Make actual API call to Manus
-      // await this.callManusAPI(request);
-      
-      // For now, simulate async processing
-      this.simulateResearchProcessing(requestId);
+    if (this.isEnabled && this.openai) {
+      // Process asynchronously
+      this.processOpenAIRequest(requestId, ticker, currentPrice);
     } else {
-      // Generate mock result immediately
-      this.generateMockResult(requestId);
+      // Mock mode
+      this.simulateResearchProcessing(requestId);
     }
 
     return request;
   }
 
-  /**
-   * Get status of a research request
-   */
   async getRequestStatus(requestId: string): Promise<ResearchRequest | null> {
-    const request = this.requestsCache.get(requestId);
-    
-    if (!request) {
-      return null;
-    }
-
-    // If enabled, check actual status from Manus API
-    if (this.isEnabled) {
-      // TODO: Check status from Manus API
-      // const status = await this.checkManusStatus(requestId);
-      // request.status = status;
-    }
-
-    return request;
+    return this.requestsCache.get(requestId) || null;
   }
 
-  /**
-   * Get research result
-   */
   async getResearchResult(requestId: string): Promise<ResearchResult | null> {
-    const result = this.resultsCache.get(requestId);
-    return result || null;
+    return this.resultsCache.get(requestId) || null;
   }
 
-  /**
-   * Get all completed research for a ticker
-   */
   async getResearchByTicker(ticker: string): Promise<ResearchResult[]> {
     const results: ResearchResult[] = [];
-    
-    for (const [requestId, result] of this.resultsCache.entries()) {
+    for (const result of this.resultsCache.values()) {
       if (result.ticker.toUpperCase() === ticker.toUpperCase()) {
         results.push(result);
       }
     }
-
-    // Sort by completion date (most recent first)
-    results.sort((a, b) => b.completedAt.getTime() - a.completedAt.getTime());
-
-    return results;
+    return results.sort((a, b) => b.completedAt.getTime() - a.completedAt.getTime());
   }
 
-  /**
-   * Get all research requests by a user
-   */
   async getResearchByUser(userId: number): Promise<ResearchRequest[]> {
     const requests: ResearchRequest[] = [];
-    
-    for (const [requestId, request] of this.requestsCache.entries()) {
+    for (const request of this.requestsCache.values()) {
       if (request.userId === userId) {
         requests.push(request);
       }
     }
-
-    // Sort by creation date (most recent first)
-    requests.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-
-    return requests;
+    return requests.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
 
-  /**
-   * Cancel a research request
-   */
   async cancelRequest(requestId: string, userId: number): Promise<boolean> {
     const request = this.requestsCache.get(requestId);
-    
-    if (!request) {
-      throw new Error('Research request not found');
-    }
+    if (!request) throw new Error('Request not found');
+    if (request.userId !== userId) throw new Error('Permission denied');
 
-    if (request.userId !== userId) {
-      throw new Error('You do not have permission to cancel this request');
+    // Simplistic cancellation (just marks failed if not done)
+    if (request.status !== 'completed' && request.status !== 'failed') {
+      request.status = 'failed';
+      request.errorMessage = 'Cancelled by user';
+      request.updatedAt = new Date();
+      this.requestsCache.set(requestId, request);
     }
-
-    if (request.status === 'completed' || request.status === 'failed') {
-      throw new Error('Cannot cancel a completed or failed request');
-    }
-
-    if (this.isEnabled) {
-      // TODO: Cancel request via Manus API
-      // await this.cancelManusRequest(requestId);
-    }
-
-    request.status = 'failed';
-    request.errorMessage = 'Cancelled by user';
-    request.updatedAt = new Date();
-    
-    this.requestsCache.set(requestId, request);
-    
     return true;
   }
 
-  // ========== PRIVATE HELPER METHODS ==========
+  async updateResearchResult(requestId: string, updates: Partial<ResearchResult>): Promise<ResearchResult> {
+    const result = this.resultsCache.get(requestId);
+    if (!result) throw new Error('Result not found');
 
-  /**
-   * Generate unique request ID
-   */
-  private generateRequestId(): string {
-    return `manus_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const updated = { ...result, ...updates };
+    this.resultsCache.set(requestId, updated);
+    return updated;
   }
 
-  /**
-   * Simulate async research processing (for demo)
-   */
-  private simulateResearchProcessing(requestId: string): void {
+  async analyzePortfolio(holdings: Array<{ ticker: string; shares: number; avgPrice: number; currentPrice: number }>): Promise<PortfolioAnalysisResult> {
+    if (!this.isEnabled || !this.openai) {
+      // Mock result
+      return {
+        summary: "Mock Portfolio Analysis: OpenAI key missing. Enable integration for real insights.",
+        diversificationScore: 5,
+        diversificationAnalysis: "This is a mock analysis. Your portfolio concentration cannot be calculated without the AI service.",
+        strengths: ["Mock Strength 1", "Mock Strength 2"],
+        weaknesses: ["Mock Weakness 1", "Mock Weakness 2"],
+        recommendations: [
+          { type: 'buy', sector: 'Technology', reasoning: 'Mock recommendation to buy tech.' },
+          { type: 'sell', ticker: 'MOCK', reasoning: 'Mock recommendation to sell.' }
+        ],
+        overallSentiment: 'neutral',
+        analyzedAt: new Date()
+      };
+    }
+
+    try {
+      const holdingsSummary = holdings.map(h =>
+        `${h.ticker}: ${h.shares} shares @ $${h.avgPrice} (Current: $${h.currentPrice})`
+      ).join('\n');
+
+      const completion = await this.openai.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [
+          {
+            role: 'system',
+            content: `You are an expert portfolio manager. Analyze the following portfolio holdings.
+            Return a valid JSON object matching this schema exactly:
+            {
+              "summary": "Executive summary of the portfolio health and strategy (max 500 chars)",
+              "diversificationScore": number (0-10, 10 being perfectly diversified),
+              "diversificationAnalysis": "Brief analysis of sector/asset exposure",
+              "strengths": ["Strength 1", "Strength 2", ...],
+              "weaknesses": ["Weakness 1", "Weakness 2", ...],
+              "recommendations": [
+                { "type": "buy"|"sell"|"hold", "ticker": "Optional Ticker", "sector": "Optional Sector", "reasoning": "Why?" }
+              ],
+              "overallSentiment": "bullish"|"bearish"|"neutral"
+            }`
+          },
+          {
+            role: 'user',
+            content: `Analyze this portfolio:\n${holdingsSummary}`
+          }
+        ],
+        response_format: { type: 'json_object' }
+      });
+
+      const content = completion.choices[0].message.content;
+      if (!content) throw new Error('No content received from OpenAI');
+
+      const data = JSON.parse(content);
+
+      return {
+        summary: data.summary,
+        diversificationScore: data.diversificationScore,
+        diversificationAnalysis: data.diversificationAnalysis,
+        strengths: data.strengths,
+        weaknesses: data.weaknesses,
+        recommendations: data.recommendations,
+        overallSentiment: data.overallSentiment,
+        analyzedAt: new Date()
+      };
+
+    } catch (error: any) {
+      console.error('Portfolio analysis error:', error);
+      throw new Error(`Failed to analyze portfolio: ${error.message}`);
+    }
+
+  }
+
+  async analyzeNews(title: string, content: string | null, publisher: string): Promise<NewsAnalysisResult> {
+    if (!this.isEnabled || !this.openai) {
+      // Mock result
+      // Try to guess based on title keywords if possible, or just return random mock
+      let mockTickers = [{ ticker: "SPY", impact: 'neutral', reasoning: "Market wide news" }];
+
+      // Simple keyword matching for mock mode
+      if (title.includes("Apple")) mockTickers = [{ ticker: "AAPL", impact: 'positive', reasoning: "Mentioned in title" }];
+      if (title.includes("Tesla")) mockTickers = [{ ticker: "TSLA", impact: 'negative', reasoning: "Mentioned in title" }];
+
+      return {
+        summary: `Mock Analysis: ${title}. Only the title was analyzed as AI service is invalid.`,
+        affectedStocks: mockTickers as any,
+        generalMarketSentiment: 'neutral',
+        confidenceScore: 5
+      };
+    }
+
+    try {
+      const completion = await this.openai.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [
+          {
+            role: 'system',
+            content: `You are an expert financial news analyst. Analyze the following news article.
+            Your goal is to:
+            1. Provide a concise 1-2 sentence summary of the core news.
+            2. Identify what Publicly Traded Companies (Tickers) are most affected by this news.
+            3. Determine the impact (Positive/Negative/Neutral) and provide a brief reasoning.
+
+            Return a valid JSON object matching this schema exactly:
+            {
+              "summary": "1-2 sentence summary",
+              "affectedStocks": [
+                { "ticker": "TICKER", "impact": "positive"|"negative"|"neutral", "reasoning": "Why?" }
+              ],
+              "generalMarketSentiment": "bullish"|"bearish"|"neutral",
+              "confidenceScore": number (1-10)
+            }
+            Do not include Markdown formatting in the response.`
+          },
+          {
+            role: 'user',
+            content: `Analyze this news:
+            Title: ${title}
+            Publisher: ${publisher}
+            Content: ${content ? content.substring(0, 5000) : "Content not available, analyze based on title only."}`
+          }
+        ],
+        response_format: { type: 'json_object' }
+      });
+
+      const responseContent = completion.choices[0].message.content;
+      if (!responseContent) throw new Error('No content received from OpenAI');
+
+      const data = JSON.parse(responseContent);
+
+      return {
+        summary: data.summary,
+        affectedStocks: data.affectedStocks,
+        generalMarketSentiment: data.generalMarketSentiment,
+        confidenceScore: data.confidenceScore
+      };
+
+    } catch (error: any) {
+      console.error('News analysis error:', error);
+      throw new Error(`Failed to analyze news: ${error.message}`);
+    }
+  }
+
+  // ========== PRIVATE METHODS ==========
+
+  private generateRequestId(): string {
+    return `res_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  private async processOpenAIRequest(requestId: string, ticker: string, currentPrice?: number) {
     const request = this.requestsCache.get(requestId);
     if (!request) return;
 
-    // Update to processing after 1 second
-    setTimeout(() => {
+    try {
       request.status = 'processing';
       request.updatedAt = new Date();
       this.requestsCache.set(requestId, request);
-    }, 1000);
 
-    // Complete after 5 seconds
-    setTimeout(() => {
-      this.generateMockResult(requestId);
-    }, 5000);
+      const completion = await this.openai!.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [
+          {
+            role: 'system',
+            content: `You are an expert financial analyst. Analyze the provided stock ticker.
+            Return a valid JSON object matching this schema exactly:
+            {
+              "summary": "Executive summary of the analysis (max 300 chars)",
+              "keyFindings": ["Finding 1", "Finding 2", "Finding 3", "Finding 4"],
+              "priceScenarios": {
+                "bull": { "price": number, "description": "rationale", "upsidePercent": number },
+                "bear": { "price": number, "description": "rationale", "downsidePercent": number },
+                "base": { "price": number, "description": "rationale" }
+              },
+              "catalysts": [{ "name": "Event Name", "impact": "high"|"medium"|"low", "type": "positive"|"negative"|"neutral" }],
+              "risks": [{ "name": "Risk Name", "impact": "high"|"medium"|"low", "type": "negative" }],
+              "sentiment": { "overall": "positive"|"negative"|"neutral", "score": number (0-1) },
+              "financialData": {
+                 "revenue": "string with units", "revenueGrowth": "string %", "netIncome": "string units", 
+                 "netMargin": "string %", "eps": "string $", "peRatio": number, "debtToEquity": number
+              }
+            }
+            Ensure all numbers are realistic based on current market data if possible, or reasonable estimates.`
+          },
+          {
+            role: 'user',
+            content: `Analyze stock ticker: ${ticker}. ${currentPrice ? `The current price is $${currentPrice}. Ensure price targets (bull/bear/base) are consistent with this current price.` : ''}`
+          }
+        ],
+        response_format: { type: 'json_object' }
+      });
+
+      const content = completion.choices[0].message.content;
+      if (!content) throw new Error('No content received from OpenAI');
+
+      const data = JSON.parse(content);
+
+      const result: ResearchResult = {
+        requestId,
+        ticker,
+        summary: data.summary,
+        keyFindings: data.keyFindings,
+        priceScenarios: data.priceScenarios,
+        catalysts: data.catalysts,
+        risks: data.risks,
+        financialData: data.financialData,
+        sentiment: data.sentiment,
+        sources: [
+          { title: "OpenAI Market Analysis", url: "#", publishedAt: new Date() }
+        ],
+        generatedFiles: [],
+        completedAt: new Date()
+      };
+
+      this.resultsCache.set(requestId, result);
+
+      request.status = 'completed';
+      request.completedAt = new Date();
+      request.updatedAt = new Date();
+      this.requestsCache.set(requestId, request);
+
+    } catch (error: any) {
+      console.error('OpenAI processing error:', error);
+      request.status = 'failed';
+      request.errorMessage = error.message;
+      request.updatedAt = new Date();
+      this.requestsCache.set(requestId, request);
+    }
   }
 
-  /**
-   * Generate mock research result (for demo/testing)
-   */
-  private generateMockResult(requestId: string): void {
+  private simulateResearchProcessing(requestId: string) {
+    // Keep existing mock logic if needed, or simplify
     const request = this.requestsCache.get(requestId);
     if (!request) return;
 
-    const mockResult: ResearchResult = {
-      requestId,
-      ticker: request.ticker,
-      summary: `This is a comprehensive analysis of ${request.ticker}. The company shows strong fundamentals with solid revenue growth and improving margins. Market sentiment is generally positive, though some near-term headwinds exist.`,
-      keyFindings: [
-        `${request.ticker} has demonstrated consistent revenue growth of 15-20% annually over the past 3 years`,
-        'Operating margins have improved from 12% to 18% as the company achieves economies of scale',
-        'Recent product launches have been well-received by the market',
-        'Management has a strong track record of execution and capital allocation',
-        'The stock is currently trading at a reasonable valuation relative to peers',
-        'Some concerns exist around increased competition in key markets',
-      ],
-      financialData: {
-        revenue: '$2.5B',
-        revenueGrowth: '18.5%',
-        netIncome: '$450M',
-        netMargin: '18%',
-        eps: '$3.25',
-        peRatio: 24.5,
-        debtToEquity: 0.35,
-      },
-      sentiment: {
-        overall: 'positive',
-        score: 0.72,
-      },
-      sources: [
-        {
-          title: `${request.ticker} Q4 Earnings Report`,
-          url: `https://example.com/${request.ticker.toLowerCase()}-earnings`,
-          publishedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
+    setTimeout(() => {
+      // (Mock generation logic - reuse from previous version if fallback is needed)
+      // For brevity, assuming OpenAI key is present for this task. 
+      // If mock needed, can copy-paste the mock generator here.
+
+      // Minimal Mock Fallback
+      const mockResult: ResearchResult = {
+        requestId,
+        ticker: request.ticker,
+        summary: "Mock analysis - OpenAI key missing.",
+        keyFindings: ["Mock Finding 1", "Mock Finding 2"],
+        priceScenarios: {
+          bull: { price: 150, description: "Bull", upsidePercent: 20 },
+          base: { price: 120, description: "Base" },
+          bear: { price: 90, description: "Bear", downsidePercent: 25 }
         },
-        {
-          title: `Analyst Report: ${request.ticker} Maintains Strong Growth`,
-          url: 'https://example.com/analyst-report',
-          publishedAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000), // 14 days ago
-        },
-        {
-          title: `Industry Analysis: ${request.ticker}'s Market Position`,
-          url: 'https://example.com/industry-analysis',
-          publishedAt: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000), // 21 days ago
-        },
-      ],
-      generatedFiles: [
-        {
-          filename: `${request.ticker}_research_report.pdf`,
-          fileType: 'pdf',
-          url: '/api/research/placeholder/download/report.pdf',
-        },
-        {
-          filename: `${request.ticker}_financial_data.csv`,
-          fileType: 'csv',
-          url: '/api/research/placeholder/download/data.csv',
-        },
-      ],
-      completedAt: new Date(),
-    };
-
-    // Update request status
-    request.status = 'completed';
-    request.completedAt = new Date();
-    request.updatedAt = new Date();
-    this.requestsCache.set(requestId, request);
-
-    // Store result
-    this.resultsCache.set(requestId, mockResult);
-  }
-
-  /**
-   * Call Manus API (to be implemented when API key is available)
-   */
-  private async callManusAPI(request: ResearchRequest): Promise<void> {
-    if (!this.apiKey) {
-      throw new Error('Manus API key not configured');
-    }
-
-    // TODO: Implement actual API call
-    // Example structure:
-    // const response = await fetch(`${this.apiUrl}/research`, {
-    //   method: 'POST',
-    //   headers: {
-    //     'Authorization': `Bearer ${this.apiKey}`,
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({
-    //     ticker: request.ticker,
-    //     requestType: request.requestType,
-    //     parameters: request.parameters,
-    //   }),
-    // });
-    // 
-    // const data = await response.json();
-    // return data;
-
-    throw new Error('Manus API integration not yet implemented');
-  }
-
-  /**
-   * Check request status from Manus API
-   */
-  private async checkManusStatus(requestId: string): Promise<ResearchRequest['status']> {
-    if (!this.apiKey) {
-      throw new Error('Manus API key not configured');
-    }
-
-    // TODO: Implement status check
-    // const response = await fetch(`${this.apiUrl}/research/${requestId}/status`, {
-    //   headers: {
-    //     'Authorization': `Bearer ${this.apiKey}`,
-    //   },
-    // });
-    // 
-    // const data = await response.json();
-    // return data.status;
-
-    return 'pending';
-  }
-
-  /**
-   * Cancel request via Manus API
-   */
-  private async cancelManusRequest(requestId: string): Promise<void> {
-    if (!this.apiKey) {
-      throw new Error('Manus API key not configured');
-    }
-
-    // TODO: Implement cancellation
-    // await fetch(`${this.apiUrl}/research/${requestId}/cancel`, {
-    //   method: 'POST',
-    //   headers: {
-    //     'Authorization': `Bearer ${this.apiKey}`,
-    //   },
-    // });
+        completedAt: new Date(),
+        sources: [],
+        generatedFiles: []
+      };
+      this.resultsCache.set(requestId, mockResult);
+      request.status = 'completed';
+      request.completedAt = new Date();
+      this.requestsCache.set(requestId, request);
+    }, 2000);
   }
 }
 

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Market Overview Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#195f76",
+                        "background-light": "#fafafa",
+                        "background-dark": "#121416",
+                        "surface-dark": "#212529",
+                        "growth": "#4CAF50",
+                        "loss": "#EF5350",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom Scrollbar Hide for horizontal scrolling if needed */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Subtle glass effect for bottom nav */
+        .glass-nav {
+            background: rgba(18, 20, 22, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display antialiased overflow-x-hidden selection:bg-primary selection:text-white">
+<div class="relative min-h-screen pb-24"> <!-- Padding bottom for fixed nav -->
+<!-- Top App Bar -->
+<header class="sticky top-0 z-40 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm transition-colors duration-300">
+<div class="flex items-center justify-between p-5 pb-2">
+<div class="flex items-center gap-3">
+<div class="relative group cursor-pointer">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 ring-2 ring-primary/20 group-hover:ring-primary transition-all duration-300" data-alt="User profile avatar showing a smiling professional man" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBAG0i3NUqvd6tHJeLrMFx8Et0-e3IGh393lWvTULwbyni2ZqjBDkoZ7iozImbH2fHoZZOEL320lJ4p1wyYo71KXI7JlK2jcYldJ6sV60rMDjgqXmiilRGRgUqtXR_8WB7IYNBZehhsgoidYUqQStkSkLOWf3ILEqdN3l0hl5fQwa0KRE92q9dQidUhjNRg5oCCRaB6Hu8yVD9g1m9qmSNL4rkrqb9Kp4Ua-amrtn9yMydkVFoWmbwMqdPDS4r5u4clO-FzvnnD3ts");'>
+</div>
+<div class="absolute bottom-0 right-0 size-3 bg-growth rounded-full border-2 border-background-dark"></div>
+</div>
+<div>
+<h1 class="text-sm text-gray-400 font-medium">Welcome back,</h1>
+<h2 class="text-base font-bold leading-tight">Alex Trader</h2>
+</div>
+</div>
+<button class="flex items-center justify-center size-10 rounded-full bg-surface-dark/50 hover:bg-surface-dark transition-colors text-white">
+<span class="material-symbols-outlined text-[24px]">search</span>
+</button>
+</div>
+</header>
+<!-- Market Pulse Section -->
+<section class="px-5 pt-4">
+<div class="flex items-center justify-between mb-3">
+<h3 class="text-lg font-bold tracking-tight">Market Pulse</h3>
+<a class="text-xs font-semibold text-primary hover:text-primary/80 transition-colors" href="#">See All</a>
+</div>
+<!-- Bento Box Grid -->
+<div class="grid grid-cols-2 gap-3">
+<!-- Card 1: DJIA -->
+<div class="flex flex-col p-4 rounded-xl bg-surface-dark relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-4xl">show_chart</span>
+</div>
+<div class="flex items-start justify-between mb-2">
+<span class="text-gray-400 text-xs font-bold uppercase tracking-wider">DJIA</span>
+<span class="bg-growth/20 text-growth text-[10px] font-bold px-1.5 py-0.5 rounded-sm">+1.2%</span>
+</div>
+<p class="text-xl font-bold tracking-tight mb-1">34,500.12</p>
+<!-- Mini Sparkline SVG -->
+<svg class="w-full h-8 text-growth overflow-visible" fill="none" preserveaspectratio="none" viewbox="0 0 100 30">
+<path d="M0 25 C20 25, 20 10, 40 15 C60 20, 60 5, 80 10 L100 2" stroke="currentColor" stroke-linecap="round" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+<defs>
+<lineargradient id="grad1" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:rgb(76, 175, 80);stop-opacity:0.2"></stop>
+<stop offset="100%" style="stop-color:rgb(76, 175, 80);stop-opacity:0"></stop>
+</lineargradient>
+</defs>
+<path d="M0 25 C20 25, 20 10, 40 15 C60 20, 60 5, 80 10 L100 2 V30 H0 Z" fill="url(#grad1)"></path>
+</svg>
+</div>
+<!-- Card 2: NASDAQ -->
+<div class="flex flex-col p-4 rounded-xl bg-surface-dark relative overflow-hidden group">
+<div class="flex items-start justify-between mb-2">
+<span class="text-gray-400 text-xs font-bold uppercase tracking-wider">NASDAQ</span>
+<span class="bg-growth/20 text-growth text-[10px] font-bold px-1.5 py-0.5 rounded-sm">+0.8%</span>
+</div>
+<p class="text-xl font-bold tracking-tight mb-1">14,200.50</p>
+<svg class="w-full h-8 text-growth overflow-visible" fill="none" preserveaspectratio="none" viewbox="0 0 100 30">
+<path d="M0 20 C20 22, 40 15, 60 18 C80 20, 80 5, 100 8" stroke="currentColor" stroke-linecap="round" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+<defs>
+<lineargradient id="grad2" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:rgb(76, 175, 80);stop-opacity:0.2"></stop>
+<stop offset="100%" style="stop-color:rgb(76, 175, 80);stop-opacity:0"></stop>
+</lineargradient>
+</defs>
+<path d="M0 20 C20 22, 40 15, 60 18 C80 20, 80 5, 100 8 V30 H0 Z" fill="url(#grad2)"></path>
+</svg>
+</div>
+<!-- Card 3: S&P 500 -->
+<div class="flex flex-col p-4 rounded-xl bg-surface-dark relative overflow-hidden group">
+<div class="flex items-start justify-between mb-2">
+<span class="text-gray-400 text-xs font-bold uppercase tracking-wider">S&amp;P 500</span>
+<span class="bg-loss/20 text-loss text-[10px] font-bold px-1.5 py-0.5 rounded-sm">-0.2%</span>
+</div>
+<p class="text-xl font-bold tracking-tight mb-1">4,450.20</p>
+<svg class="w-full h-8 text-loss overflow-visible" fill="none" preserveaspectratio="none" viewbox="0 0 100 30">
+<path d="M0 5 C20 8, 40 2, 60 15 C80 12, 80 25, 100 28" stroke="currentColor" stroke-linecap="round" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+<defs>
+<lineargradient id="grad3" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:rgb(239, 83, 80);stop-opacity:0.2"></stop>
+<stop offset="100%" style="stop-color:rgb(239, 83, 80);stop-opacity:0"></stop>
+</lineargradient>
+</defs>
+<path d="M0 5 C20 8, 40 2, 60 15 C80 12, 80 25, 100 28 V30 H0 Z" fill="url(#grad3)"></path>
+</svg>
+</div>
+<!-- Card 4: BTC -->
+<div class="flex flex-col p-4 rounded-xl bg-surface-dark relative overflow-hidden group border border-primary/20 shadow-[0_0_15px_-5px_rgba(25,95,118,0.3)]">
+<div class="absolute -right-4 -top-4 size-16 bg-primary/10 rounded-full blur-xl"></div>
+<div class="flex items-start justify-between mb-2 relative z-10">
+<div class="flex items-center gap-1">
+<span class="text-gray-400 text-xs font-bold uppercase tracking-wider">BTC</span>
+<span class="material-symbols-outlined text-[14px] text-orange-400">currency_bitcoin</span>
+</div>
+<span class="bg-growth/20 text-growth text-[10px] font-bold px-1.5 py-0.5 rounded-sm">+3.5%</span>
+</div>
+<p class="text-xl font-bold tracking-tight mb-1 relative z-10">$42,100</p>
+<svg class="w-full h-8 text-growth overflow-visible relative z-10" fill="none" preserveaspectratio="none" viewbox="0 0 100 30">
+<path d="M0 28 L20 20 L40 25 L60 5 L80 12 L100 0" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+</svg>
+</div>
+</div>
+</section>
+<!-- Sector Heatmap Section -->
+<section class="px-5 mt-8">
+<h3 class="text-lg font-bold tracking-tight mb-3">Sector Heatmap</h3>
+<!-- Custom CSS Grid Treemap -->
+<div class="w-full h-[280px] grid grid-cols-4 grid-rows-4 gap-1.5 rounded-xl overflow-hidden bg-background-dark border border-surface-dark/50">
+<!-- Technology: Large Block -->
+<div class="col-span-2 row-span-2 bg-[#1a4731] hover:bg-[#1f563b] transition-colors p-3 flex flex-col justify-between cursor-pointer relative group">
+<div class="flex justify-between items-start">
+<span class="text-xs font-bold text-white/90">Tech</span>
+<span class="text-xs font-bold text-white">+2.4%</span>
+</div>
+<span class="text-[10px] text-white/50 uppercase">XLK</span>
+<!-- Subtle background noise/pattern -->
+<div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
+</div>
+<!-- Financials: Medium -->
+<div class="col-span-2 row-span-1 bg-[#2e5c42] hover:bg-[#366d4e] transition-colors p-3 flex flex-col justify-between cursor-pointer relative">
+<div class="flex justify-between items-center">
+<span class="text-xs font-bold text-white/90">Finance</span>
+<span class="text-xs font-bold text-white">+1.1%</span>
+</div>
+</div>
+<!-- Healthcare: Medium Vertical -->
+<div class="col-span-1 row-span-2 bg-[#5c2b2b] hover:bg-[#6e3333] transition-colors p-2 flex flex-col justify-between cursor-pointer relative">
+<div>
+<span class="text-[10px] font-bold text-white/90 block">Health</span>
+<span class="text-[10px] font-bold text-white block">-1.5%</span>
+</div>
+<span class="text-[9px] text-white/50 uppercase">XLV</span>
+</div>
+<!-- Consumer Discretionary -->
+<div class="col-span-1 row-span-2 bg-[#265039] hover:bg-[#2d6044] transition-colors p-2 flex flex-col justify-between cursor-pointer relative">
+<div>
+<span class="text-[10px] font-bold text-white/90 block">Retail</span>
+<span class="text-[10px] font-bold text-white block">+0.9%</span>
+</div>
+<span class="text-[9px] text-white/50 uppercase">XLY</span>
+</div>
+<!-- Energy -->
+<div class="col-span-2 row-span-1 bg-[#143926] hover:bg-[#1a4831] transition-colors p-3 flex items-center justify-between cursor-pointer relative">
+<span class="text-xs font-bold text-white/90">Energy</span>
+<span class="text-xs font-bold text-white">+0.5%</span>
+</div>
+<!-- Utilities (Smallest) -->
+<div class="col-span-1 row-span-1 bg-[#4a2222] hover:bg-[#5e2b2b] transition-colors p-2 flex items-center justify-center cursor-pointer relative">
+<span class="text-[10px] font-bold text-white/90">-0.8%</span>
+</div>
+<!-- Real Estate (Smallest) -->
+<div class="col-span-3 row-span-1 bg-[#204430] hover:bg-[#265239] transition-colors p-2 flex items-center justify-between cursor-pointer relative">
+<span class="text-xs font-bold text-white/90">Real Estate</span>
+<span class="text-xs font-bold text-white">+0.7%</span>
+</div>
+</div>
+</section>
+<!-- Opportunity Watch Section -->
+<section class="px-5 mt-8 mb-4">
+<div class="flex items-center justify-between mb-4">
+<div>
+<h3 class="text-lg font-bold tracking-tight">Opportunity Watch</h3>
+<p class="text-xs text-gray-500">Retraced stocks with high upside potential</p>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<!-- Item 1 -->
+<div class="flex items-center justify-between p-3 rounded-xl bg-surface-dark hover:bg-surface-dark/80 transition-colors border-l-4 border-primary cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-white/5 flex items-center justify-center text-white font-bold text-xs" data-alt="Stock logo placeholder for NVDA">
+                            NVDA
+                        </div>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-white">NVIDIA Corp.</span>
+<span class="text-xs text-gray-500">Tech • Semiconductor</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-sm font-bold text-white">$450.22</span>
+<span class="text-xs font-medium text-loss flex items-center">
+<span class="material-symbols-outlined text-[12px] mr-0.5">trending_down</span>
+                            -2.1% (Dip)
+                        </span>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex items-center justify-between p-3 rounded-xl bg-surface-dark hover:bg-surface-dark/80 transition-colors border-l-4 border-gray-700 hover:border-primary cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-white/5 flex items-center justify-center text-white font-bold text-xs" data-alt="Stock logo placeholder for TSLA">
+                            TSLA
+                        </div>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-white">Tesla Inc.</span>
+<span class="text-xs text-gray-500">Auto • EV</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-sm font-bold text-white">$235.40</span>
+<span class="text-xs font-medium text-loss flex items-center">
+<span class="material-symbols-outlined text-[12px] mr-0.5">trending_down</span>
+                            -1.8% (Dip)
+                        </span>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="flex items-center justify-between p-3 rounded-xl bg-surface-dark hover:bg-surface-dark/80 transition-colors border-l-4 border-gray-700 hover:border-primary cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-white/5 flex items-center justify-center text-white font-bold text-xs" data-alt="Stock logo placeholder for AMD">
+                            AMD
+                        </div>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-white">AMD</span>
+<span class="text-xs text-gray-500">Tech • Chips</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-sm font-bold text-white">$105.15</span>
+<span class="text-xs font-medium text-growth flex items-center">
+<span class="material-symbols-outlined text-[12px] mr-0.5">trending_flat</span>
+                            +0.2% (Recovering)
+                        </span>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 w-full glass-nav border-t border-white/5 z-50">
+<div class="flex justify-around items-center h-20 px-2 pb-2">
+<button class="flex flex-col items-center justify-center gap-1 w-full text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="text-[10px] font-medium">Overview</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-1 w-full text-gray-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined">visibility</span>
+<span class="text-[10px] font-medium">Watchlist</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-1 w-full text-gray-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined">newspaper</span>
+<span class="text-[10px] font-medium">News</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-1 w-full text-gray-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</button>
+</div>
+</nav>
+</div>
+</body></html>

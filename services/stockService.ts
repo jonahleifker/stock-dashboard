@@ -14,8 +14,36 @@ export interface StockQuote {
   change7d?: number;
   change30d?: number;
   change90d?: number;
+  change1y?: number;
   marketCap?: number;
   lastUpdated: Date;
+  // Extended Metrics
+  pe?: number;
+  peg?: number;
+  eps?: number;
+  dividendYield?: number;
+  roe?: number;
+  netMargin?: number;
+  operatingMargin?: number;
+  cash?: number;
+  totalDebt?: number;
+  earningsDate?: Date;
+  exDividendDate?: Date;
+  targetPrice?: number;
+  recommendation?: string;
+  description?: string;
+  website?: string;
+  employees?: number;
+  news?: Array<{
+    title: string;
+    link: string;
+    publisher: string;
+    providerPublishTime?: number | Date;
+    type?: string;
+    thumbnail?: {
+      resolutions: Array<{ url: string; width: number; height: number }>;
+    };
+  }>;
 }
 
 export interface SectorPerformance {
@@ -160,6 +188,10 @@ export class StockService {
         const price90dAgo = data3mo[0].close;
         metrics.change90d = price90dAgo ? ((currentPrice - price90dAgo) / price90dAgo) * 100 : undefined;
       }
+      if (data1yr.length > 0) {
+        const price1yAgo = data1yr[0].close;
+        metrics.change1y = price1yAgo ? ((currentPrice - price1yAgo) / price1yAgo) * 100 : undefined;
+      }
     } catch (error) {
       console.error(`Error calculating metrics for ${ticker}:`, error);
     }
@@ -172,22 +204,78 @@ export class StockService {
    */
   async fetchStockData(ticker: string): Promise<StockQuote | null> {
     try {
-      const quote = await this.fetchYahooQuote(ticker);
+      // Parallel fetch for speed
+      const [quote, summary, searchResult] = await Promise.all([
+        this.fetchYahooQuote(ticker),
+        this.yahooFinance.quoteSummary(ticker, {
+          modules: ['summaryDetail', 'defaultKeyStatistics', 'financialData', 'assetProfile', 'calendarEvents', 'earnings']
+        }).catch((e: any) => {
+          console.warn(`QuoteSummary failed for ${ticker}:`, e.message);
+          return null;
+        }),
+        this.yahooFinance.search(ticker, { newsCount: 5 }).catch((e: any) => {
+          console.warn(`Search/News failed for ${ticker}:`, e.message);
+          return null;
+        })
+      ]);
+
       if (!quote) return null;
 
       const currentPrice = quote.regularMarketPrice;
       if (!currentPrice) return null;
 
-      // Calculate metrics
-      const metrics = await this.calculateMetrics(ticker, currentPrice);
+      // Calculate metrics from history (keeping existing logic)
+      const cachedMetrics = await this.calculateMetrics(ticker, currentPrice);
+
+      // Extract data from quoteSummary
+      const stats = summary?.defaultKeyStatistics || {};
+      const finData = summary?.financialData || {};
+      const sumDetail = summary?.summaryDetail || {};
+      const profile = summary?.assetProfile || {};
+      const calendar = summary?.calendarEvents || {};
+
+      // Parse News
+      const news = searchResult?.news || [];
 
       const stockData: StockQuote = {
         ticker,
         companyName: quote.longName || quote.shortName || ticker,
-        sector: quote.sector || undefined,
+        sector: profile.sector || quote.sector || undefined,
         currentPrice,
-        marketCap: quote.marketCap || undefined,
-        ...metrics,
+        marketCap: quote.marketCap || sumDetail.marketCap,
+
+        // History Metrics
+        ...cachedMetrics,
+        // Override 1y change with official 52 week change if available
+        change1y: stats['52WeekChange'] ? (stats['52WeekChange'] * 100) : cachedMetrics.change1y,
+
+        // Extended Metrics
+        pe: sumDetail.trailingPE ?? quote.trailingPE,
+        peg: stats.pegRatio ?? quote.pegRatio,
+        eps: stats.trailingEps ?? quote.epsTrailingTwelveMonths,
+        dividendYield: sumDetail.dividendYield ?? quote.dividendYield,
+        roe: finData.returnOnEquity,
+        netMargin: finData.profitMargins,
+        operatingMargin: finData.operatingMargins,
+        cash: finData.totalCash,
+        totalDebt: finData.totalDebt,
+        earningsDate: calendar.earnings?.earningsDate?.[0],
+        exDividendDate: sumDetail.exDividendDate,
+        targetPrice: finData.targetMeanPrice,
+        recommendation: finData.recommendationKey,
+        description: profile.longBusinessSummary,
+        website: profile.website,
+        employees: profile.fullTimeEmployees,
+
+        news: news.map((n: any) => ({
+          title: n.title,
+          link: n.link,
+          publisher: n.publisher,
+          providerPublishTime: n.providerPublishTime,
+          type: n.type,
+          thumbnail: n.thumbnail
+        })),
+
         lastUpdated: new Date(),
       };
 
@@ -244,6 +332,14 @@ export class StockService {
     }
 
     return results;
+  }
+
+  /**
+   * Get all stocks from database (no limit)
+   */
+  async getAllStocks(): Promise<StockQuote[]> {
+    const stocks = await this.repository.findAll();
+    return stocks.map(stock => this.convertToStockQuote(stock));
   }
 
   /**
@@ -412,9 +508,135 @@ export class StockService {
       change7d: stock.change7d,
       change30d: stock.change30d,
       change90d: stock.change90d,
+      change1y: stock.change1y,
       marketCap: stock.marketCap,
       lastUpdated: stock.lastUpdated,
+      // Pass through new fields if they exist in DB (assuming generic object or updated model)
+      pe: stock.pe,
+      peg: stock.peg,
+      eps: stock.eps,
+      dividendYield: stock.dividendYield,
+      roe: stock.roe,
+      netMargin: stock.netMargin,
+      operatingMargin: stock.operatingMargin,
+      cash: stock.cash,
+      totalDebt: stock.totalDebt,
+      earningsDate: stock.earningsDate,
+      exDividendDate: stock.exDividendDate,
+      targetPrice: stock.targetPrice,
+      recommendation: stock.recommendation,
+      description: stock.description,
+      website: stock.website,
+      employees: stock.employees,
+      news: stock.news // Assuming DB can store JSON or simplified
     };
+  }
+
+  /**
+   * Get market pulse data (Major Indices)
+   */
+  async getMarketPulse(): Promise<any[]> {
+    const indices = [
+      { ticker: '^DJI', name: 'DJIA' },
+      { ticker: '^IXIC', name: 'NASDAQ' },
+      { ticker: '^GSPC', name: 'S&P 500' },
+      { ticker: 'BTC-USD', name: 'BTC' }
+    ];
+
+    const results = [];
+
+    for (const index of indices) {
+      try {
+        const quote = await this.getStock(index.ticker);
+
+        // For sparkline, we'll fetch 7d history
+        const history = await this.fetchHistoricalData(index.ticker, '7d');
+        const sparklineData = history.map((h: any) => h.close);
+
+        results.push({
+          index: index.name,
+          value: quote?.currentPrice?.toLocaleString('en-US', {
+            style: index.ticker === 'BTC-USD' ? 'currency' : 'decimal',
+            currency: 'USD',
+            maximumFractionDigits: 2
+          }) || '0.00',
+          changePercent: quote?.change7d || 0, // Using 7d change as proxy if 24h not available, or calc from open/close
+          sparklineData
+        });
+      } catch (error) {
+        console.error(`Error fetching market pulse for ${index.ticker}:`, error);
+        results.push({
+          index: index.name,
+          value: '0.00',
+          changePercent: 0,
+          sparklineData: []
+        });
+      }
+    }
+
+    return results;
+  }
+
+  /**
+   * Get top market news (General "Front Page" news)
+   */
+  async getMarketNews(): Promise<any[]> {
+    try {
+      // Search for broad market terms and major indices to get top news
+      // Increased count to ensure we have enough after filtering
+      // Adding specific high-quality search terms might help too
+      const queries = ['stock market', 'federal reserve', '^GSPC', '^DJI', 'economy', 'investing'];
+
+      // Strict list of trusted sources
+      const TRUSTED_SOURCES = ['Reuters', 'Bloomberg', 'CNBC', 'Wall Street Journal', 'Financial Times', 'Barrons'];
+
+      const results = await Promise.all(
+        queries.map(q =>
+          this.yahooFinance.search(q, { newsCount: 10 }) // Fetch more to allow for filtering
+            .catch((e: any) => {
+              console.warn(`Market news search failed for ${q}:`, e.message);
+              return { news: [] };
+            })
+        )
+      );
+
+      // Aggregate all news
+      const allNews: any[] = [];
+      const seenLinks = new Set<string>();
+
+      results.forEach(res => {
+        if (res && res.news) {
+          res.news.forEach((n: any) => {
+            // Check if source is trusted
+            const publisher = n.publisher || '';
+            const isTrusted = TRUSTED_SOURCES.some(source => publisher.toLowerCase().includes(source.toLowerCase()));
+
+            if (isTrusted && !seenLinks.has(n.link)) {
+              seenLinks.add(n.link);
+              allNews.push({
+                title: n.title,
+                link: n.link,
+                publisher: n.publisher,
+                providerPublishTime: n.providerPublishTime,
+                type: n.type,
+                thumbnail: n.thumbnail,
+                relatedTickers: n.relatedTickers || []
+              });
+            }
+          });
+        }
+      });
+
+      // Sort by time (newest first)
+      return allNews.sort((a, b) => {
+        const timeA = typeof a.providerPublishTime === 'number' ? a.providerPublishTime * 1000 : new Date(a.providerPublishTime).getTime();
+        const timeB = typeof b.providerPublishTime === 'number' ? b.providerPublishTime * 1000 : new Date(b.providerPublishTime).getTime();
+        return timeB - timeA;
+      }).slice(0, 20); // Return top 20
+    } catch (error) {
+      console.error('Error fetching market news:', error);
+      return [];
+    }
   }
 }
 

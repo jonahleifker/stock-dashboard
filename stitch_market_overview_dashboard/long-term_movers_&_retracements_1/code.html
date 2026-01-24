@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Long-Term Trends</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#195f76",
+                        "primary-dark": "#124658",
+                        "background-light": "#fafafa",
+                        "background-dark": "#121416",
+                        "surface-dark": "#212529",
+                        "success": "#4CAF50",
+                        "danger": "#EF5350",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "mono": ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "monospace"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark font-display text-white overflow-hidden h-screen flex">
+<aside class="w-64 bg-surface-dark border-r border-white/5 flex flex-col shrink-0 z-20">
+<div class="h-16 flex items-center px-6 border-b border-white/5 bg-surface-dark">
+<div class="flex items-center gap-2 text-primary font-bold text-xl tracking-tight">
+<span class="material-symbols-outlined text-3xl">ssid_chart</span>
+<span>MarketSights</span>
+</div>
+</div>
+<nav class="flex-1 px-3 py-6 space-y-1 overflow-y-auto no-scrollbar">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#9ca3af] hover:text-white hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">dashboard</span>
+<span class="font-medium text-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary font-medium text-sm transition-colors border border-primary/20" href="#">
+<span class="material-symbols-outlined filled">ssid_chart</span>
+<span>Long-Term Trends</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#9ca3af] hover:text-white hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">tune</span>
+<span class="font-medium text-sm">Stock Screener</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#9ca3af] hover:text-white hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">notifications</span>
+<span class="font-medium text-sm">Alerts</span>
+<span class="ml-auto bg-danger/20 text-danger border border-danger/20 text-[10px] font-bold px-1.5 py-0.5 rounded-full">3</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#9ca3af] hover:text-white hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">visibility</span>
+<span class="font-medium text-sm">Watchlist</span>
+</a>
+<div class="my-4 border-t border-white/5"></div>
+<div class="px-3 text-xs font-semibold text-[#6c757d] uppercase tracking-wider mb-2">My Portfolios</div>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-[#9ca3af] hover:text-white hover:bg-white/5 transition-colors" href="#">
+<span class="w-2 h-2 rounded-full bg-success"></span>
+<span class="font-medium text-sm">Growth Tech</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-[#9ca3af] hover:text-white hover:bg-white/5 transition-colors" href="#">
+<span class="w-2 h-2 rounded-full bg-blue-500"></span>
+<span class="font-medium text-sm">Dividend Kings</span>
+</a>
+</nav>
+<div class="p-4 border-t border-white/5 bg-surface-dark">
+<button class="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-[#9ca3af] hover:text-white hover:bg-white/5 transition-colors group">
+<div class="size-8 rounded-full bg-primary/20 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">person</span>
+</div>
+<div class="text-sm text-left flex-1 min-w-0">
+<div class="font-medium text-white truncate">Alex Trader</div>
+<div class="text-xs truncate">Pro Plan</div>
+</div>
+<span class="material-symbols-outlined text-lg">settings</span>
+</button>
+</div>
+</aside>
+<main class="flex-1 flex flex-col min-w-0 bg-background-dark">
+<header class="h-16 border-b border-white/5 flex items-center justify-between px-8 bg-background-dark/80 backdrop-blur-md sticky top-0 z-30">
+<div class="flex flex-col">
+<h1 class="text-lg font-bold text-white leading-tight">Long-Term Movers</h1>
+<span class="text-xs text-[#9ca3af]">Identify retracements &amp; deep value</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#9ca3af] text-lg group-focus-within:text-primary transition-colors">search</span>
+<input class="bg-surface-dark border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 w-72 placeholder-[#6c757d] transition-all shadow-sm" placeholder="Search assets (e.g. AAPL)..." type="text"/>
+<div class="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] border border-white/10 rounded px-1.5 text-[#6c757d] hidden lg:block">⌘ K</div>
+</div>
+<div class="h-6 w-px bg-white/10 mx-1"></div>
+<button class="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+<span class="material-symbols-outlined text-lg">filter_list</span>
+<span>Filters</span>
+</button>
+<button class="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-lg">add</span>
+<span>New Alert</span>
+</button>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+<div class="lg:col-span-3 p-6 rounded-2xl bg-gradient-to-r from-primary/10 via-surface-dark to-surface-dark border border-white/5 flex items-start gap-5 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-3 opacity-5">
+<span class="material-symbols-outlined text-9xl">show_chart</span>
+</div>
+<div class="p-3 bg-primary/20 rounded-xl text-primary shrink-0 relative z-10">
+<span class="material-symbols-outlined text-2xl">analytics</span>
+</div>
+<div class="relative z-10">
+<h3 class="text-lg font-bold mb-1 text-white">Retracement Strategy</h3>
+<p class="text-[#9ca3af] text-sm leading-relaxed max-w-2xl">
+                          This dashboard highlights assets that have retraced significantly (&gt;70%) from their 2.5-year highs. 
+                          Use the "Drawdown Trend" column to find stocks potentially forming stabilization bases.
+                      </p>
+</div>
+</div>
+<div class="p-6 rounded-2xl bg-surface-dark border border-white/5 flex flex-col justify-center relative overflow-hidden">
+<div class="flex justify-between items-start mb-2">
+<div class="text-sm text-[#9ca3af] font-medium">Signals Today</div>
+<span class="flex h-2 w-2 rounded-full bg-success animate-pulse"></span>
+</div>
+<div class="text-3xl font-bold text-white tracking-tight">124</div>
+<div class="flex items-center gap-1 mt-2 text-xs text-success font-medium">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>+12 new entries</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+<div class="inline-flex bg-surface-dark p-1 rounded-lg border border-white/5 shadow-sm">
+<button class="px-4 py-1.5 rounded-md text-sm font-medium bg-white/10 text-white shadow-sm border border-white/5 transition-all">Peak Retracement</button>
+<button class="px-4 py-1.5 rounded-md text-sm font-medium text-[#9ca3af] hover:text-white hover:bg-white/5 transition-all">52W Momentum</button>
+<button class="px-4 py-1.5 rounded-md text-sm font-medium text-[#9ca3af] hover:text-white hover:bg-white/5 transition-all">Basing Patterns</button>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-2 text-sm text-[#9ca3af] bg-surface-dark px-3 py-1.5 rounded-lg border border-white/5">
+<span>Sort by:</span>
+<select class="bg-transparent border-none text-white text-sm font-medium focus:ring-0 cursor-pointer py-0 pl-1 pr-6">
+<option>Deepest Drawdown</option>
+<option>Market Cap</option>
+<option>Relative Volume</option>
+</select>
+</div>
+<button class="p-1.5 rounded-lg text-[#9ca3af] hover:text-white hover:bg-white/5 border border-transparent hover:border-white/5 transition-all">
+<span class="material-symbols-outlined text-xl">view_module</span>
+</button>
+<button class="p-1.5 rounded-lg text-primary bg-primary/10 border border-primary/20 transition-all">
+<span class="material-symbols-outlined text-xl">view_list</span>
+</button>
+</div>
+</div>
+<div class="bg-surface-dark border border-white/5 rounded-2xl overflow-hidden shadow-xl">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-white/5 text-xs font-semibold text-[#6c757d] uppercase tracking-wider bg-black/20">
+<th class="px-6 py-4 w-[280px]">Asset</th>
+<th class="px-6 py-4 text-right">Price</th>
+<th class="px-6 py-4 w-[240px]">52W Range</th>
+<th class="px-6 py-4">Drawdown from Peak</th>
+<th class="px-6 py-4 w-[180px]">Fundamentals</th>
+<th class="px-6 py-4 w-[200px]">2.5Y Trend</th>
+<th class="px-6 py-4 text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5 text-sm">
+<tr class="hover:bg-white/[0.02] transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-[#003087] ring-1 ring-white/10 flex items-center justify-center shrink-0 text-white font-bold text-lg shadow-lg shadow-[#003087]/20">P</div>
+<div>
+<div class="font-bold text-white text-base">PYPL</div>
+<div class="text-xs text-[#9ca3af]">PayPal Holdings</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="font-mono font-medium text-white text-base">$62.40</div>
+<div class="inline-flex items-center gap-1 text-xs font-bold text-danger bg-danger/10 px-1.5 py-0.5 rounded mt-1">
+<span class="material-symbols-outlined text-[10px]">trending_down</span>
+                                    1.24%
+                                  </div>
+</td>
+<td class="px-6 py-4 align-middle">
+<div class="flex flex-col gap-2 w-full">
+<div class="flex justify-between text-[10px] text-[#9ca3af] font-mono">
+<span>$50.25</span>
+<span>$76.60</span>
+</div>
+<div class="h-1.5 w-full bg-white/10 rounded-full overflow-hidden relative">
+<div class="absolute top-0 bottom-0 left-[30%] right-[40%] bg-white/10"></div>
+<div class="absolute top-0 bottom-0 left-[45%] w-2 h-2 -mt-[1px] bg-primary rounded-full shadow-[0_0_8px_rgba(25,95,118,0.8)]"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 mb-1">
+<span class="text-danger font-bold text-base">-78%</span>
+<span class="text-xs text-[#9ca3af]">from $308</span>
+</div>
+<div class="text-[10px] text-[#6c757d] flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px]">calendar_today</span>
+                                    Peak: Aug 2021
+                                  </div>
+</td>
+<td class="px-6 py-4">
+<div class="grid grid-cols-2 gap-x-2 gap-y-1">
+<div class="text-[10px] text-[#6c757d]">Mkt Cap</div>
+<div class="text-[10px] font-medium text-white text-right">67.2B</div>
+<div class="text-[10px] text-[#6c757d]">P/E (fwd)</div>
+<div class="text-[10px] font-medium text-white text-right">12.4</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="h-10 w-full max-w-[140px]">
+<svg class="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 80 30">
+<path d="M0,5 Q10,25 20,20 T40,25 T60,28 T80,30" fill="none" stroke="#EF5350" stroke-linecap="round" stroke-width="2"></path>
+<circle cx="80" cy="30" fill="#EF5350" r="2.5"></circle>
+</svg>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="size-8 rounded-full hover:bg-white/10 flex items-center justify-center text-[#9ca3af] hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">more_horiz</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-white/[0.02] transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-white ring-1 ring-white/10 text-black flex items-center justify-center shrink-0 font-bold text-lg shadow-lg shadow-white/10">S</div>
+<div>
+<div class="font-bold text-white text-base">SQ</div>
+<div class="text-xs text-[#9ca3af]">Block Inc.</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="font-mono font-medium text-white text-base">$74.12</div>
+<div class="inline-flex items-center gap-1 text-xs font-bold text-success bg-success/10 px-1.5 py-0.5 rounded mt-1">
+<span class="material-symbols-outlined text-[10px]">trending_up</span>
+                                    2.15%
+                                  </div>
+</td>
+<td class="px-6 py-4 align-middle">
+<div class="flex flex-col gap-2 w-full">
+<div class="flex justify-between text-[10px] text-[#9ca3af] font-mono">
+<span>$38.85</span>
+<span>$89.90</span>
+</div>
+<div class="h-1.5 w-full bg-white/10 rounded-full overflow-hidden relative">
+<div class="absolute top-0 bottom-0 left-[60%] w-2 h-2 -mt-[1px] bg-primary rounded-full shadow-[0_0_8px_rgba(25,95,118,0.8)]"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 mb-1">
+<span class="text-danger font-bold text-base">-73%</span>
+<span class="text-xs text-[#9ca3af]">from $289</span>
+</div>
+<div class="text-[10px] text-[#6c757d] flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px]">calendar_today</span>
+                                    Peak: Oct 2021
+                                  </div>
+</td>
+<td class="px-6 py-4">
+<div class="grid grid-cols-2 gap-x-2 gap-y-1">
+<div class="text-[10px] text-[#6c757d]">Mkt Cap</div>
+<div class="text-[10px] font-medium text-white text-right">45.8B</div>
+<div class="text-[10px] text-[#6c757d]">P/E (fwd)</div>
+<div class="text-[10px] font-medium text-white text-right">38.1</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="h-10 w-full max-w-[140px]">
+<svg class="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 80 30">
+<defs>
+<linearGradient id="gradSQ" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:#EF5350;stop-opacity:0.2"></stop>
+<stop offset="100%" style="stop-color:#EF5350;stop-opacity:0"></stop>
+</linearGradient>
+</defs>
+<path d="M0,2 Q10,15 20,12 T40,20 T60,25 T80,22" fill="url(#gradSQ)" stroke="#EF5350" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="size-8 rounded-full hover:bg-white/10 flex items-center justify-center text-[#9ca3af] hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">more_horiz</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-white/[0.02] transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-[#2D8CFF] ring-1 ring-white/10 flex items-center justify-center shrink-0 text-white font-bold text-lg shadow-lg shadow-[#2D8CFF]/20">Z</div>
+<div>
+<div class="font-bold text-white text-base">ZM</div>
+<div class="text-xs text-[#9ca3af]">Zoom Video</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="font-mono font-medium text-white text-base">$68.50</div>
+<div class="inline-flex items-center gap-1 text-xs font-bold text-[#9ca3af] bg-white/5 px-1.5 py-0.5 rounded mt-1">
+<span class="material-symbols-outlined text-[10px]">remove</span>
+                                    0.00%
+                                  </div>
+</td>
+<td class="px-6 py-4 align-middle">
+<div class="flex flex-col gap-2 w-full">
+<div class="flex justify-between text-[10px] text-[#9ca3af] font-mono">
+<span>$58.80</span>
+<span>$74.70</span>
+</div>
+<div class="h-1.5 w-full bg-white/10 rounded-full overflow-hidden relative">
+<div class="absolute top-0 bottom-0 left-[60%] w-2 h-2 -mt-[1px] bg-primary rounded-full shadow-[0_0_8px_rgba(25,95,118,0.8)]"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 mb-1">
+<span class="text-danger font-bold text-base">-88%</span>
+<span class="text-xs text-[#9ca3af]">from $568</span>
+</div>
+<div class="text-[10px] text-[#6c757d] flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px]">calendar_today</span>
+                                    Peak: Oct 2020
+                                  </div>
+</td>
+<td class="px-6 py-4">
+<div class="grid grid-cols-2 gap-x-2 gap-y-1">
+<div class="text-[10px] text-[#6c757d]">Mkt Cap</div>
+<div class="text-[10px] font-medium text-white text-right">21.3B</div>
+<div class="text-[10px] text-[#6c757d]">P/E (fwd)</div>
+<div class="text-[10px] font-medium text-white text-right">13.8</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="h-10 w-full max-w-[140px]">
+<svg class="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 80 30">
+<path d="M0,0 Q20,25 40,28 T80,28" fill="none" stroke="#EF5350" stroke-dasharray="4 2" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="size-8 rounded-full hover:bg-white/10 flex items-center justify-center text-[#9ca3af] hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">more_horiz</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-white/[0.02] transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-[#5932ea] ring-1 ring-white/10 flex items-center justify-center shrink-0 text-white font-bold text-lg shadow-lg shadow-[#5932ea]/20">T</div>
+<div>
+<div class="font-bold text-white text-base">TDOC</div>
+<div class="text-xs text-[#9ca3af]">Teladoc Health</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="font-mono font-medium text-white text-base">$14.22</div>
+<div class="inline-flex items-center gap-1 text-xs font-bold text-danger bg-danger/10 px-1.5 py-0.5 rounded mt-1">
+<span class="material-symbols-outlined text-[10px]">trending_down</span>
+                                    4.30%
+                                  </div>
+</td>
+<td class="px-6 py-4 align-middle">
+<div class="flex flex-col gap-2 w-full">
+<div class="flex justify-between text-[10px] text-[#9ca3af] font-mono">
+<span>$8.40</span>
+<span>$22.85</span>
+</div>
+<div class="h-1.5 w-full bg-white/10 rounded-full overflow-hidden relative">
+<div class="absolute top-0 bottom-0 left-[35%] w-2 h-2 -mt-[1px] bg-primary rounded-full shadow-[0_0_8px_rgba(25,95,118,0.8)]"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 mb-1">
+<span class="px-1.5 py-0.5 rounded bg-danger/20 text-danger text-[10px] font-bold border border-danger/20 tracking-wide">CRITICAL</span>
+<span class="text-sm font-medium text-white">-95%</span>
+</div>
+<div class="text-[10px] text-[#6c757d] flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px]">calendar_today</span>
+                                    Peak: Feb 2021
+                                  </div>
+</td>
+<td class="px-6 py-4">
+<div class="grid grid-cols-2 gap-x-2 gap-y-1">
+<div class="text-[10px] text-[#6c757d]">Mkt Cap</div>
+<div class="text-[10px] font-medium text-white text-right">2.4B</div>
+<div class="text-[10px] text-[#6c757d]">Sales Y/Y</div>
+<div class="text-[10px] font-medium text-white text-right">+3%</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="h-10 w-full max-w-[140px]">
+<svg class="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 80 30">
+<path d="M0,5 L20,15 L40,20 L60,25 L80,29" fill="none" stroke="#EF5350" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="size-8 rounded-full hover:bg-white/10 flex items-center justify-center text-[#9ca3af] hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">more_horiz</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+
+</body></html>

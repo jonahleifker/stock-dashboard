@@ -9,7 +9,7 @@ const router = express.Router();
 router.post('/register', async (req, res) => {
   try {
     const { username, password, email, displayName } = req.body;
-    
+
     // Validate input
     if (!username || !password) {
       return res.status(400).json({ error: 'Username and password are required' });
@@ -49,10 +49,10 @@ router.post('/register', async (req, res) => {
     const accessToken = issueAccessToken(user, roles);
     const { refreshToken, jti, expiresAt } = await issueRefreshToken(user);
 
-    res.status(201).json({ 
-      accessToken, 
-      refreshToken, 
-      jti, 
+    res.status(201).json({
+      accessToken,
+      refreshToken,
+      jti,
       expiresAt,
       user: {
         id: user.id,
@@ -93,10 +93,34 @@ router.get('/me', passport.authenticate('jwt', { session: false }), async (req, 
   res.json({ user: (req as any).user });
 });
 
+router.put('/me', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
+    const userId = (req as any).user.id;
+    const user = await models.User.findByPk(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const { displayName, profilePicture } = req.body;
+
+    // Update fields if provided
+    if (displayName !== undefined) user.displayName = displayName;
+    if (profilePicture !== undefined) user.profilePicture = profilePicture;
+
+    await user.save();
+
+    res.json({ user });
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
+
 router.post('/logout', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
     const userId = (req as any).user.id;
-    
+
     // Revoke all active refresh tokens for this user
     await models.RefreshToken.update(
       { revokedAt: new Date() },

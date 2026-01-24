@@ -14,7 +14,8 @@ import { TICKERS, EXPANDED_TICKERS, RECENT_IPOS } from '../config/tickers';
 export async function getStocks(req: Request, res: Response) {
   try {
     const forceRefresh = req.query.refresh === 'true';
-    const stocks = await stockService.getStocks(TICKERS, forceRefresh);
+    // Use getAllStocks to return everything in the DB, not just the hardcoded list
+    const stocks = await stockService.getAllStocks();
 
     // Calculate additional metrics for response
     const stocksWithMetrics = stocks.map(stock => {
@@ -31,8 +32,10 @@ export async function getStocks(req: Request, res: Response) {
         percentFromHigh30d,
         change7d: stock.change7d,
         change30d: stock.change30d,
+        change1y: stock.change1y,
         marketCap: stock.marketCap,
         lastUpdated: stock.lastUpdated,
+        news: stock.news,
       };
     });
 
@@ -84,7 +87,7 @@ export async function getSectors(req: Request, res: Response) {
 export async function getDeepPullbacks(req: Request, res: Response) {
   try {
     const timeframe = (req.query.timeframe as '3mo' | '6mo' | '1yr') || '6mo';
-    
+
     // Validate timeframe
     if (!['3mo', '6mo', '1yr'].includes(timeframe)) {
       return res.status(400).json({
@@ -131,6 +134,29 @@ export async function getIPOs(req: Request, res: Response) {
     res.status(500).json({
       success: false,
       error: 'Failed to analyze IPOs',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
+/**
+ * GET /api/stocks/market-pulse
+ * Returns market pulse data (Major Indices)
+ */
+export async function getMarketPulse(req: Request, res: Response) {
+  try {
+    const pulse = await stockService.getMarketPulse();
+
+    res.json({
+      success: true,
+      count: pulse.length,
+      data: pulse,
+    });
+  } catch (error) {
+    console.error('Error in getMarketPulse:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch market pulse',
       message: error instanceof Error ? error.message : 'Unknown error',
     });
   }
@@ -201,6 +227,75 @@ export async function getStockByTicker(req: Request, res: Response) {
   }
 }
 
+/**
+ * POST /api/stocks/bulk
+ * Bulk import tickers
+ */
+export async function bulkImportStocks(req: Request, res: Response) {
+  try {
+    const { tickers } = req.body; // Expecting { tickers: "AAPL, MSFT, ..." } or array
+
+    if (!tickers) {
+      return res.status(400).json({ success: false, error: 'Tickers are required' });
+    }
+
+    let tickerList: string[] = [];
+    if (typeof tickers === 'string') {
+      tickerList = tickers.split(/[\s,]+/).map((s: string) => s.trim().toUpperCase()).filter(Boolean);
+    } else if (Array.isArray(tickers)) {
+      tickerList = tickers.map((s: any) => String(s).trim().toUpperCase()).filter(Boolean);
+    }
+
+    const uniqueTickers = [...new Set(tickerList)];
+
+    // Trigger fetch
+    const results = await stockService.getStocks(uniqueTickers, true); // true = force refresh/create
+
+    // Calculate success/fail
+    const foundTickers = new Set(results.map(s => s.ticker));
+    const failedTickers = uniqueTickers.filter(t => !foundTickers.has(t));
+
+    res.json({
+      success: true,
+      count: results.length,
+      totalRequested: uniqueTickers.length,
+      failedCount: failedTickers.length,
+      failedTickers,
+      message: `Successfully imported ${results.length} stocks. ${failedTickers.length > 0 ? `Failed: ${failedTickers.join(', ')}` : ''}`,
+    });
+  } catch (error) {
+    console.error('Error in bulkImportStocks:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to bulk import stocks',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
+/**
+ * GET /api/stocks/news/top
+ * Get top market news
+ */
+export async function getMarketNews(req: Request, res: Response) {
+  try {
+    const news = await stockService.getMarketNews();
+
+    res.json({
+      success: true,
+      count: news.length,
+      data: news,
+    });
+  } catch (error) {
+    console.error('Error in getMarketNews:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch market news',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
 export default {
   getStocks,
   getSectors,
@@ -208,4 +303,7 @@ export default {
   getIPOs,
   refreshStocks,
   getStockByTicker,
+  bulkImportStocks,
+  getMarketPulse,
+  getMarketNews,
 };

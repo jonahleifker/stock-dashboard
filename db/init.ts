@@ -8,18 +8,18 @@ import models from '../models';
 export async function initializeDatabase(): Promise<void> {
   try {
     console.log('Initializing database...');
-    
+
     // Test connection
     await sequelize.authenticate();
     console.log('Database connection established successfully.');
 
     // Sync all models (creates tables if they don't exist)
     // Don't use alter mode - use migrations instead for schema changes
-    await sequelize.sync({ 
-      alter: false,          // Use migrations for schema changes
+    await sequelize.sync({
+      alter: false,          // Don't auto-update - use migrations instead
       force: false,          // Never drop tables
     });
-    
+
     console.log('Database tables synced successfully.');
   } catch (error) {
     console.error('Unable to initialize database:', error);

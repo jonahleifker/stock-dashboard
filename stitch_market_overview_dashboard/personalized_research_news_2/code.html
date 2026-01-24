@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Research Feed</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#195f76",
+              "background-light": "#fafafa",
+              "background-dark": "#121416",
+              "card-dark": "#212529",
+              "text-secondary": "#9ca3af",
+            },
+            fontFamily: {
+              "display": ["Manrope", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white min-h-screen flex flex-col overflow-x-hidden selection:bg-primary selection:text-white">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-50 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 transition-colors duration-200">
+<div class="flex items-center px-4 h-16 justify-between">
+<div class="flex items-center gap-3">
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+<span class="material-symbols-outlined text-gray-900 dark:text-white" style="font-size: 24px;">menu</span>
+</button>
+<h1 class="text-xl font-extrabold tracking-tight">Research Feed</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+<span class="material-symbols-outlined text-gray-900 dark:text-white" style="font-size: 24px;">search</span>
+</button>
+<div class="size-8 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
+<span class="material-symbols-outlined text-primary" style="font-size: 18px;">person</span>
+</div>
+</div>
+</div>
+<!-- Filter Chips (Horizontal Scroll) -->
+<div class="w-full overflow-x-auto no-scrollbar pb-3 pt-1 px-4">
+<div class="flex gap-3 min-w-max">
+<button class="flex h-9 items-center justify-center px-5 rounded-full bg-primary text-white text-sm font-bold shadow-lg shadow-primary/20 transition-transform active:scale-95">
+                    All Stocks
+                </button>
+<button class="flex h-9 items-center justify-center px-5 rounded-full bg-white dark:bg-[#212529] border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm font-semibold hover:border-primary/50 transition-colors active:scale-95">
+                    $AAPL
+                </button>
+<button class="flex h-9 items-center justify-center px-5 rounded-full bg-white dark:bg-[#212529] border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm font-semibold hover:border-primary/50 transition-colors active:scale-95">
+                    $MSFT
+                </button>
+<button class="flex h-9 items-center justify-center px-5 rounded-full bg-white dark:bg-[#212529] border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm font-semibold hover:border-primary/50 transition-colors active:scale-95">
+                    $TSLA
+                </button>
+<button class="flex h-9 items-center justify-center px-5 rounded-full bg-white dark:bg-[#212529] border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm font-semibold hover:border-primary/50 transition-colors active:scale-95">
+                    $NVDA
+                </button>
+<button class="flex h-9 items-center justify-center px-5 rounded-full bg-white dark:bg-[#212529] border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm font-semibold hover:border-primary/50 transition-colors active:scale-95">
+                    $GOOGL
+                </button>
+</div>
+</div>
+</header>
+<!-- Main Feed Content -->
+<main class="flex-1 px-4 py-4 pb-28 space-y-4">
+<!-- Date Header -->
+<div class="flex items-center gap-4 py-2 opacity-80">
+<div class="h-[1px] flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-700 to-transparent"></div>
+<span class="text-xs font-bold uppercase tracking-widest text-text-secondary">Today</span>
+<div class="h-[1px] flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-700 to-transparent"></div>
+</div>
+<!-- Card 1: NVDA (Positive Sentiment) -->
+<article class="group relative overflow-hidden rounded-xl bg-white dark:bg-card-dark shadow-sm border border-gray-100 dark:border-gray-800 transition-all active:scale-[0.99]">
+<!-- Sentiment Indicator Strip -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500"></div>
+<div class="flex flex-col sm:flex-row gap-4 p-4 pl-5">
+<div class="flex flex-col gap-2 flex-1 min-w-0">
+<!-- Meta Row -->
+<div class="flex items-center gap-2 flex-wrap text-xs font-medium">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/20">
+                            $NVDA
+                            <span class="material-symbols-outlined ml-0.5" style="font-size: 14px;">trending_up</span>
+</span>
+<span class="text-text-secondary">•</span>
+<span class="text-text-secondary">Reuters</span>
+<span class="text-text-secondary">•</span>
+<span class="text-text-secondary">15m ago</span>
+</div>
+<!-- Content -->
+<h3 class="text-base sm:text-lg font-bold leading-tight text-gray-900 dark:text-white line-clamp-2">
+                        Nvidia announces new AI chip architecture promising 4x gains
+                    </h3>
+<p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-2">
+                        Nvidia revealed its latest Blackwell GPU architecture at GTC today, promising massive performance improvements for training large language models...
+                    </p>
+</div>
+<!-- Image -->
+<div class="shrink-0 w-full sm:w-32 aspect-video sm:aspect-square rounded-lg bg-gray-100 dark:bg-gray-800 overflow-hidden relative">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Abstract visualization of a computer chip circuit board glowing green" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB4F2X-g0FwgitkUde7YfbPnyKMek4eoMhMUH-o59VuktmRJMqLHbrPm_NaVP10jTDMDUwvcqCyeJXx-01qgkpRSoxNVVd5iogzhEI56zz801mEUVUjkB3-W9m6aaYM6C_A-4ffapmvzYWKjB3FCYeLshzLhVBHyqVNPngSdpnYeUREXy_hBEfwe1YJdvMnGO20anDsfdB8RuVhjCkF6KTO46VhYE3PrpnHFs3FWedWnx31nS-l_g1PPfUXslI8gDt6qHX_G0whg3I');">
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+</div>
+</div>
+<!-- Actions Footer -->
+<div class="flex items-center justify-between px-4 pb-3 pt-0 pl-5">
+<div class="flex gap-3">
+<button class="text-text-secondary hover:text-primary transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined" style="font-size: 18px;">bookmark_add</span>
+</button>
+<button class="text-text-secondary hover:text-primary transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined" style="font-size: 18px;">share</span>
+</button>
+</div>
+<button class="text-xs font-bold text-primary hover:text-primary/80 transition-colors flex items-center gap-0.5">
+                    Read Analysis <span class="material-symbols-outlined" style="font-size: 14px;">arrow_forward</span>
+</button>
+</div>
+</article>
+<!-- Card 2: TSLA (Negative Sentiment) -->
+<article class="group relative overflow-hidden rounded-xl bg-white dark:bg-card-dark shadow-sm border border-gray-100 dark:border-gray-800 transition-all active:scale-[0.99]">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-red-500"></div>
+<div class="flex flex-col sm:flex-row gap-4 p-4 pl-5">
+<div class="flex flex-col gap-2 flex-1 min-w-0">
+<div class="flex items-center gap-2 flex-wrap text-xs font-medium">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-red-500/10 text-red-600 dark:text-red-400 font-bold border border-red-500/20">
+                            $TSLA
+                            <span class="material-symbols-outlined ml-0.5" style="font-size: 14px;">trending_down</span>
+</span>
+<span class="text-text-secondary">•</span>
+<span class="text-text-secondary">Bloomberg</span>
+<span class="text-text-secondary">•</span>
+<span class="text-text-secondary">1h ago</span>
+</div>
+<h3 class="text-base sm:text-lg font-bold leading-tight text-gray-900 dark:text-white line-clamp-2">
+                        Tesla production numbers miss quarterly targets by 5%
+                    </h3>
+<p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-2">
+                        Deliveries fell short of Wall Street expectations as supply chain issues persist in key manufacturing hubs, causing stock to slip in pre-market...
+                    </p>
+</div>
+<div class="shrink-0 w-full sm:w-32 aspect-video sm:aspect-square rounded-lg bg-gray-100 dark:bg-gray-800 overflow-hidden relative">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Modern electric vehicle charging station silhouette against a sunset" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDcbBwGWcPL2vqXDh2wE_zpW2-ccDikIoSl6pvsgja7ELET6tX47yzQ8ovr02Bk8E7IyRB5O3dKGFi50ueNxU4roPFkGd9uT0D3TdtNqSXft68LrxUn2D3NVKGsZ4cIss3OYFKmxoL40XKZawtuWtdw6olgWD-9w9BYiAadkwjFee3AX-iEcrtMDuu-vzp7b420Ot4NNr223m4FEg2j-bangnTTkbzxYdvrS7-bj-rJwAzXtRAja-spRddDmN_59Mif4ubS6ld9Leg');">
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between px-4 pb-3 pt-0 pl-5">
+<div class="flex gap-3">
+<button class="text-text-secondary hover:text-primary transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined" style="font-size: 18px;">bookmark_add</span>
+</button>
+<button class="text-text-secondary hover:text-primary transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined" style="font-size: 18px;">share</span>
+</button>
+</div>
+<button class="text-xs font-bold text-primary hover:text-primary/80 transition-colors flex items-center gap-0.5">
+                    Read Analysis <span class="material-symbols-outlined" style="font-size: 14px;">arrow_forward</span>
+</button>
+</div>
+</article>
+<!-- Card 3: AMD (Positive Sentiment) -->
+<article class="group relative overflow-hidden rounded-xl bg-white dark:bg-card-dark shadow-sm border border-gray-100 dark:border-gray-800 transition-all active:scale-[0.99]">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500"></div>
+<div class="flex flex-col sm:flex-row gap-4 p-4 pl-5">
+<div class="flex flex-col gap-2 flex-1 min-w-0">
+<div class="flex items-center gap-2 flex-wrap text-xs font-medium">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/20">
+                            $AMD
+                            <span class="material-symbols-outlined ml-0.5" style="font-size: 14px;">trending_up</span>
+</span>
+<span class="text-text-secondary">•</span>
+<span class="text-text-secondary">CNBC</span>
+<span class="text-text-secondary">•</span>
+<span class="text-text-secondary">3h ago</span>
+</div>
+<h3 class="text-base sm:text-lg font-bold leading-tight text-gray-900 dark:text-white line-clamp-2">
+                        AMD gains significant market share in enterprise server space
+                    </h3>
+<p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-2">
+                        New EPYC processors are driving adoption in data centers at the expense of Intel, with key contracts signed with major cloud providers...
+                    </p>
+</div>
+<div class="shrink-0 w-full sm:w-32 aspect-video sm:aspect-square rounded-lg bg-gray-100 dark:bg-gray-800 overflow-hidden relative">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Server rack room with blue LED lights indicating data processing" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCkeDpQW8t4Owq5xzqOD9bry9I8hzD3CNPfjfGIduYuLmwWdFofhoR8sL4vhr_Sl2Z90fn4vnGk6yG8ZpS8VBz0Kj4Iibqvt9IlkgeSVGL0fuQU1ZxT1crOnmnstlqtIp7MnDuBmfOC1gNJbHTRoQ_DNuHjKkruM0cN6fsiwJ0FyLe_vllpJ0HdnC2C7KLn329Z2hbAae3m4DjsWgP6Ti5T4mjESKKJ6cGZr8vZdD4uAdWXsF3zbCnD9JRWuOM3l45IW-Wy76YLlFY');">
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between px-4 pb-3 pt-0 pl-5">
+<div class="flex gap-3">
+<button class="text-text-secondary hover:text-primary transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined" style="font-size: 18px;">bookmark_add</span>
+</button>
+<button class="text-text-secondary hover:text-primary transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined" style="font-size: 18px;">share</span>
+</button>
+</div>
+<button class="text-xs font-bold text-primary hover:text-primary/80 transition-colors flex items-center gap-0.5">
+                    Read Analysis <span class="material-symbols-outlined" style="font-size: 14px;">arrow_forward</span>
+</button>
+</div>
+</article>
+<!-- Card 4: MSFT (Neutral Sentiment) -->
+<article class="group relative overflow-hidden rounded-xl bg-white dark:bg-card-dark shadow-sm border border-gray-100 dark:border-gray-800 transition-all active:scale-[0.99]">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-gray-400"></div>
+<div class="flex flex-col sm:flex-row gap-4 p-4 pl-5">
+<div class="flex flex-col gap-2 flex-1 min-w-0">
+<div class="flex items-center gap-2 flex-wrap text-xs font-medium">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-gray-500/10 text-gray-600 dark:text-gray-400 font-bold border border-gray-500/20">
+                            $MSFT
+                            <span class="material-symbols-outlined ml-0.5" style="font-size: 14px;">remove</span>
+</span>
+<span class="text-text-secondary">•</span>
+<span class="text-text-secondary">The Verge</span>
+<span class="text-text-secondary">•</span>
+<span class="text-text-secondary">5h ago</span>
+</div>
+<h3 class="text-base sm:text-lg font-bold leading-tight text-gray-900 dark:text-white line-clamp-2">
+                        Microsoft integrates new Copilot features into Office 365
+                    </h3>
+<p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-2">
+                        The rollout begins next week for enterprise customers. Analysts are waiting to see adoption rates before adjusting price targets...
+                    </p>
+</div>
+<div class="shrink-0 w-full sm:w-32 aspect-video sm:aspect-square rounded-lg bg-gray-100 dark:bg-gray-800 overflow-hidden relative">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Abstract blue digital interface representing software integration" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAEZMrmCTDizGvgUfNrkX8xSq_9bkbPcQFaGkfVetm0AZ-P69GL-q0ylVzscmSzq8T2SWFqM6dMUM01AY2OPb_MbvOETtWiEfMTyPhxz56kBq4_1aCGeCKeZusG2Vmydg7MAznYcgYsXvO-gxxGi_MET8Y1VGvGl8oVHpypuUTEi_ll67Y9sOLHwx7DBC-HTcY8I83S04eqdVWOs-M-z-2elsGVgL-DYrYtxEq09-bY_kTt_8jjcbftOz_bw8fsPgZuc7E1JDqkWw8');">
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between px-4 pb-3 pt-0 pl-5">
+<div class="flex gap-3">
+<button class="text-text-secondary hover:text-primary transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined" style="font-size: 18px;">bookmark_add</span>
+</button>
+<button class="text-text-secondary hover:text-primary transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined" style="font-size: 18px;">share</span>
+</button>
+</div>
+<button class="text-xs font-bold text-primary hover:text-primary/80 transition-colors flex items-center gap-0.5">
+                    Read Analysis <span class="material-symbols-outlined" style="font-size: 14px;">arrow_forward</span>
+</button>
+</div>
+</article>
+<!-- End of Feed State -->
+<div class="py-8 text-center flex flex-col items-center justify-center opacity-60">
+<span class="material-symbols-outlined text-4xl mb-2 text-text-secondary">check_circle</span>
+<p class="text-sm text-text-secondary">You're all caught up</p>
+</div>
+</main>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 w-full bg-background-light dark:bg-background-dark border-t border-gray-200 dark:border-gray-800 pb-safe pt-2 px-6 z-50">
+<div class="flex items-center justify-between max-w-md mx-auto h-14">
+<button class="flex flex-1 flex-col items-center justify-center gap-1 text-gray-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">dashboard</span>
+<span class="text-[10px] font-semibold">Dashboard</span>
+</button>
+<button class="flex flex-1 flex-col items-center justify-center gap-1 text-primary">
+<div class="relative">
+<span class="material-symbols-outlined" style="font-size: 24px; font-variation-settings: 'FILL' 1;">newspaper</span>
+<span class="absolute -top-0.5 -right-0.5 size-2 bg-red-500 rounded-full border border-background-dark"></span>
+</div>
+<span class="text-[10px] font-semibold">Research</span>
+</button>
+<button class="flex flex-1 flex-col items-center justify-center gap-1 text-gray-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">show_chart</span>
+<span class="text-[10px] font-semibold">Market</span>
+</button>
+<button class="flex flex-1 flex-col items-center justify-center gap-1 text-gray-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">settings</span>
+<span class="text-[10px] font-semibold">Settings</span>
+</button>
+</div>
+<!-- Safe area spacing for iOS home indicator -->
+<div class="h-4 w-full"></div>
+</nav>
+</body></html>
