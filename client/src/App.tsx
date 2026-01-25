@@ -7,38 +7,149 @@ import TickerMatrix from './pages/TickerMatrix';
 import Favorites from './pages/Favorites';
 import Watchlist from './pages/Watchlist';
 import ResearchHub from './pages/ResearchHub';
-import { AuthProvider } from './context/AuthContext';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import ErrorBoundary from './components/ErrorBoundary';
 
-// No auth required - auto-authenticated as dev user
+// PrivateRoute wrapper component that checks authentication
+interface PrivateRouteProps {
+  children: React.ReactElement;
+}
+
+const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    // Show loading spinner while checking authentication
+    return (
+      <div className="min-h-screen bg-background-dark flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+          <p className="text-white/60 text-sm">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+};
+
 function AppRoutes() {
+  const { isAuthenticated, loading } = useAuth();
+
+  // Handle default route based on authentication status
+  const DefaultRoute = () => {
+    if (loading) {
+      return (
+        <div className="min-h-screen bg-background-dark flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+            <p className="text-white/60 text-sm">Loading...</p>
+          </div>
+        </div>
+      );
+    }
+    return isAuthenticated ? <Navigate to="/portfolio" replace /> : <Navigate to="/login" replace />;
+  };
+
   return (
     <Routes>
-      {/* Default route goes to Portfolio (Favorites page) */}
-      <Route path="/" element={<Navigate to="/portfolio" replace />} />
+      {/* Default route - redirects based on auth status */}
+      <Route path="/" element={<DefaultRoute />} />
 
-      {/* Redirect any login/register attempts to portfolio */}
-      <Route path="/login" element={<Navigate to="/portfolio" replace />} />
-      <Route path="/register" element={<Navigate to="/portfolio" replace />} />
+      {/* Public routes - login and register */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
 
-      {/* Main routes - no auth wrapper needed */}
-      <Route path="/dashboard" element={<Watchlist />} />
-      <Route path="/favorites" element={<Watchlist />} />
-      <Route path="/portfolio" element={<Favorites />} />
-      <Route path="/quotes" element={<QuotesHome />} />
-      <Route path="/company/:ticker" element={<CompanyDashboard />} />
-      <Route path="/notes" element={<ResearchNotes />} />
-      <Route path="/company/:ticker/research" element={<ResearchNotes />} />
-      <Route path="/research" element={<ResearchHub />} />
-      <Route path="/matrix" element={<TickerMatrix />} />
+      {/* Protected routes - wrapped with PrivateRoute */}
+      <Route
+        path="/dashboard"
+        element={
+          <PrivateRoute>
+            <Watchlist />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/favorites"
+        element={
+          <PrivateRoute>
+            <Watchlist />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/portfolio"
+        element={
+          <PrivateRoute>
+            <Favorites />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/quotes"
+        element={
+          <PrivateRoute>
+            <QuotesHome />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/company/:ticker"
+        element={
+          <PrivateRoute>
+            <CompanyDashboard />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/notes"
+        element={
+          <PrivateRoute>
+            <ResearchNotes />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/company/:ticker/research"
+        element={
+          <PrivateRoute>
+            <ResearchNotes />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/research"
+        element={
+          <PrivateRoute>
+            <ResearchHub />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/matrix"
+        element={
+          <PrivateRoute>
+            <TickerMatrix />
+          </PrivateRoute>
+        }
+      />
     </Routes>
   );
 }
 
 function App() {
   return (
-    <AuthProvider>
-      <AppRoutes />
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

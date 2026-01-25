@@ -59,16 +59,23 @@ app.use(cors());
 app.use(passport.initialize());
 app.use(passport.session());
 
-// DEV: Bypass Authentication Middleware
+// DEV: Bypass Authentication Middleware (only if explicitly enabled)
 app.use((req: Request, res: Response, next: NextFunction) => {
-  // Inject default user for all requests
-  (req as any).user = {
-    id: 1,
-    username: 'jonah',
-    email: 'jonahleifker@gmail.com',
-    displayName: 'Jonah Leifker',
-    roles: ['admin'] // Simulate admin role
-  };
+  // Only bypass if BOTH conditions are met:
+  // 1. NODE_ENV is 'development'
+  // 2. DEV_AUTH_BYPASS environment variable is 'true'
+  const devBypass = process.env.NODE_ENV === 'development' && process.env.DEV_AUTH_BYPASS === 'true';
+  
+  if (devBypass) {
+    // Inject default user for all requests
+    (req as any).user = {
+      id: 1,
+      username: 'jonah',
+      email: 'jonahleifker@gmail.com',
+      displayName: 'Jonah Leifker',
+      roles: ['admin'] // Simulate admin role
+    };
+  }
   next();
 });
 

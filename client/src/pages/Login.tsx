@@ -27,20 +27,8 @@ const Login: React.FC = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Based on auth.api.ts, data contains { accessToken, refreshToken, jti, expiresAt }
-        // We need user data too. The login endpoint in auth.api.ts DOES NOT return user object currently, 
-        // only tokens. We might need to fetch /me or update backend. 
-        // Let's check auth.api.ts again. 
-        // Wait, line 76 in auth.api.ts: res.json({ accessToken, refreshToken, jti, expiresAt }); 
-        // It does NOT return user. 
-        // So we should fetch /me after getting token.
-
-        login(data.accessToken, data.refreshToken, { id: 0, username: email, displayName: email, email: email, roles: [] }); // Temporary user obj until we fetch real one
-
-        // Optionally fetch real user data immediately ensuring context is updated
-        // But AuthProvider init check does this on mount. 
-        // Let's rely on the optimistic update for speed or update AuthProvider to fetchMe.
-
+        // Login successful - data contains { accessToken, refreshToken, jti, expiresAt, user }
+        login(data.accessToken, data.refreshToken, data.user);
         navigate('/quotes');
       } else {
         setError(data.error || 'Login failed');

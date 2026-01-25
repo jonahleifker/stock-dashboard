@@ -59,6 +59,7 @@ router.post('/register', async (req, res) => {
         username: user.username,
         email: user.email,
         displayName: user.displayName,
+        roles: roles
       }
     });
   } catch (error) {
@@ -73,7 +74,19 @@ router.post('/login', (req, res, next) => {
     const roles = await user.getRoles().then((rs: any[]) => rs.map(r => r.name));
     const accessToken = issueAccessToken(user, roles);
     const { refreshToken, jti, expiresAt } = await issueRefreshToken(user);
-    res.json({ accessToken, refreshToken, jti, expiresAt });
+    res.json({ 
+      accessToken, 
+      refreshToken, 
+      jti, 
+      expiresAt,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        displayName: user.displayName,
+        roles: roles
+      }
+    });
   })(req, res, next);
 });
 
