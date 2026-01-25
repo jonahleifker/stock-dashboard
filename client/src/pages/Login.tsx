@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const [usernameOrEmail, setUsernameOrEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +21,7 @@ const Login: React.FC = () => {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: email, password }) // Using email as username for now as per simple Auth
+        body: JSON.stringify({ username: usernameOrEmail, password })
       });
 
       const data = await response.json();
@@ -96,27 +96,27 @@ const Login: React.FC = () => {
           {/* Form Section */}
           <form onSubmit={handleLogin} className="flex flex-col gap-4">
             {error && <div className="p-3 text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-lg">{error}</div>}
-            {/* Email Field */}
+            {/* Username or Email Field */}
             <div className="space-y-1.5">
               <label
                 className="text-xs font-medium text-gray-300 ml-1"
-                htmlFor="email"
+                htmlFor="usernameOrEmail"
               >
-                Email
+                Username or Email
               </label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 group-focus-within:text-primary transition-colors">
                   <span className="material-symbols-outlined text-[20px]">
-                    mail
+                    person
                   </span>
                 </div>
                 <input
                   className="block w-full rounded-lg bg-white border border-white/10 text-black placeholder-gray-500 focus:border-primary focus:ring-1 focus:ring-primary pl-10 pr-4 py-3 text-sm transition-all outline-none"
-                  id="email"
-                  placeholder="name@example.com"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  id="usernameOrEmail"
+                  placeholder="username or email"
+                  type="text"
+                  value={usernameOrEmail}
+                  onChange={(e) => setUsernameOrEmail(e.target.value)}
                   required
                 />
               </div>
