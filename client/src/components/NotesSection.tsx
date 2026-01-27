@@ -166,7 +166,9 @@ const NotesSection: React.FC<NotesSectionProps> = ({ ticker }) => {
                                             {note.user?.displayName?.charAt(0) || "U"}
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="text-white text-sm font-bold">{note.user?.displayName || note.user?.username}</span>
+                                            <span className={`text-sm font-bold ${user?.id === note.user?.id ? 'text-white' : 'text-blue-400'}`}>
+                                                {note.user?.displayName || note.user?.username}
+                                            </span>
                                             <span className="text-gray-500 text-[10px]">{format(new Date(note.createdAt), "MMM d, yyyy")}</span>
                                         </div>
                                     </div>

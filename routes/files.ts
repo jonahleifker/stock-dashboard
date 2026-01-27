@@ -5,7 +5,7 @@ import * as fileController from '../controllers/fileController';
 
 const router = express.Router();
 
-// Configure multer for memory storage (we'll upload to Supabase, not disk)
+// Configure multer for memory storage (files are written to disk by fileService)
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
@@ -17,8 +17,17 @@ const upload = multer({
 const requireAuth = passport.authenticate('jwt', { session: false });
 
 /**
- * File Routes
+ * File Routes - Local filesystem storage
  */
+
+// Get files shared with me (must come before /:ticker route)
+router.get('/shared', requireAuth, fileController.getSharedFiles);
+
+// Get current user's files (must come before /:ticker route)
+router.get('/user/me', requireAuth, fileController.getMyFiles);
+
+// Get current user's storage usage
+router.get('/user/storage', requireAuth, fileController.getStorageUsage);
 
 // Upload file for a specific ticker
 router.post('/:ticker/upload', requireAuth, upload.single('file'), fileController.uploadFile);
@@ -26,16 +35,22 @@ router.post('/:ticker/upload', requireAuth, upload.single('file'), fileControlle
 // Get all files for a ticker
 router.get('/:ticker', fileController.getFilesByTicker);
 
+// Share file with users
+router.post('/:id/share', requireAuth, fileController.shareFile);
+
+// Unshare file from user
+router.delete('/:id/share/:userId', requireAuth, fileController.unshareFile);
+
+// Get users file is shared with
+router.get('/:id/shared-with', requireAuth, fileController.getSharedWith);
+
+// Serve file directly (stream from local storage)
+router.get('/:id/serve', fileController.serveFile);
+
 // Get download URL for a file
 router.get('/:id/download', fileController.getDownloadUrl);
 
 // Delete a file
 router.delete('/:id', requireAuth, fileController.deleteFile);
-
-// Get current user's files
-router.get('/user/me', requireAuth, fileController.getMyFiles);
-
-// Get current user's storage usage
-router.get('/user/storage', requireAuth, fileController.getStorageUsage);
 
 export default router;

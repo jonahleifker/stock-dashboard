@@ -69,8 +69,17 @@ router.post('/register', async (req, res) => {
 });
 
 router.post('/login', (req, res, next) => {
+  console.log('[LOGIN] Attempt:', { username: req.body?.username, hasPassword: !!req.body?.password });
   passport.authenticate('local', { session: false }, async (err: any, user: any, info: any) => {
-    if (err || !user) return res.status(401).json({ error: 'Invalid credentials' });
+    if (err) {
+      console.error('[LOGIN] Authentication error:', err);
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    if (!user) {
+      console.log('[LOGIN] Authentication failed - no user returned. Info:', info);
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    console.log('[LOGIN] Success for user:', user.username);
     const roles = await user.getRoles().then((rs: any[]) => rs.map(r => r.name));
     const accessToken = issueAccessToken(user, roles);
     const { refreshToken, jti, expiresAt } = await issueRefreshToken(user);

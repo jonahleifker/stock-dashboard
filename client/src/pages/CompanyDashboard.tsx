@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar";
 import AntiGravitySection from "../components/AntiGravitySection";
 import NotesSection from "../components/NotesSection";
 import ArticlesSection from "../components/ArticlesSection";
+import ResearchFilesSection from "../components/ResearchFilesSection";
 import { stockApi, StockQuote } from "../lib/api";
 
 interface CompanyData {
@@ -184,6 +185,9 @@ const CompanyDashboard: React.FC = () => {
 
                             {/* Articles Section */}
                             <ArticlesSection ticker={companyData.symbol} />
+
+                            {/* Research Files Section */}
+                            <ResearchFilesSection ticker={companyData.symbol} />
 
                             {/* Fundamentals Sections (Mock/Partial for now) */}
                             <div className="flex flex-col gap-3">

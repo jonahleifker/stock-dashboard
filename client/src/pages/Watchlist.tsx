@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Navbar from "../components/Navbar";
 import { watchlistApi, stockApi } from "../lib/api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { format } from "date-fns";
 import ConfirmModal from "../components/ConfirmModal";
 
@@ -248,7 +248,13 @@ const Watchlist: React.FC = () => {
                                                             {stock.ticker[0]}
                                                         </div>
                                                         <div>
-                                                            <div className="font-bold text-white">{stock.ticker}</div>
+                                                            <Link 
+                                                                to={`/company/${stock.ticker}`}
+                                                                className="font-bold text-white hover:text-primary transition-colors"
+                                                                onClick={(e) => e.stopPropagation()}
+                                                            >
+                                                                {stock.ticker}
+                                                            </Link>
                                                             <div className="text-xs text-text-secondary">{stock.name}</div>
                                                         </div>
                                                     </div>

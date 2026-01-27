@@ -23,14 +23,7 @@ export const uploadFile = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'No file provided' });
     }
 
-    // Check if Supabase is configured
-    if (!fileService.isConfigured()) {
-      return res.status(503).json({ 
-        error: 'File upload service is not configured. Please contact administrator.' 
-      });
-    }
-
-    // Upload file
+    // Upload file to local storage
     const file = await fileService.uploadFile({
       ticker: ticker.toUpperCase(),
       userId,
@@ -106,24 +99,14 @@ export const getDownloadUrl = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Invalid file ID' });
     }
 
-    // Check if Supabase is configured
-    if (!fileService.isConfigured()) {
-      return res.status(503).json({ 
-        error: 'File download service is not configured' 
-      });
-    }
-
     // Get file metadata to check if it exists
     const file = await fileService.getFileById(fileId);
     if (!file) {
       return res.status(404).json({ error: 'File not found' });
     }
 
-    // Generate download URL
-    const downloadUrl = await fileService.getDownloadUrl({ 
-      id: fileId,
-      expiresIn: 3600, // 1 hour
-    });
+    // For local storage, the download URL points to our serve endpoint
+    const downloadUrl = `/api/files/${fileId}/serve`;
 
     // Either redirect to the URL or return it as JSON
     if (redirect) {
@@ -133,13 +116,46 @@ export const getDownloadUrl = async (req: Request, res: Response) => {
         fileId,
         filename: file.filename,
         downloadUrl,
-        expiresIn: 3600,
       });
     }
   } catch (error: any) {
     console.error('Error generating download URL:', error);
     return res.status(500).json({ 
       error: error.message || 'Failed to generate download URL' 
+    });
+  }
+};
+
+/**
+ * Serve file directly (stream file from local storage)
+ * GET /api/files/:id/serve
+ */
+export const serveFile = async (req: Request, res: Response) => {
+  try {
+    const fileId = parseInt(req.params.id as string);
+
+    if (isNaN(fileId)) {
+      return res.status(400).json({ error: 'Invalid file ID' });
+    }
+
+    // Get file data
+    const { buffer, filename, mimeType } = await fileService.getFileBuffer(fileId);
+
+    // Set headers for download
+    res.setHeader('Content-Type', mimeType);
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('Content-Length', buffer.length);
+
+    return res.send(buffer);
+  } catch (error: any) {
+    console.error('Error serving file:', error);
+    
+    if (error.message.includes('not found')) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+    
+    return res.status(500).json({ 
+      error: error.message || 'Failed to serve file' 
     });
   }
 };
@@ -161,14 +177,7 @@ export const deleteFile = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Invalid file ID' });
     }
 
-    // Check if Supabase is configured
-    if (!fileService.isConfigured()) {
-      return res.status(503).json({ 
-        error: 'File service is not configured' 
-      });
-    }
-
-    // Delete file (includes ownership check)
+    // Delete file from local storage (includes ownership check)
     await fileService.deleteFile(fileId, userId);
 
     return res.json({
@@ -252,6 +261,162 @@ export const getStorageUsage = async (req: Request, res: Response) => {
     console.error('Error fetching storage usage:', error);
     return res.status(500).json({ 
       error: 'Failed to fetch storage usage' 
+    });
+  }
+};
+
+/**
+ * Share a file with one or more users
+ * POST /api/files/:id/share
+ * Body: { userIds: number[] }
+ */
+export const shareFile = async (req: Request, res: Response) => {
+  try {
+    const fileId = parseInt(req.params.id as string);
+    const userId = (req.user as any)?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    if (isNaN(fileId)) {
+      return res.status(400).json({ error: 'Invalid file ID' });
+    }
+
+    const { userIds } = req.body;
+    if (!Array.isArray(userIds) || userIds.length === 0) {
+      return res.status(400).json({ error: 'userIds must be a non-empty array' });
+    }
+
+    await fileService.shareFile(fileId, userId, userIds);
+
+    return res.json({
+      message: 'File shared successfully',
+      sharedWith: userIds
+    });
+  } catch (error: any) {
+    console.error('Error sharing file:', error);
+
+    if (error.message?.includes('Unauthorized')) {
+      return res.status(403).json({ error: 'You do not have permission to share this file' });
+    }
+
+    return res.status(500).json({
+      error: error.message || 'Failed to share file'
+    });
+  }
+};
+
+/**
+ * Unshare a file from a specific user
+ * DELETE /api/files/:id/share/:userId
+ */
+export const unshareFile = async (req: Request, res: Response) => {
+  try {
+    const fileId = parseInt(req.params.id as string);
+    const targetUserId = parseInt(req.params.userId as string);
+    const userId = (req.user as any)?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    if (isNaN(fileId) || isNaN(targetUserId)) {
+      return res.status(400).json({ error: 'Invalid file or user ID' });
+    }
+
+    await fileService.unshareFile(fileId, userId, targetUserId);
+
+    return res.json({ message: 'File unshared successfully' });
+  } catch (error: any) {
+    console.error('Error unsharing file:', error);
+
+    if (error.message?.includes('Unauthorized')) {
+      return res.status(403).json({ error: 'You do not have permission to unshare this file' });
+    }
+
+    return res.status(500).json({
+      error: error.message || 'Failed to unshare file'
+    });
+  }
+};
+
+/**
+ * Get list of users a file is shared with
+ * GET /api/files/:id/shared-with
+ */
+export const getSharedWith = async (req: Request, res: Response) => {
+  try {
+    const fileId = parseInt(req.params.id as string);
+    const userId = (req.user as any)?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    if (isNaN(fileId)) {
+      return res.status(400).json({ error: 'Invalid file ID' });
+    }
+
+    const users = await fileService.getSharedWith(fileId, userId);
+
+    return res.json({
+      fileId,
+      sharedWith: users.map((user: any) => ({
+        id: user.id,
+        username: user.username,
+        displayName: user.displayName || user.username,
+      }))
+    });
+  } catch (error: any) {
+    console.error('Error fetching shared users:', error);
+
+    if (error.message?.includes('Unauthorized')) {
+      return res.status(403).json({ error: 'You do not have permission to view this information' });
+    }
+
+    return res.status(500).json({
+      error: error.message || 'Failed to fetch shared users'
+    });
+  }
+};
+
+/**
+ * Get all files shared with the current user
+ * GET /api/files/shared
+ */
+export const getSharedFiles = async (req: Request, res: Response) => {
+  try {
+    const userId = (req.user as any)?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    const files = await fileService.getSharedFiles(userId);
+
+    return res.json({
+      count: files.length,
+      files: files.map(file => ({
+        id: file.id,
+        ticker: file.ticker,
+        filename: file.filename,
+        fileType: file.fileType,
+        fileSize: file.fileSize,
+        source: file.source,
+        visibility: file.visibility,
+        uploadedAt: file.uploadedAt,
+        user: {
+          id: (file as any).User?.id,
+          username: (file as any).User?.username,
+          displayName: (file as any).User?.displayName,
+        },
+      })),
+    });
+  } catch (error: any) {
+    console.error('Error fetching shared files:', error);
+    return res.status(500).json({
+      error: 'Failed to fetch shared files'
     });
   }
 };

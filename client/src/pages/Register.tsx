@@ -13,6 +13,7 @@ const Register: React.FC = () => {
         displayName: ""
     });
 
+    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -40,7 +41,7 @@ const Register: React.FC = () => {
             if (response.ok) {
                 // Auto-login after register
                 login(data.accessToken, data.refreshToken, data.user);
-                navigate('/quotes');
+                navigate('/portfolio');
             } else {
                 setError(data.error || 'Registration failed');
             }
@@ -152,14 +153,23 @@ const Register: React.FC = () => {
                                     <span className="material-symbols-outlined text-[20px]">lock</span>
                                 </div>
                                 <input
-                                    className="block w-full rounded-lg bg-white border border-white/10 text-black placeholder-gray-500 focus:border-primary focus:ring-1 focus:ring-primary pl-10 pr-4 py-3 text-sm transition-all outline-none"
+                                    className="block w-full rounded-lg bg-white border border-white/10 text-black placeholder-gray-500 focus:border-primary focus:ring-1 focus:ring-primary pl-10 pr-10 py-3 text-sm transition-all outline-none"
                                     id="password"
                                     placeholder="••••••••"
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     value={formData.password}
                                     onChange={handleChange}
                                     required
                                 />
+                                <button
+                                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-black transition-colors cursor-pointer"
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                >
+                                    <span className="material-symbols-outlined text-[20px]">
+                                        {showPassword ? "visibility_off" : "visibility"}
+                                    </span>
+                                </button>
                             </div>
                         </div>
 

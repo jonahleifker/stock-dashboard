@@ -11,9 +11,33 @@ const router = express.Router();
  * All routes are prefixed with /api/notes
  */
 
+// GET /api/notes/shared - Get notes shared with me (requires auth)
+// This must come before other routes to avoid route collision
+router.get('/shared',
+  authenticate,
+  noteController.getSharedNotes
+);
+
 // GET /api/notes/user/:userId - Get all notes by a user (public)
-// This must come before /:ticker to avoid route collision
 router.get('/user/:userId', noteController.getNotesByUser);
+
+// POST /api/notes/:id/share - Share note with users (requires auth + ownership)
+router.post('/:id/share',
+  authenticate,
+  noteController.shareNote
+);
+
+// DELETE /api/notes/:id/share/:userId - Unshare note from user (requires auth + ownership)
+router.delete('/:id/share/:userId',
+  authenticate,
+  noteController.unshareNote
+);
+
+// GET /api/notes/:id/shared-with - Get users note is shared with (requires auth + ownership)
+router.get('/:id/shared-with',
+  authenticate,
+  noteController.getSharedWith
+);
 
 // PUT /api/notes/:id - Update note (requires auth + ownership)
 router.put('/:id',

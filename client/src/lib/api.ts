@@ -272,6 +272,13 @@ export const stockApi = {
     }
 };
 
+export interface SharedUser {
+    id: number;
+    username: string;
+    displayName: string;
+    email?: string;
+}
+
 export interface Note {
     id: number;
     ticker: string;
@@ -279,6 +286,7 @@ export interface Note {
     bearCase: string;
     buyInPrice: number;
     currentStance: 'bullish' | 'bearish' | 'neutral';
+    visibility?: 'private' | 'shared' | 'public';
     createdAt: string;
     updatedAt: string;
     user: {
@@ -286,6 +294,11 @@ export interface Note {
         username: string;
         displayName: string;
     } | null;
+    sharedBy?: {
+        id: number;
+        username: string;
+        displayName: string;
+    };
 }
 
 export const notesApi = {
@@ -307,6 +320,27 @@ export const notesApi = {
     delete: async (id: number) => {
         const response = await api.delete<{ message: string }>(`/notes/${id}`);
         return response.data;
+    },
+
+    // Sharing methods
+    share: async (id: number, userIds: number[]) => {
+        const response = await api.post<{ message: string }>(`/notes/${id}/share`, { userIds });
+        return response.data;
+    },
+
+    unshare: async (id: number, userId: number) => {
+        const response = await api.delete<{ message: string }>(`/notes/${id}/share/${userId}`);
+        return response.data;
+    },
+
+    getSharedWith: async (id: number) => {
+        const response = await api.get<{ sharedWith: SharedUser[] }>(`/notes/${id}/shared-with`);
+        return response.data.sharedWith;
+    },
+
+    getSharedNotes: async () => {
+        const response = await api.get<{ count: number, notes: Note[] }>('/notes/shared');
+        return response.data.notes;
     }
 };
 
@@ -348,8 +382,14 @@ export interface ResearchFile {
     fileType: string;
     fileSize: number;
     source: string;
+    visibility?: 'private' | 'shared' | 'public';
     uploadedAt: string;
     user: {
+        id: number;
+        username: string;
+        displayName: string;
+    };
+    sharedBy?: {
         id: number;
         username: string;
         displayName: string;
@@ -381,6 +421,35 @@ export const filesApi = {
     delete: async (id: number) => {
         const response = await api.delete<{ message: string }>(`/files/${id}`);
         return response.data;
+    },
+
+    // Sharing methods
+    share: async (id: number, userIds: number[]) => {
+        const response = await api.post<{ message: string }>(`/files/${id}/share`, { userIds });
+        return response.data;
+    },
+
+    unshare: async (id: number, userId: number) => {
+        const response = await api.delete<{ message: string }>(`/files/${id}/share/${userId}`);
+        return response.data;
+    },
+
+    getSharedWith: async (id: number) => {
+        const response = await api.get<{ sharedWith: SharedUser[] }>(`/files/${id}/shared-with`);
+        return response.data.sharedWith;
+    },
+
+    getSharedFiles: async () => {
+        const response = await api.get<{ count: number, files: ResearchFile[] }>('/files/shared');
+        return response.data.files;
+    }
+};
+
+// Users API for sharing functionality
+export const usersApi = {
+    getAll: async () => {
+        const response = await api.get<{ count: number, users: SharedUser[] }>('/users');
+        return response.data.users;
     }
 };
 

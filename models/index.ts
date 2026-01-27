@@ -86,6 +86,7 @@ export class Note extends Model<InferAttributes<Note>, InferCreationAttributes<N
   declare bearCase: CreationOptional<string | null>;
   declare buyInPrice: CreationOptional<number | null>;
   declare currentStance: CreationOptional<'bullish' | 'bearish' | 'neutral' | null>;
+  declare visibility: CreationOptional<'private' | 'shared' | 'public'>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
 }
@@ -112,6 +113,7 @@ export class ResearchFile extends Model<InferAttributes<ResearchFile>, InferCrea
   declare supabasePath: string;
   declare fileSize: CreationOptional<number | null>;
   declare source: CreationOptional<'manual' | 'manus'>;
+  declare visibility: CreationOptional<'private' | 'shared' | 'public'>;
   declare uploadedAt: CreationOptional<Date>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
@@ -201,6 +203,7 @@ Note.init({
   bearCase: { type: DataTypes.TEXT, allowNull: true },
   buyInPrice: { type: DataTypes.FLOAT, allowNull: true },
   currentStance: { type: DataTypes.ENUM('bullish', 'bearish', 'neutral'), allowNull: true },
+  visibility: { type: DataTypes.ENUM('private', 'shared', 'public'), allowNull: false, defaultValue: 'private' },
   createdAt: { type: DataTypes.DATE },
   updatedAt: { type: DataTypes.DATE },
 }, { sequelize, modelName: 'Note', tableName: 'notes', timestamps: true });
@@ -227,6 +230,7 @@ ResearchFile.init({
   supabasePath: { type: DataTypes.STRING, allowNull: false },
   fileSize: { type: DataTypes.INTEGER, allowNull: true },
   source: { type: DataTypes.ENUM('manual', 'manus'), allowNull: true, defaultValue: 'manual' },
+  visibility: { type: DataTypes.ENUM('private', 'shared', 'public'), allowNull: false, defaultValue: 'private' },
   uploadedAt: { type: DataTypes.DATE, allowNull: true, defaultValue: DataTypes.NOW },
   createdAt: { type: DataTypes.DATE },
   updatedAt: { type: DataTypes.DATE },
@@ -278,6 +282,26 @@ export class Watchlist extends Model<InferAttributes<Watchlist>, InferCreationAt
   declare updatedAt: CreationOptional<Date>;
 }
 
+export class SharedNote extends Model<InferAttributes<SharedNote>, InferCreationAttributes<SharedNote>> {
+  declare id: CreationOptional<number>;
+  declare noteId: number;
+  declare sharedByUserId: number;
+  declare sharedWithUserId: number;
+  declare sharedAt: CreationOptional<Date>;
+  declare createdAt: CreationOptional<Date>;
+  declare updatedAt: CreationOptional<Date>;
+}
+
+export class SharedFile extends Model<InferAttributes<SharedFile>, InferCreationAttributes<SharedFile>> {
+  declare id: CreationOptional<number>;
+  declare fileId: number;
+  declare sharedByUserId: number;
+  declare sharedWithUserId: number;
+  declare sharedAt: CreationOptional<Date>;
+  declare createdAt: CreationOptional<Date>;
+  declare updatedAt: CreationOptional<Date>;
+}
+
 // ... existing inits ...
 
 Favorite.init({
@@ -316,6 +340,48 @@ Watchlist.init({
     {
       unique: true,
       fields: ['userId', 'ticker']
+    }
+  ]
+});
+
+SharedNote.init({
+  id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+  noteId: { type: DataTypes.INTEGER, allowNull: false },
+  sharedByUserId: { type: DataTypes.INTEGER, allowNull: false },
+  sharedWithUserId: { type: DataTypes.INTEGER, allowNull: false },
+  sharedAt: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
+  createdAt: { type: DataTypes.DATE },
+  updatedAt: { type: DataTypes.DATE },
+}, {
+  sequelize,
+  modelName: 'SharedNote',
+  tableName: 'shared_notes',
+  timestamps: true,
+  indexes: [
+    {
+      unique: true,
+      fields: ['noteId', 'sharedWithUserId']
+    }
+  ]
+});
+
+SharedFile.init({
+  id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+  fileId: { type: DataTypes.INTEGER, allowNull: false },
+  sharedByUserId: { type: DataTypes.INTEGER, allowNull: false },
+  sharedWithUserId: { type: DataTypes.INTEGER, allowNull: false },
+  sharedAt: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
+  createdAt: { type: DataTypes.DATE },
+  updatedAt: { type: DataTypes.DATE },
+}, {
+  sequelize,
+  modelName: 'SharedFile',
+  tableName: 'shared_files',
+  timestamps: true,
+  indexes: [
+    {
+      unique: true,
+      fields: ['fileId', 'sharedWithUserId']
     }
   ]
 });
@@ -361,4 +427,16 @@ User.hasMany(ResearchFile, { foreignKey: 'userId' });
 Stock.hasMany(EarningsReport, { foreignKey: 'ticker', sourceKey: 'ticker' });
 EarningsReport.belongsTo(Stock, { foreignKey: 'ticker', targetKey: 'ticker' });
 
-export default { sequelize, User, Role, Permission, RefreshToken, Stock, Note, Article, ResearchFile, EarningsReport, Favorite, Watchlist };
+// SharedNote associations
+SharedNote.belongsTo(Note, { foreignKey: 'noteId', as: 'note' });
+SharedNote.belongsTo(User, { foreignKey: 'sharedByUserId', as: 'sharedBy' });
+SharedNote.belongsTo(User, { foreignKey: 'sharedWithUserId', as: 'sharedWith' });
+Note.hasMany(SharedNote, { foreignKey: 'noteId', as: 'shares' });
+
+// SharedFile associations
+SharedFile.belongsTo(ResearchFile, { foreignKey: 'fileId', as: 'file' });
+SharedFile.belongsTo(User, { foreignKey: 'sharedByUserId', as: 'sharedBy' });
+SharedFile.belongsTo(User, { foreignKey: 'sharedWithUserId', as: 'sharedWith' });
+ResearchFile.hasMany(SharedFile, { foreignKey: 'fileId', as: 'shares' });
+
+export default { sequelize, User, Role, Permission, RefreshToken, Stock, Note, Article, ResearchFile, EarningsReport, Favorite, Watchlist, SharedNote, SharedFile };

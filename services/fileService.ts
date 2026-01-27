@@ -1,6 +1,11 @@
-import { getSupabaseClient, isSupabaseConfigured, STORAGE_BUCKET } from '../config/supabase';
+import fs from 'fs';
+import path from 'path';
 import ResearchFileRepository from '../repositories/ResearchFileRepository';
-import { ResearchFile } from '../models';
+import SharedFileRepository from '../repositories/SharedFileRepository';
+import { ResearchFile, User } from '../models';
+
+// Base directory for file uploads (relative to project root)
+const UPLOADS_DIR = process.env.UPLOADS_DIR || './var/uploads';
 
 export interface FileUploadData {
   ticker: string;
@@ -11,11 +16,11 @@ export interface FileUploadData {
 
 export interface FileDownloadData {
   id: number;
-  expiresIn?: number; // seconds, default 3600 (1 hour)
+  expiresIn?: number; // Not used for local storage, kept for API compatibility
 }
 
 /**
- * File Service - Handles Supabase Storage operations and file metadata
+ * File Service - Handles local filesystem operations and file metadata
  */
 export class FileService {
   private readonly MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
@@ -44,10 +49,21 @@ export class FileService {
   ];
 
   /**
-   * Check if Supabase is configured
+   * Ensure the uploads directory exists
+   */
+  private ensureUploadsDir(subPath: string = ''): string {
+    const fullPath = path.join(UPLOADS_DIR, subPath);
+    if (!fs.existsSync(fullPath)) {
+      fs.mkdirSync(fullPath, { recursive: true });
+    }
+    return fullPath;
+  }
+
+  /**
+   * Local storage is always configured (no external service needed)
    */
   isConfigured(): boolean {
-    return isSupabaseConfigured();
+    return true;
   }
 
   /**
@@ -83,48 +99,39 @@ export class FileService {
   }
 
   /**
-   * Upload file to Supabase Storage
+   * Upload file to local filesystem
    */
   async uploadFile(data: FileUploadData): Promise<ResearchFile> {
-    if (!this.isConfigured()) {
-      throw new Error('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_KEY environment variables.');
-    }
-
     // Validate file
     const validation = this.validateFile(data.file);
     if (!validation.valid) {
       throw new Error(validation.error);
     }
 
-    const supabase = getSupabaseClient();
-
     // Generate unique file path: ticker/userId/timestamp-filename
     const timestamp = Date.now();
     const sanitizedFilename = data.file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_');
-    const filePath = `${data.ticker}/${data.userId}/${timestamp}-${sanitizedFilename}`;
+    const relativePath = `${data.ticker}/${data.userId}`;
+    const filename = `${timestamp}-${sanitizedFilename}`;
+    
+    // Ensure directory exists
+    const uploadDir = this.ensureUploadsDir(relativePath);
+    const fullFilePath = path.join(uploadDir, filename);
+    const storedPath = path.join(relativePath, filename);
 
-    // Upload to Supabase Storage
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from(STORAGE_BUCKET)
-      .upload(filePath, data.file.buffer, {
-        contentType: data.file.mimetype,
-        upsert: false,
-      });
-
-    if (uploadError) {
-      throw new Error(`Failed to upload file to Supabase: ${uploadError.message}`);
-    }
+    // Write file to disk
+    await fs.promises.writeFile(fullFilePath, data.file.buffer);
 
     // Get file extension for fileType
     const ext = data.file.originalname.substring(data.file.originalname.lastIndexOf('.') + 1);
 
-    // Save metadata to database
+    // Save metadata to database (using supabasePath field to store local path)
     const fileRecord = await ResearchFileRepository.create({
       ticker: data.ticker,
       userId: data.userId,
       filename: data.file.originalname,
       fileType: ext,
-      supabasePath: uploadData.path,
+      supabasePath: storedPath, // Storing local path here
       fileSize: data.file.size,
       source: data.source || 'manual',
     });
@@ -133,41 +140,71 @@ export class FileService {
   }
 
   /**
-   * Get download URL for a file
+   * Get the full local path for a file
+   */
+  getFilePath(storedPath: string): string {
+    return path.join(UPLOADS_DIR, storedPath);
+  }
+
+  /**
+   * Get download URL for a file (returns local path for serving)
+   * For local storage, we return a relative URL that the server will serve
    */
   async getDownloadUrl(data: FileDownloadData): Promise<string> {
-    if (!this.isConfigured()) {
-      throw new Error('Supabase is not configured');
-    }
-
     // Get file metadata
     const file = await ResearchFileRepository.findById(data.id);
     if (!file) {
       throw new Error('File not found');
     }
 
-    const supabase = getSupabaseClient();
-
-    // Generate signed URL (expires in 1 hour by default)
-    const { data: urlData, error } = await supabase.storage
-      .from(STORAGE_BUCKET)
-      .createSignedUrl(file.supabasePath, data.expiresIn || 3600);
-
-    if (error) {
-      throw new Error(`Failed to generate download URL: ${error.message}`);
-    }
-
-    return urlData.signedUrl;
+    // Return a URL path that the server can serve
+    // The actual file serving happens in the controller/route
+    return `/api/files/${data.id}/serve`;
   }
 
   /**
-   * Delete file from Supabase Storage and database
+   * Get file buffer for downloading
    */
-  async deleteFile(fileId: number, userId: number): Promise<boolean> {
-    if (!this.isConfigured()) {
-      throw new Error('Supabase is not configured');
+  async getFileBuffer(fileId: number): Promise<{ buffer: Buffer; filename: string; mimeType: string }> {
+    const file = await ResearchFileRepository.findById(fileId);
+    if (!file) {
+      throw new Error('File not found');
     }
 
+    const fullPath = this.getFilePath(file.supabasePath);
+    
+    if (!fs.existsSync(fullPath)) {
+      throw new Error('File not found on disk');
+    }
+
+    const buffer = await fs.promises.readFile(fullPath);
+    
+    // Determine MIME type from extension
+    const mimeTypes: Record<string, string> = {
+      'pdf': 'application/pdf',
+      'doc': 'application/msword',
+      'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'xls': 'application/vnd.ms-excel',
+      'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'csv': 'text/csv',
+      'txt': 'text/plain',
+      'md': 'text/markdown',
+      'png': 'image/png',
+      'jpg': 'image/jpeg',
+      'jpeg': 'image/jpeg',
+    };
+
+    return {
+      buffer,
+      filename: file.filename,
+      mimeType: mimeTypes[file.fileType] || 'application/octet-stream',
+    };
+  }
+
+  /**
+   * Delete file from local filesystem and database
+   */
+  async deleteFile(fileId: number, userId: number): Promise<boolean> {
     // Get file metadata
     const file = await ResearchFileRepository.findById(fileId);
     if (!file) {
@@ -179,15 +216,11 @@ export class FileService {
       throw new Error('You do not have permission to delete this file');
     }
 
-    const supabase = getSupabaseClient();
+    const fullPath = this.getFilePath(file.supabasePath);
 
-    // Delete from Supabase Storage
-    const { error: deleteError } = await supabase.storage
-      .from(STORAGE_BUCKET)
-      .remove([file.supabasePath]);
-
-    if (deleteError) {
-      throw new Error(`Failed to delete file from Supabase: ${deleteError.message}`);
+    // Delete from filesystem (if exists)
+    if (fs.existsSync(fullPath)) {
+      await fs.promises.unlink(fullPath);
     }
 
     // Delete metadata from database
@@ -229,6 +262,81 @@ export class FileService {
    */
   async getUserStorageUsage(userId: number): Promise<number> {
     return await ResearchFileRepository.getTotalStorageByUser(userId);
+  }
+
+  /**
+   * Share a file with one or more users
+   */
+  async shareFile(fileId: number, ownerId: number, userIds: number[]): Promise<void> {
+    // Check ownership
+    const isOwner = await ResearchFileRepository.isOwner(fileId, ownerId);
+    if (!isOwner) {
+      throw new Error('Unauthorized: User does not own this file');
+    }
+
+    // Get the file
+    const file = await ResearchFileRepository.findById(fileId);
+    if (!file) {
+      throw new Error('File not found');
+    }
+
+    // Update visibility to 'shared' if it's currently 'private'
+    if (file.visibility === 'private') {
+      await ResearchFileRepository.update(fileId, { visibility: 'shared' } as any);
+    }
+
+    // Share with specified users
+    await SharedFileRepository.shareWithMultiple(fileId, ownerId, userIds);
+  }
+
+  /**
+   * Unshare a file from a specific user
+   */
+  async unshareFile(fileId: number, ownerId: number, targetUserId: number): Promise<void> {
+    // Check ownership
+    const isOwner = await ResearchFileRepository.isOwner(fileId, ownerId);
+    if (!isOwner) {
+      throw new Error('Unauthorized: User does not own this file');
+    }
+
+    await SharedFileRepository.unshare(fileId, targetUserId);
+
+    // If no more shares exist, update visibility back to 'private'
+    const shareCount = await SharedFileRepository.countShares(fileId);
+    if (shareCount === 0) {
+      await ResearchFileRepository.update(fileId, { visibility: 'private' } as any);
+    }
+  }
+
+  /**
+   * Get all users a file is shared with
+   */
+  async getSharedWith(fileId: number, userId: number): Promise<User[]> {
+    // Check ownership
+    const isOwner = await ResearchFileRepository.isOwner(fileId, userId);
+    if (!isOwner) {
+      throw new Error('Unauthorized: User does not own this file');
+    }
+
+    return await SharedFileRepository.getSharedWith(fileId);
+  }
+
+  /**
+   * Get all files shared with a user
+   */
+  async getSharedFiles(userId: number): Promise<ResearchFile[]> {
+    return await SharedFileRepository.getFilesSharedWithUser(userId);
+  }
+
+  /**
+   * Check if a user can access a file (owner or shared with)
+   */
+  async canAccessFile(fileId: number, userId: number): Promise<boolean> {
+    const isOwner = await ResearchFileRepository.isOwner(fileId, userId);
+    if (isOwner) return true;
+
+    const isShared = await SharedFileRepository.isSharedWith(fileId, userId);
+    return isShared;
   }
 }
 

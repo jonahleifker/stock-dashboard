@@ -15,7 +15,11 @@
     "db:migrate": "sequelize-cli db:migrate",
     "db:migrate:undo": "sequelize-cli db:migrate:undo",
     "db:seed": "sequelize-cli db:seed:all",
-    "db:reset": "sequelize-cli db:migrate:undo:all && sequelize-cli db:migrate && sequelize-cli db:seed:all"
+    "db:reset": "sequelize-cli db:migrate:undo:all && sequelize-cli db:migrate && sequelize-cli db:seed:all",
+    "reset-password": "ts-node reset_password.ts",
+    "test-login": "ts-node test_login.ts",
+    "diagnose-login": "ts-node diagnose_login.ts",
+    "create-user": "ts-node create_user.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.90.1",
