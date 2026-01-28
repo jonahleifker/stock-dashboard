@@ -17,6 +17,7 @@ passport.deserializeUser(async (id: string, done: (err: any, user?: any) => void
 
 passport.use(new LocalStrategy({ usernameField: 'username' }, async (username: string, password: string, done: (err: any, user?: any, info?: any) => void) => {
   try {
+    console.log('[PASSPORT] Attempting authentication for:', username);
     // Try to find user by username or email
     const user: any = await models.User.findOne({ 
       where: { 
@@ -24,15 +25,30 @@ passport.use(new LocalStrategy({ usernameField: 'username' }, async (username: s
           { username },
           { email: username }
         ]
-      } 
+      },
+      logging: (sql) => console.log('[PASSPORT] SQL Query:', sql)
     });
-    if (!user || !user.isActive) return done(null, false);
+    console.log('[PASSPORT] Query result:', user ? `User found: ${user.username}` : 'No user found');
+    if (!user) {
+      console.log('[PASSPORT] User not found:', username);
+      return done(null, false);
+    }
+    if (!user.isActive) {
+      console.log('[PASSPORT] User inactive:', username);
+      return done(null, false);
+    }
+    console.log('[PASSPORT] User found, checking password...');
     const ok = await bcrypt.compare(password, user.passwordHash);
-    if (!ok) return done(null, false);
+    if (!ok) {
+      console.log('[PASSPORT] Password mismatch for:', username);
+      return done(null, false);
+    }
+    console.log('[PASSPORT] Authentication successful for:', username);
     user.lastLoginAt = new Date();
     await user.save();
     return done(null, user);
   } catch (e) {
+    console.error('[PASSPORT] Error during authentication:', e);
     return done(e);
   }
 }));

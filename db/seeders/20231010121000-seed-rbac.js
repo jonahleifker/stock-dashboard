@@ -41,10 +41,10 @@ module.exports = {
       { email: adminEmail, passwordHash, isActive: true, createdAt: new Date(), updatedAt: new Date() },
     ]);
     
-    // Get the auto-generated ID
+    // Get the auto-generated ID (use quoted table name for PostgreSQL case-sensitivity)
     const [adminUser] = await queryInterface.sequelize.query(
-      `SELECT id FROM Users WHERE email = ?`,
-      { replacements: [adminEmail], type: queryInterface.sequelize.QueryTypes.SELECT }
+      `SELECT id FROM "Users" WHERE email = :email`,
+      { replacements: { email: adminEmail }, type: queryInterface.sequelize.QueryTypes.SELECT }
     );
     const adminUserId = adminUser.id;
 

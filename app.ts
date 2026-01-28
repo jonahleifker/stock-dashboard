@@ -7,10 +7,10 @@ import session from 'express-session';
 import cors from 'cors';
 import passport from './auth/passport';
 import sequelize from './db/sequelize';
-import { initializeDatabase } from './db/init';
 import indexRouter from './routes/index';
 import authWeb from './routes/auth.web';
 import authApi from './routes/auth.api';
+import usersRouter from './routes/users';
 import stockRoutes from './routes/stocks';
 import noteRoutes from './routes/notes';
 import fileRoutes from './routes/files';
@@ -19,12 +19,6 @@ import researchRoutes from './routes/research';
 import earningsRoutes from './routes/earnings';
 import favoritesRouter from './routes/favorites';
 import watchlistRouter from './routes/watchlist';
-
-// Initialize database
-initializeDatabase().catch(error => {
-  console.error('Failed to initialize database:', error);
-  process.exit(1);
-});
 
 const app = express();
 
@@ -83,6 +77,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use('/api', indexRouter);
 app.use('/auth', authWeb); // session-based web auth
 app.use('/api/auth', authApi); // JWT-based API auth
+app.use('/api/users', usersRouter); // users API for sharing
 app.use('/api/stocks', stockRoutes); // stock data API
 app.use('/api/notes', noteRoutes); // notes API
 app.use('/api/files', fileRoutes); // file upload/download API
